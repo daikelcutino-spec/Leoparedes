@@ -842,35 +842,41 @@ class Bot(BaseBot):
 
         # Comando !emote list - Mostrar lista completa de emotes (máximo por mensaje)
         if msg == "!emote list":
-            emote_names = []
-            for k, v in emotes.items():
-                emote_names.append(f"{k}:{v['name']}")
+            try:
+                emote_list = []
+                for k, v in emotes.items():
+                    emote_list.append(f"{k}:{v['name']}")
 
-            # Calcular tamaño óptimo por mensaje (máximo ~400 caracteres)
-            messages = []
-            current_message = "📋 EMOTES:\n"
-            
-            for emote_entry in emote_names:
-                # Si agregar este emote excede el límite, guardar mensaje actual y empezar uno nuevo
-                if len(current_message) + len(emote_entry) + 2 > 400:
-                    messages.append(current_message)
-                    current_message = ""
+                # Dividir en grupos de 20 emotes por mensaje (límite seguro)
+                chunk_size = 20
+                total_emotes = len(emote_list)
                 
-                current_message += emote_entry + ", "
-            
-            # Agregar último mensaje
-            if current_message:
-                messages.append(current_message.rstrip(", "))
-            
-            # Enviar todos los mensajes
-            for idx, message in enumerate(messages, 1):
-                if idx == 1:
-                    await self.highrise.send_whisper(user.id, message)
-                else:
-                    await self.highrise.send_whisper(user.id, message)
+                await self.highrise.send_whisper(user.id, f"📋 LISTA DE EMOTES ({total_emotes} total)")
                 await asyncio.sleep(0.3)
-            
-            await self.highrise.send_whisper(user.id, f"✅ Total: {len(emote_names)} emotes")
+                
+                for i in range(0, len(emote_list), chunk_size):
+                    chunk = emote_list[i:i+chunk_size]
+                    message = ", ".join(chunk)
+                    
+                    # Asegurar que el mensaje no exceda 250 caracteres
+                    if len(message) > 250:
+                        # Si es muy largo, dividir en mensajes más pequeños
+                        half = len(chunk) // 2
+                        message1 = ", ".join(chunk[:half])
+                        message2 = ", ".join(chunk[half:])
+                        await self.highrise.send_whisper(user.id, message1)
+                        await asyncio.sleep(0.3)
+                        await self.highrise.send_whisper(user.id, message2)
+                    else:
+                        await self.highrise.send_whisper(user.id, message)
+                    
+                    await asyncio.sleep(0.3)
+                
+                await self.highrise.send_whisper(user.id, f"✅ Usa el número o nombre del emote para ejecutarlo")
+                
+            except Exception as e:
+                await self.highrise.send_whisper(user.id, f"❌ Error mostrando emotes: {str(e)[:50]}")
+                log_event("ERROR", f"Error en !emote list: {e}")
             return
 
         # Inicio rápido de animación por número
