@@ -1624,3 +1624,14 @@
 [2025-10-02 18:29:12] [BOT] Iniciando floss falso acelerado para usuario 681d54aa4cedce763169580f
 [2025-10-02 18:29:25] [BOT] Floss falso completado para usuario 681d54aa4cedce763169580f
 [2025-10-02 18:29:25] [BOT] Floss falso de bienvenida completado
+[2025-10-02 18:31:40] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-02 18:31:40] [BOT] Starting initial bot appearance setup
+[2025-10-02 18:31:42] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-02 18:31:42] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-02 18:31:42] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-02 18:31:42] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-02 18:31:42] [BOT] Initial bot appearance setup completed
+[2025-10-02 18:31:44] [BOT] Preparando floss falso infinito de inicio
+[2025-10-02 18:31:44] [BOT] Floss falso infinito iniciado
+[2025-10-02 18:31:44] [BOT] Iniciando floss falso acelerado para usuario 681d54aa4cedce763169580f - Bucle infinito: True
+[2025-10-02 18:31:57] [BOT] Iniciando bucle infinito de floss falso para usuario 681d54aa4cedce763169580f
