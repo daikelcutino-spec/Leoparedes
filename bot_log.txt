@@ -1728,3 +1728,25 @@
 [2025-10-02 18:59:41] [BOT] Reproduciendo emote #34: ditzy (emote-pose9) - Duración: 6.0s
 [2025-10-02 18:59:47] [BOT] Reproduciendo emote #35: uwu (idle-uwu) - Duración: 25.5s
 [2025-10-02 19:00:13] [BOT] Reproduciendo emote #36: wrong (dance-wrong) - Duración: 13.6s
+[2025-10-02 19:21:01] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-02 19:21:01] [BOT] Starting initial bot appearance setup
+[2025-10-02 19:21:03] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-02 19:21:03] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-02 19:21:03] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-02 19:21:03] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-02 19:21:03] [BOT] Initial bot appearance setup completed
+[2025-10-02 19:21:05] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-02 19:21:05] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-02 19:21:05] [BOT] Iniciando ciclo automático de 224 emotes
+[2025-10-02 19:21:05] [BOT] Reproduciendo emote #1: fairytwirl (emote-looping) - Duración: 9.89s
+[2025-10-02 19:21:15] [BOT] Reproduciendo emote #2: fairyfloat (idle-floating) - Duración: 27.6s
+[2025-10-02 19:21:43] [BOT] Reproduciendo emote #3: launch (emote-launch) - Duración: 10.88s
+[2025-10-02 19:21:54] [BOT] Reproduciendo emote #4: cutesalute (emote-cutesalute) - Duración: 3.79s
+[2025-10-02 19:21:58] [BOT] Reproduciendo emote #5: atattention (emote-salute) - Duración: 4.79s
+[2025-10-02 19:22:02] [BOT] Reproduciendo emote #6: tiktok (dance-tiktok11) - Duración: 11.37s
+[2025-10-02 19:22:14] [BOT] Reproduciendo emote #7: smooch (emote-kissing) - Duración: 6.69s
+[2025-10-02 19:22:21] [BOT] Reproduciendo emote #8: pushit (dance-employee) - Duración: 8.55s
+[2025-10-02 19:22:29] [BOT] Reproduciendo emote #9: foryou (emote-gift) - Duración: 6.09s
+[2025-10-02 19:22:35] [BOT] Reproduciendo emote #10: touch (dance-touch) - Duración: 13.15s
+[2025-10-02 19:22:48] [BOT] Reproduciendo emote #11: kawaii (dance-kawai) - Duración: 10.85s
+[2025-10-02 19:22:59] [BOT] Reproduciendo emote #12: repose (sit-relaxed) - Duración: 31.21s
