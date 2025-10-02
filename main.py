@@ -976,10 +976,10 @@ class Bot(BaseBot):
                 await self.highrise.send_whisper(user.id, "❌ No tienes estatus VIP!")
             return
 
-        # Проверяем, если сообщение "dj" - телепорт в DJ зону (только для Owner)
+        # Проверяем, если сообщение "dj" - телепорт в DJ зону (solo admin y propietario)
         if msg.lower() == "dj":
-            if user_id != OWNER_ID:
-                await self.highrise.send_whisper(user.id, "❌ ¡Solo el propietario puede usar la zona DJ!")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID):
+                await self.highrise.send_whisper(user.id, "❌ ¡Solo administradores y propietario pueden usar la zona DJ!")
                 return
 
             try:
@@ -999,10 +999,10 @@ class Bot(BaseBot):
                 await self.highrise.send_whisper(user.id, f"❌ Error de teletransporte: {e}")
             return
 
-        # Проверяем, если сообщение "directivo" - телепорт в директорию (только для Owner)
+        # Проверяем, если сообщение "directivo" - телепорт en директорию (solo admin y propietario)
         if msg.lower() == "directivo":
-            if user_id != OWNER_ID:
-                await self.highrise.send_whisper(user.id, "❌ ¡Solo el propietario puede usar la zona directiva!")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID):
+                await self.highrise.send_whisper(user.id, "❌ ¡Solo administradores y propietario pueden usar la zona directiva!")
                 return
 
             try:
