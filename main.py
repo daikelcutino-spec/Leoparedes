@@ -365,17 +365,18 @@ class Bot(BaseBot):
                 # Configurar outfit y emote inicial del bot
                 await self.setup_initial_bot_appearance()
                 
-                # Ejecutar floss falso de bienvenida
+                # Ejecutar floss falso infinito de inicio
                 try:
                     await asyncio.sleep(2)  # Espera breve para estabilizar conexión
-                    log_event("BOT", "Preparando floss falso de bienvenida")
-                    await self.highrise.chat("¡El bot ha entrado en la sala! Preparándose para la bienvenida...")
-                    await self.fake_floss_acelerado(self.bot_id)
-                    await self.highrise.chat("¡Estoy en línea! Escribe !help para ver mis comandos.")
-                    log_event("BOT", "Floss falso de bienvenida completado")
+                    log_event("BOT", "Preparando floss falso infinito de inicio")
+                    await self.highrise.chat("¡El bot ha entrado en la sala! Iniciando FLOSS FALSO INFINITO...")
+                    await self.highrise.chat("🕺 ¡MODO FLOSS FALSO INFINITO ACTIVADO!")
+                    # Iniciar floss falso infinito en tarea separada
+                    asyncio.create_task(self.fake_floss_acelerado(self.bot_id, bucle_infinito=True))
+                    log_event("BOT", "Floss falso infinito iniciado")
                 except Exception as e:
-                    log_event("ERROR", f"Error en floss falso de bienvenida: {e}")
-                    print(f"⚠️ Error en floss falso de bienvenida: {e}")
+                    log_event("ERROR", f"Error en floss falso infinito: {e}")
+                    print(f"⚠️ Error en floss falso infinito: {e}")
             else:
                 print("Не удалось подключиться к серверу")
                 sys.exit(1)
@@ -3201,9 +3202,10 @@ class Bot(BaseBot):
             log_event("ERROR", f"Error crítico en modo floss: {e}")
             print(f"❌ Error crítico en modo floss: {e}")
 
-    async def fake_floss_acelerado(self, user_id):
+    async def fake_floss_acelerado(self, user_id, bucle_infinito=False):
         """
         Simulación del 'Floss Falso' con aceleración progresiva.
+        Si bucle_infinito=True, continúa ejecutándose indefinidamente.
         """
         try:
             movimiento_floss = [
@@ -3220,18 +3222,28 @@ class Bot(BaseBot):
                 (0.18, 5)  # Máximo (Velocidad final)
             ]
             
-            log_event("BOT", f"Iniciando floss falso acelerado para usuario {user_id}")
+            log_event("BOT", f"Iniciando floss falso acelerado para usuario {user_id} - Bucle infinito: {bucle_infinito}")
             
-            # Ejecutamos la secuencia de aceleración
+            # Ejecutamos la secuencia de aceleración inicial
             for tiempo_sleep, num_repeticiones in fases_aceleracion:
                 for _ in range(num_repeticiones):
                     for emote_name in movimiento_floss:
                         await self.highrise.send_emote(emote_name, user_id)
                         await asyncio.sleep(tiempo_sleep)
             
-            # El bot termina la aceleración y se pone en pose final
-            await self.highrise.send_emote("emote-celebrationstep", user_id)
-            log_event("BOT", f"Floss falso completado para usuario {user_id}")
+            # Si es bucle infinito, continuar con la velocidad máxima
+            if bucle_infinito:
+                log_event("BOT", f"Iniciando bucle infinito de floss falso para usuario {user_id}")
+                print("🕺 FLOSS FALSO - Iniciando bucle infinito a velocidad máxima")
+                
+                while True:
+                    for emote_name in movimiento_floss:
+                        await self.highrise.send_emote(emote_name, user_id)
+                        await asyncio.sleep(0.18)  # Velocidad máxima constante
+            else:
+                # El bot termina la aceleración y se pone en pose final
+                await self.highrise.send_emote("emote-celebrationstep", user_id)
+                log_event("BOT", f"Floss falso completado para usuario {user_id}")
             
         except Exception as e:
             log_event("ERROR", f"Error en floss falso: {e}")
