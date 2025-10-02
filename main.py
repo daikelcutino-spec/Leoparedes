@@ -743,9 +743,31 @@ class Bot(BaseBot):
         # Detectar si es comando privado (susurro/whisper)
         is_whisper = hasattr(message, 'is_whisper') and message.is_whisper if hasattr(message, '__dict__') else False
         
+        # DETECCIÓN MEJORADA DE MENCIONES AL BOT
+        # Verificar si el mensaje menciona al bot por su nombre de usuario
+        bot_username = "NOCTURNO_BOT"  # Nombre exacto del bot en Highrise
+        is_bot_mention = False
+        
+        # Detectar @NOCTURNO_BOT o variaciones
+        if f"@{bot_username}" in msg or "@nocturno" in msg.lower() or "@bot" in msg.lower():
+            is_bot_mention = True
+            # Remover la mención del mensaje para procesar el comando
+            msg = msg.replace(f"@{bot_username}", "").replace("@nocturno", "").replace("@bot", "").strip()
+        
         # Registro de todos los mensajes
-        log_event("CHAT", f"[{'WHISPER' if is_whisper else 'PUBLIC'}] {user.username}: {msg}")
+        log_event("CHAT", f"[{'WHISPER' if is_whisper else 'PUBLIC'}] {user.username}: {message}" + (f" [BOT_MENTION]" if is_bot_mention else ""))
 
+        # Si el bot fue mencionado, responder automáticamente
+        if is_bot_mention:
+            await self.highrise.send_whisper(user.id, f"👋 ¡Hola @{username}! Me mencionaste.")
+            await self.highrise.send_whisper(user.id, "💡 Usa !help para ver todos los comandos disponibles")
+            # Si después de la mención no hay comando, terminar aquí
+            if not msg or msg.isspace():
+                log_event("BOT", f"Mención detectada de {username} sin comando")
+                return
+            else:
+                log_event("BOT", f"Mención detectada de {username} con comando: {msg}")
+        
         # Verificación de ban y mute
         if self.is_banned(user_id):
             log_event("BANNED", f"Mensaje bloqueado de {user.username}")
