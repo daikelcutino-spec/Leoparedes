@@ -364,6 +364,12 @@ class Bot(BaseBot):
                 asyncio.create_task(self.check_console_messages())
                 # Configurar outfit y emote inicial del bot
                 await self.setup_initial_bot_appearance()
+                
+                # Ejecutar floss falso de bienvenida
+                await asyncio.sleep(2)  # Espera breve para estabilizar conexión
+                await self.highrise.chat("¡El bot ha entrado en la sala! Preparándose para la bienvenida...")
+                await self.fake_floss_acelerado(self.bot_id)
+                await self.highrise.chat("¡Estoy en línea! Escribe !help para ver mis comandos.")
             else:
                 print("Не удалось подключиться к серверу")
                 sys.exit(1)
@@ -3188,6 +3194,42 @@ class Bot(BaseBot):
         except Exception as e:
             log_event("ERROR", f"Error crítico en modo floss: {e}")
             print(f"❌ Error crítico en modo floss: {e}")
+
+    async def fake_floss_acelerado(self, user_id):
+        """
+        Simulación del 'Floss Falso' con aceleración progresiva.
+        """
+        try:
+            movimiento_floss = [
+                "idle-fighter",      # fighter - Brazo rígido
+                "emote-superpunch",  # superpunch - Brazo adelante
+                "emote-kicking",     # superkick - Brazo atrás
+                "idle-loop-tapdance" # taploop - Ritmo de cadera/reset
+            ]
+            
+            # Fases de aceleración [Tiempo, Número de Veces que Repite la secuencia]
+            fases_aceleracion = [
+                (0.5, 2),  # Lento
+                (0.3, 2),  # Medio
+                (0.18, 5)  # Máximo (Velocidad final)
+            ]
+            
+            log_event("BOT", f"Iniciando floss falso acelerado para usuario {user_id}")
+            
+            # Ejecutamos la secuencia de aceleración
+            for tiempo_sleep, num_repeticiones in fases_aceleracion:
+                for _ in range(num_repeticiones):
+                    for emote_name in movimiento_floss:
+                        await self.highrise.send_emote(emote_name, user_id)
+                        await asyncio.sleep(tiempo_sleep)
+            
+            # El bot termina la aceleración y se pone en pose final
+            await self.highrise.send_emote("emote-celebrationstep", user_id)
+            log_event("BOT", f"Floss falso completado para usuario {user_id}")
+            
+        except Exception as e:
+            log_event("ERROR", f"Error en floss falso: {e}")
+            print(f"⚠️ Error ejecutando floss falso: {e}")
 
     async def start_auto_emote_cycle(self):
         """Inicia ciclo automático de todos los 224 emotes en secuencia infinita"""
