@@ -13,6 +13,8 @@ This is a Highrise bot application built with Python that manages automated inte
 - ✅ Changed bot default mode from "floss" to "idle" to prevent emote errors
 - ✅ Disabled auto-start of floss mode (can be manually activated with !floss command)
 - ✅ Bot now connects successfully without errors
+- ✅ Integrated "fake floss acelerado" - simulates floss dance with progressive acceleration using free emotes
+- ✅ Bot now performs welcome floss dance sequence when connecting to room (~12 seconds duration)
 
 ## User Preferences
 
