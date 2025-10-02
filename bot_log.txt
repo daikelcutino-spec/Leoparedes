@@ -1555,3 +1555,50 @@
 [2025-10-01 15:14:56] [ERROR] Error con emote floss real: Emote is not free or owned by target user
 [2025-10-01 15:14:58] [ERROR] Error con emote floss real: Emote is not free or owned by target user
 [2025-10-01 15:15:00] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:13] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-02 18:16:13] [BOT] Starting initial bot appearance setup
+[2025-10-02 18:16:15] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-02 18:16:15] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-02 18:16:15] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-02 18:16:15] [BOT] Floss mode started for bot ID 681d54aa4cedce763169580f
+[2025-10-02 18:16:15] [BOT] Initial bot appearance setup completed
+[2025-10-02 18:16:15] [BOT] Iniciando modo FLOSS REAL en bucle infinito
+[2025-10-02 18:16:15] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:17] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:19] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:21] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:23] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:25] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:28] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:30] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:32] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:34] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:36] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:38] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:40] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:42] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:44] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:47] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:49] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:51] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:53] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:55] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:57] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:16:59] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:17:01] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:17:03] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:17:05] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:17:07] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:17:09] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:17:11] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:17:13] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:17:16] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:17:18] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:17:20] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-02 18:17:21] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-02 18:17:21] [BOT] Starting initial bot appearance setup
+[2025-10-02 18:17:23] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-02 18:17:24] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-02 18:17:24] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-02 18:17:24] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-02 18:17:24] [BOT] Initial bot appearance setup completed

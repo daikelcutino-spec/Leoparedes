@@ -1,0 +1,29 @@
+modules = ["python-3.11"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Highrise Bot"
+
+[[workflows.workflow]]
+name = "Highrise Bot"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python -m highrise main:Bot 686c527e9668a3cb40e1f58d b0c7b29926c42a39987057723b8def359ce211d320ecd7f946401fdf9b14d56a"
+
+[workflows.workflow.metadata]
+outputType = "console"

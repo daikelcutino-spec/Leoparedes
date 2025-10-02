@@ -339,7 +339,7 @@ class Bot(BaseBot):
         self.last_announcement = 0
         self.user_positions = {}  # Словарь для хранения последних позиций пользователей
         self.connection_retries = 0
-        self.bot_mode = "floss"  # Modo por defecto: floss falso
+        self.bot_mode = "idle"  # Modo por defecto: idle (sin emotes automáticos)
         self.current_emote_task = None  # Para controlar la tarea actual de emotes
 
     async def connect_with_retry(self):
@@ -3264,19 +3264,9 @@ class Bot(BaseBot):
             else:
                 log_event("BOT", "No initial outfit specified in config")
 
-            # Iniciar modo floss real por defecto
-            if hasattr(self, 'bot_id') and self.bot_id:
-                try:
-                    # Iniciar modo floss real (solo dance-floss en bucle)
-                    self.current_emote_task = asyncio.create_task(self.start_floss_mode())
-                    log_event("BOT", f"Floss mode started for bot ID {self.bot_id}")
-                    print(f"🕺 Modo FLOSS REAL iniciado: dance-floss en bucle infinito")
-                except Exception as e:
-                    log_event("ERROR", f"Error starting floss mode: {e}")
-                    print(f"⚠️  Error iniciando modo floss: {e}")
-            else:
-                log_event("ERROR", "Bot ID not available for floss mode")
-                print("⚠️  Bot ID no disponible para inicializar modo floss")
+            # Modo floss deshabilitado por defecto (se puede activar con comando !floss)
+            log_event("BOT", f"Bot inicializado en modo idle (bot ID: {self.bot_id})")
+            print(f"✅ Bot inicializado en modo idle - usa !floss para activar modo floss")
 
             log_event("BOT", "Initial bot appearance setup completed")
 
