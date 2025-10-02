@@ -1611,3 +1611,16 @@
 [2025-10-02 18:22:18] [BOT] Initial bot appearance setup completed
 [2025-10-02 18:22:20] [BOT] Iniciando floss falso acelerado para usuario 681d54aa4cedce763169580f
 [2025-10-02 18:22:32] [BOT] Floss falso completado para usuario 681d54aa4cedce763169580f
+[2025-10-02 18:26:55] [CHAT] Xx__Daikel__xX: !floss
+[2025-10-02 18:27:03] [CHAT] Xx__Daikel__xX: ghostfloat
+[2025-10-02 18:29:08] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-02 18:29:08] [BOT] Starting initial bot appearance setup
+[2025-10-02 18:29:10] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-02 18:29:10] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-02 18:29:10] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-02 18:29:10] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-02 18:29:10] [BOT] Initial bot appearance setup completed
+[2025-10-02 18:29:12] [BOT] Preparando floss falso de bienvenida
+[2025-10-02 18:29:12] [BOT] Iniciando floss falso acelerado para usuario 681d54aa4cedce763169580f
+[2025-10-02 18:29:25] [BOT] Floss falso completado para usuario 681d54aa4cedce763169580f
+[2025-10-02 18:29:25] [BOT] Floss falso de bienvenida completado

@@ -366,10 +366,16 @@ class Bot(BaseBot):
                 await self.setup_initial_bot_appearance()
                 
                 # Ejecutar floss falso de bienvenida
-                await asyncio.sleep(2)  # Espera breve para estabilizar conexión
-                await self.highrise.chat("¡El bot ha entrado en la sala! Preparándose para la bienvenida...")
-                await self.fake_floss_acelerado(self.bot_id)
-                await self.highrise.chat("¡Estoy en línea! Escribe !help para ver mis comandos.")
+                try:
+                    await asyncio.sleep(2)  # Espera breve para estabilizar conexión
+                    log_event("BOT", "Preparando floss falso de bienvenida")
+                    await self.highrise.chat("¡El bot ha entrado en la sala! Preparándose para la bienvenida...")
+                    await self.fake_floss_acelerado(self.bot_id)
+                    await self.highrise.chat("¡Estoy en línea! Escribe !help para ver mis comandos.")
+                    log_event("BOT", "Floss falso de bienvenida completado")
+                except Exception as e:
+                    log_event("ERROR", f"Error en floss falso de bienvenida: {e}")
+                    print(f"⚠️ Error en floss falso de bienvenida: {e}")
             else:
                 print("Не удалось подключиться к серверу")
                 sys.exit(1)
