@@ -850,35 +850,37 @@ class Bot(BaseBot):
                 for k, v in emotes.items():
                     emote_list.append(f"{k}:{v['name']}")
 
-                # Dividir en grupos de 40 emotes por mensaje
-                chunk_size = 40
                 total_emotes = len(emote_list)
-
-                await send_response( f"📋 LISTA DE EMOTES ({total_emotes} total)")
+                await send_response(f"📋 LISTA DE EMOTES ({total_emotes} total)")
                 await asyncio.sleep(0.3)
 
-                for i in range(0, len(emote_list), chunk_size):
-                    chunk = emote_list[i:i+chunk_size]
-                    message = ", ".join(chunk)
-
-                    # Asegurar que el mensaje no exceda 250 caracteres
-                    if len(message) > 250:
-                        # Si es muy largo, dividir en mensajes más pequeños
-                        half = len(chunk) // 2
-                        message1 = ", ".join(chunk[:half])
-                        message2 = ", ".join(chunk[half:])
-                        await send_response( message1)
-                        await asyncio.sleep(0.3)
-                        await send_response( message2)
+                # Construir mensajes respetando límite de 200 caracteres
+                current_message = []
+                current_length = 0
+                
+                for emote_entry in emote_list:
+                    entry_length = len(emote_entry) + 2  # +2 por ", "
+                    
+                    # Si agregar este emote excede 200 caracteres, enviar mensaje actual
+                    if current_length + entry_length > 200:
+                        if current_message:
+                            await send_response(", ".join(current_message))
+                            await asyncio.sleep(0.3)
+                        current_message = [emote_entry]
+                        current_length = len(emote_entry)
                     else:
-                        await send_response( message)
+                        current_message.append(emote_entry)
+                        current_length += entry_length
 
+                # Enviar último mensaje si hay contenido
+                if current_message:
+                    await send_response(", ".join(current_message))
                     await asyncio.sleep(0.3)
 
-                await send_response( f"✅ Usa el número o nombre del emote para ejecutarlo")
+                await send_response(f"✅ Usa el número o nombre del emote para ejecutarlo")
 
             except Exception as e:
-                await send_response( f"❌ Error mostrando emotes: {str(e)[:50]}")
+                await send_response(f"❌ Error mostrando emotes: {str(e)[:50]}")
                 log_event("ERROR", f"Error en !emote list: {e}")
             return
 
