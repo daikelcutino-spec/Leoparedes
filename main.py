@@ -772,11 +772,9 @@ class Bot(BaseBot):
             # Si el comando está en la lista pública, SIEMPRE responder en público
             if force_public:
                 await self.highrise.chat(text)
-            # Si no, usar el flag is_whisper original
-            elif is_whisper:
-                await self.highrise.send_whisper(user.id, text)
+            # Todos los demás comandos responden SIEMPRE por whisper
             else:
-                await self.highrise.chat(f"@{user.username} {text}")
+                await self.highrise.send_whisper(user.id, text)
 
         # COMMAND PROCESSING LOGIC STARTS HERE
         # All commands from on_chat are now handled here
