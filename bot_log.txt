@@ -1987,3 +1987,25 @@
 [2025-10-03 01:19:08] [ERROR] Error reproduciendo emote #102: Emote is not free or owned by target user
 [2025-10-03 01:19:10] [ERROR] Error reproduciendo emote #103: Emote is not free or owned by target user
 [2025-10-03 01:19:12] [ERROR] Error reproduciendo emote #104: Emote is not free or owned by target user
+[2025-10-03 01:25:25] [BOT] Ciclo automático cancelado
+[2025-10-03 01:25:27] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-03 01:25:27] [BOT] Starting initial bot appearance setup
+[2025-10-03 01:25:29] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-03 01:25:29] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-03 01:25:29] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-03 01:25:29] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-03 01:25:29] [BOT] Initial bot appearance setup completed
+[2025-10-03 01:25:31] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-03 01:25:31] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-03 01:25:31] [BOT] Iniciando nuevo ciclo de emotes gratuitos
+[2025-10-03 01:26:35] [CHAT] [PUBLIC] Xx__Daikel__xX: !copyoutfit
+[2025-10-03 01:26:35] [ADMIN] Outfit copiado y guardado #1: Xx__Daikel__xX -> bot
+[2025-10-03 01:27:13] [CHAT] [PUBLIC] Xx__Daikel__xX: !copyoutfit
+[2025-10-03 01:27:14] [ADMIN] Outfit copiado y guardado #2: Xx__Daikel__xX -> bot
+[2025-10-03 01:27:58] [CHAT] [PUBLIC] Xx__Daikel__xX: !copyoutfit
+[2025-10-03 01:27:58] [ADMIN] Outfit copiado y guardado #3: Xx__Daikel__xX -> bot
+[2025-10-03 01:28:15] [CHAT] [PUBLIC] Xx__Daikel__xX: !outfit 1
+[2025-10-03 01:28:15] [OUTFIT] Outfit #1 aplicado por Xx__Daikel__xX
+[2025-10-03 01:28:28] [CHAT] [PUBLIC] Xx__Daikel__xX: !help
+[2025-10-03 01:28:44] [CHAT] [PUBLIC] Xx__Daikel__xX: !emote list
+[2025-10-03 01:28:45] [ERROR] Error en !emote list: Message too long.
