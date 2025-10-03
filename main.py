@@ -3527,28 +3527,33 @@ class Bot(BaseBot):
             print(f"⚠️ Error ejecutando floss falso: {e}")
 
     async def start_auto_emote_cycle(self):
-        """Inicia ciclo automático de 224 emotes en bucle infinito SIN PAUSAS"""
+        """Inicia ciclo automático de 224 emotes en bucle infinito con pausas apropiadas"""
         try:
-            log_event("BOT", "Iniciando ciclo automático de 224 emotes sin pausas")
+            log_event("BOT", "Iniciando ciclo automático de 224 emotes con pausas")
 
             while True:  # Bucle infinito
                 for number, emote_data in emotes.items():
                     emote_id = emote_data["id"]
                     emote_name = emote_data["name"]
+                    emote_duration = emote_data.get("duration", 5.0)  # Duración del emote
 
                     try:
-                        # Reproducir emote en el bot SIN ESPERAR
+                        # Reproducir emote en el bot
                         await self.highrise.send_emote(emote_id, self.bot_id)
-                        log_event("BOT", f"Emote #{number}: {emote_name} ({emote_id})")
-                        print(f"🎭 Bot emote #{number}: {emote_name}")
+                        log_event("BOT", f"Emote #{number}: {emote_name} ({emote_id}) - {emote_duration}s")
+                        print(f"🎭 Bot emote #{number}: {emote_name} ({emote_duration}s)")
 
-                        # NO HAY ESPERA - emote siguiente inmediatamente
+                        # Esperar la duración del emote antes de continuar
+                        await asyncio.sleep(emote_duration)
 
                     except Exception as e:
                         log_event("ERROR", f"Error reproduciendo emote #{number}: {e}")
+                        # Pausa corta antes de continuar con el siguiente
+                        await asyncio.sleep(1.0)
                         continue
 
-                # Sin pausa entre ciclos - reinicio inmediato
+                # Pausa breve entre ciclos completos
+                await asyncio.sleep(2.0)
 
         except Exception as e:
             log_event("ERROR", f"Error en ciclo automático de emotes: {e}")
