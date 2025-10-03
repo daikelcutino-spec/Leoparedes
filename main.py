@@ -755,9 +755,25 @@ class Bot(BaseBot):
         user_id = user.id
         username = user.username
 
+        # Lista de comandos que SIEMPRE responden de forma pública
+        public_commands = [
+            "!game love",
+            "!info",
+            "!role",
+            "!leaderboard",
+            "!bot "
+        ]
+
+        # Determinar si este comando debe ser público
+        force_public = any(msg.startswith(cmd) for cmd in public_commands)
+
         async def send_response(text: str):
-            """Helper to send response via whisper or public chat based on is_whisper flag"""
-            if is_whisper:
+            """Helper to send response via whisper or public chat based on command type"""
+            # Si el comando está en la lista pública, SIEMPRE responder en público
+            if force_public:
+                await self.highrise.chat(text)
+            # Si no, usar el flag is_whisper original
+            elif is_whisper:
                 await self.highrise.send_whisper(user.id, text)
             else:
                 await self.highrise.chat(f"@{user.username} {text}")
@@ -794,9 +810,9 @@ class Bot(BaseBot):
                     await asyncio.sleep(0.3)  # Pequeña pausa entre mensajes
             return
 
-        # Comando !info - informazioni sul giocatore
+        # Comando !info - información pública del jugador
         if msg == "!info":
-            await self.show_user_info(user)
+            await self.show_user_info(user, public_response=True)
             return
 
         # Comando !role - mostrar roles de usuario
@@ -3166,7 +3182,7 @@ class Bot(BaseBot):
             except Exception as e:
                 print(f"❌ Error de envío: {e}")
 
-    async def show_user_info(self, user: User):
+    async def show_user_info(self, user: User, public_response: bool = False):
         """Mostra informazioni sul giocatore corrente con rol e crew"""
         user_id = user.id
         username = user.username
@@ -3271,7 +3287,11 @@ class Bot(BaseBot):
         info_message += f"⏰ Tiempo en HR: {highrise_time}\n"
         info_message += f"👥 Followers: {followers} | Friends: {friends}"
 
-        await self.highrise.chat(info_message)
+        # Enviar como mensaje público o privado según el parámetro
+        if public_response:
+            await self.highrise.chat(info_message)
+        else:
+            await self.highrise.send_whisper(user_id, info_message)
 
     async def show_user_role(self, user: User):
         """Mostra il ruolo del giocatore corrente"""
