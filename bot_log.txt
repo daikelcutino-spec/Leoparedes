@@ -1929,3 +1929,50 @@
 [2025-10-03 00:57:22] [BOT] Reproduciendo emote #54: weird (dance-weird) - Duración: 22.87s
 [2025-10-03 00:57:45] [BOT] Reproduciendo emote #55: shuffle (dance-tiktok10) - Duración: 9.41s
 [2025-10-03 00:57:54] [BOT] Reproduciendo emote #56: gagging (emoji-gagging) - Duración: 6.84s
+[2025-10-03 00:58:01] [BOT] Reproduciendo emote #57: raise (emoji-celebrate) - Duración: 4.78s
+[2025-10-03 00:58:06] [BOT] Reproduciendo emote #58: savage (dance-tiktok8) - Duración: 13.1s
+[2025-10-03 00:58:20] [BOT] Reproduciendo emote #59: blackpink (dance-blackpink) - Duración: 7.97s
+[2025-10-03 00:58:28] [BOT] Reproduciendo emote #60: model (emote-model) - Duración: 7.43s
+[2025-10-03 00:58:35] [BOT] Reproduciendo emote #61: dontstartnow (dance-tiktok2) - Duración: 11.37s
+[2025-10-03 00:58:47] [BOT] Reproduciendo emote #62: pennywise (dance-pennywise) - Duración: 4.16s
+[2025-10-03 00:58:51] [BOT] Reproduciendo emote #63: bow (emote-bow) - Duración: 5.1s
+[2025-10-03 00:58:56] [BOT] Reproduciendo emote #64: russian (dance-russian) - Duración: 11.39s
+[2025-10-03 00:59:08] [BOT] Reproduciendo emote #65: curtsy (emote-curtsy) - Duración: 3.99s
+[2025-10-03 00:59:12] [BOT] Reproduciendo emote #66: snowball (emote-snowball) - Duración: 6.32s
+[2025-10-03 00:59:18] [BOT] Reproduciendo emote #67: hot (emote-hot) - Duración: 5.57s
+[2025-10-03 00:59:24] [BOT] Reproduciendo emote #68: snowangel (emote-snowangel) - Duración: 7.33s
+[2025-10-03 00:59:31] [BOT] Reproduciendo emote #69: charging (emote-charging) - Duración: 9.53s
+[2025-10-03 00:59:41] [BOT] Reproduciendo emote #70: letsgoshopping (dance-shoppingcart) - Duración: 5.56s
+[2025-10-03 00:59:47] [BOT] Reproduciendo emote #71: confused (emote-confused) - Duración: 9.58s
+[2025-10-03 00:59:56] [BOT] Reproduciendo emote #72: enthused (idle-enthusiastic) - Duración: 17.53s
+[2025-10-03 01:00:14] [BOT] Reproduciendo emote #73: telekinesis (emote-telekinesis) - Duración: 11.01s
+[2025-10-03 01:00:25] [BOT] Reproduciendo emote #74: float (emote-float) - Duración: 9.26s
+[2025-10-03 01:00:35] [BOT] Reproduciendo emote #75: teleporting (emote-teleporting) - Duración: 12.89s
+[2025-10-03 01:00:48] [BOT] Reproduciendo emote #76: swordfight (emote-swordfight) - Duración: 7.71s
+[2025-10-03 01:00:51] [WHISPER] Xx__Daikel__xX: !help
+[2025-10-03 01:00:55] [BOT] Reproduciendo emote #77: maniac (emote-maniac) - Duración: 5.94s
+[2025-10-03 01:01:01] [BOT] Reproduciendo emote #78: energyball (emote-energyball) - Duración: 8.28s
+[2025-10-03 01:01:10] [BOT] Reproduciendo emote #79: worm (emote-snake) - Duración: 6.63s
+[2025-10-03 01:01:17] [BOT] Reproduciendo emote #80: singalong (idle_singing) - Duración: 11.31s
+[2025-10-03 01:01:26] [WHISPER] Xx__Daikel__xX: !heart @NOCTURNO_BOT 100
+[2025-10-03 01:01:28] [BOT] Reproduciendo emote #81: frog (emote-frog) - Duración: 16.14s
+[2025-10-03 01:01:42] [WHISPER] Xx__Daikel__xX: ghostfloat
+[2025-10-03 01:01:44] [BOT] Reproduciendo emote #82: macarena (dance-macarena) - Duración: 15.0s
+[2025-10-03 01:01:59] [BOT] Reproduciendo emote #83: kiss (emote-kissing-passionate) - Duración: 10.47s
+[2025-10-03 01:01:59] [ERROR] Error reproduciendo emote #83: Emote is not free or owned by target user
+[2025-10-03 01:02:01] [BOT] Reproduciendo emote #84: shakehead (emoji-shake-head) - Duración: 3.5s
+[2025-10-03 01:02:02] [ERROR] Error reproduciendo emote #84: Emote is not free or owned by target user
+[2025-10-03 01:02:04] [BOT] Reproduciendo emote #85: sad (idle-sad) - Duración: 25.24s
+[2025-10-03 01:02:29] [BOT] Reproduciendo emote #86: nod (emoji-nod) - Duración: 2.5s
+[2025-10-03 01:02:29] [ERROR] Error reproduciendo emote #86: Emote is not free or owned by target user
+[2025-10-03 01:02:31] [BOT] Reproduciendo emote #87: laughing (emote-laughing2) - Duración: 6.6s
+[2025-10-03 01:02:33] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-03 01:02:33] [BOT] Starting initial bot appearance setup
+[2025-10-03 01:02:35] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-03 01:02:35] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-03 01:02:35] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-03 01:02:35] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-03 01:02:35] [BOT] Initial bot appearance setup completed
+[2025-10-03 01:02:37] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-03 01:02:37] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-03 01:02:37] [BOT] Iniciando nuevo ciclo de emotes gratuitos

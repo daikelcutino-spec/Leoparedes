@@ -1,1 +1,2 @@
 # Сердечки пользователей (user_id:hearts)
+681d54aa4cedce763169580f:100:NOCTURNO_BOT
