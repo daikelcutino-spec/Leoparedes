@@ -365,7 +365,7 @@ class Bot(BaseBot):
                 asyncio.create_task(self.check_console_messages())
                 # Configurar outfit y emote inicial del bot
                 await self.setup_initial_bot_appearance()
-                
+
                 # Ejecutar ciclo automático de 224 emotes en bucle infinito
                 try:
                     await asyncio.sleep(2)  # Espera breve para estabilizar conexión
@@ -736,11 +736,11 @@ class Bot(BaseBot):
         :param is_whisper: True si la respuesta debe ser un susurro, False para chat público.
         """
         global VIP_ZONE
-        
+
         msg = message.strip()
         user_id = user.id
         username = user.username
-        
+
         async def send_response(text: str):
             """Helper to send response via whisper or public chat based on is_whisper flag"""
             if is_whisper:
@@ -763,81 +763,6 @@ class Bot(BaseBot):
                 if mod_methods:
                     await send_response(f"🎯 Métodos de moderación: {', '.join(mod_methods)}")
                 else:
-                    await send_response("❌ Métodos de moderación no encontrados")
-            else:
-                await send_response("❌ ¡Solo administradores pueden usar este comando!")
-            return
-
-        # Comando !help - catálogo personalizado por rol
-        if msg == "!help":
-            help_lines = self.get_help_for_user(user_id, username).split('\n')
-            for line in help_lines:
-                if line.strip():
-                    await send_response( line)
-                    await asyncio.sleep(0.2)  # Pequeña pausa entre mensajes
-            return
-
-        # Comando !info - informazioni sul giocatore
-        if msg == "!info":
-            await self.show_user_info(user)
-            return
-
-        # Comando !role - mostrar roles de usuario
-        if msg == "!role":
-            role_info = self.get_user_role_info(user)
-            await send_response(f"🎭 {role_info}")
-            return
-        
-        # Comando !role list - mostrar lista de todos los roles (sin restricción)
-        if msg == "!role list":
-            roles_message = "🎭 LISTA DE ROLES:\n"
-            roles_message += "👑 Propietario - Control total\n"
-            roles_message += "🛡️ Administrador - Moderación y gestión\n"
-            roles_message += "⚖️ Moderador - Moderación básica\n"
-            roles_message += "⭐ VIP - Acceso a zonas especiales\n"
-            roles_message += "👤 Usuario Normal - Acceso básico"
-            await send_response( roles_message)
-            return
-
-        # Comando !info @username - informazioni su un altro giocatore
-        if msg.startswith("!info @"):
-            target_username = msg[7:].strip()
-            await self.show_user_info_by_username(target_username)
-            return
-
-        # Sección !help interaction
-        if msg == "!help interaction":
-            await send_response( "🥊 COMANDOS DE INTERACCIÓN:\n!punch @user — golpear (cualquier distancia)\n!slap @user — bofetada (cualquier distancia)\n!flirt @user — coquetear (máx. 3 bloques)\n!scare @user — asustar (máx. 3 bloques)\n!electro @user — electricidad (máx. 3 bloques)\n!hug @user — abrazar (máx. 3 bloques)\n!ninja @user — ninja (máx. 3 bloques)\n!laugh @user — reír (máx. 3 bloques)\n!boom @user — explosión (máx. 3 bloques)")
-            return
-
-        # Sección !help teleport
-        if msg == "!help teleport":
-            await send_response( "📍 COMANDOS DE TELETRANSPORTE:\n!tplist — lista de puntos\n[nombre_punto] — teletransporte al punto\n!tele zonaVIP — zona VIP")
-            return
-
-        # Sección !help leaderboard
-        if msg == "!help leaderboard":
-            await send_response( "🏆 TABLA DE CLASIFICACIÓN:\n!leaderboard heart — top por corazones\n!leaderboard active — top por actividad")
-            return
-
-        # Sección !help heart
-        if msg == "!help heart":
-            await send_response( "❤️ COMANDO DE CORAZONES:\n!heart @usuario [cantidad] — enviar corazones\n\n💖 También puedes enviar corazones con reacciones!")
-            return
-
-
-        # Comando temporal para depurar métodos de Highrise
-        if msg == "!methods":
-            if self.is_admin(user_id):
-                methods = [method for method in dir(self.highrise) if not method.startswith('_')]
-                await send_response( f"🔍 Métodos disponibles de Highrise: {', '.join(methods[:10])}")
-                if len(methods) > 10:
-                    await send_response( f"🔍 ... y {len(methods)-10} métodos más")
-                # Buscamos métodos de moderación
-                mod_methods = [m for m in methods if any(word in m.lower() for word in ['kick', 'mute', 'ban', 'moderate', 'freeze'])]
-                if mod_methods:
-                    await send_response( f"🎯 Métodos de moderación: {', '.join(mod_methods)}")
-                else:
                     await send_response( "❌ Métodos de moderación no encontrados")
             else:
                 await send_response( "❌ ¡Solo administradores pueden usar este comando!")
@@ -862,7 +787,7 @@ class Bot(BaseBot):
             role_info = self.get_user_role_info(user)
             await send_response(f"🎭 {role_info}")
             return
-        
+
         # Comando !role list - mostrar lista de todos los roles (sin restricción)
         if msg == "!role list":
             roles_message = "🎭 LISTA DE ROLES:\n"
@@ -889,8 +814,6 @@ class Bot(BaseBot):
         if msg == "!help teleport":
             await send_response( "📍 COMANDOS DE TELETRANSPORTE:\n!tplist — lista de puntos\n[nombre_punto] — teletransporte al punto\n!tele zonaVIP — zona VIP")
             return
-
-
 
         # Sección !help leaderboard
         if msg == "!help leaderboard":
@@ -916,14 +839,14 @@ class Bot(BaseBot):
                 # Dividir en grupos de 20 emotes por mensaje (límite seguro)
                 chunk_size = 20
                 total_emotes = len(emote_list)
-                
+
                 await send_response( f"📋 LISTA DE EMOTES ({total_emotes} total)")
                 await asyncio.sleep(0.3)
-                
+
                 for i in range(0, len(emote_list), chunk_size):
                     chunk = emote_list[i:i+chunk_size]
                     message = ", ".join(chunk)
-                    
+
                     # Asegurar que el mensaje no exceda 250 caracteres
                     if len(message) > 250:
                         # Si es muy largo, dividir en mensajes más pequeños
@@ -935,11 +858,11 @@ class Bot(BaseBot):
                         await send_response( message2)
                     else:
                         await send_response( message)
-                    
+
                     await asyncio.sleep(0.3)
-                
+
                 await send_response( f"✅ Usa el número o nombre del emote para ejecutarlo")
-                
+
             except Exception as e:
                 await send_response( f"❌ Error mostrando emotes: {str(e)[:50]}")
                 log_event("ERROR", f"Error en !emote list: {e}")
@@ -1530,12 +1453,12 @@ class Bot(BaseBot):
                         y_difference = abs(current_position.y - y)
                         x_difference = abs(current_position.x - x)
                         z_difference = abs(current_position.z - z)
-                        
+
                         # Flash solo para cambios de piso (Y) con movimiento mínimo en X y Z
                         if y_difference < 1.0:
                             await send_response( "❌ ¡Flash solo para subir/bajar entre pisos! Debe cambiar altura (Y)")
                             return
-                        
+
                         if x_difference > 3.0 or z_difference > 3.0:
                             await send_response( "❌ ¡Flash solo para subir/bajar pisos! No te alejes mucho horizontalmente")
                             return
@@ -1566,36 +1489,36 @@ class Bot(BaseBot):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo propietario y administradores pueden usar este comando!")
                 return
-            
+
             try:
                 inventory_response = await self.highrise.get_inventory()
                 if isinstance(inventory_response, Error):
                     await send_response( f"❌ Error obteniendo inventario: {inventory_response}")
                     return
-                
+
                 inventory = inventory_response.items
                 if inventory:
                     # Dividir en chunks para no exceder límite de mensaje
                     chunk_size = 10
                     total_items = len(inventory)
-                    
+
                     await send_response( f"👔 INVENTARIO DEL BOT ({total_items} items):")
-                    
+
                     for i in range(0, len(inventory), chunk_size):
                         chunk = inventory[i:i+chunk_size]
                         items_list = []
                         for idx, item in enumerate(chunk, i+1):
                             items_list.append(f"{idx}. {item.type}: {item.id}")
-                        
+
                         await send_response( "\n".join(items_list))
                         await asyncio.sleep(0.3)
                 else:
                     await send_response( "📦 El inventario del bot está vacío")
-                    
+
             except Exception as e:
                 await send_response( f"❌ Error consultando inventario: {e}")
             return
-        
+
         # Comando !wallet
         if msg == "!wallet":
             if user_id != OWNER_ID:
@@ -1624,7 +1547,7 @@ class Bot(BaseBot):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo propietario y administradores pueden usar este comando!")
                 return
-            
+
             message_to_send = msg[5:].strip()
             if message_to_send:
                 await self.highrise.chat(message_to_send)
@@ -1633,7 +1556,7 @@ class Bot(BaseBot):
             else:
                 await send_response( "❌ Usa: !say [mensaje]")
             return
-        
+
         # Comando !tome — teletransportar bot al propietario
         if msg == "!tome":
             if user_id != OWNER_ID:
@@ -1709,7 +1632,7 @@ class Bot(BaseBot):
             if len(parts) >= 2:
                 try:
                     outfit_number = int(parts[1])
-                    
+
                     if outfit_number in SAVED_OUTFITS:
                         # Usar outfit guardado
                         await self.highrise.set_outfit(SAVED_OUTFITS[outfit_number])
@@ -1717,7 +1640,7 @@ class Bot(BaseBot):
                         log_event("OUTFIT", f"Outfit #{outfit_number} aplicado por {user.username}")
                     else:
                         await send_response( f"❌ Outfit #{outfit_number} no existe. Usa !copyoutfit para guardar outfits.")
-                        
+
                 except ValueError:
                     await send_response( "❌ Usa: !outfit [número]")
                 except Exception as e:
@@ -1782,44 +1705,44 @@ class Bot(BaseBot):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo propietario y administradores pueden usar este comando!")
                 return
-            
+
             target_username = msg[7:].strip().replace("@", "")
             try:
                 users = (await self.highrise.get_room_users()).content
                 target_user = None
-                
+
                 for u, pos in users:
                     if u.username == target_username:
                         target_user = u
                         break
-                
+
                 if not target_user:
                     await send_response( f"❌ Usuario {target_username} no encontrado")
                     return
-                
+
                 # Copiar outfit del usuario objetivo
                 target_outfit = await self.highrise.get_user_outfit(target_user.id)
                 await self.highrise.set_outfit(target_outfit.outfit)
-                
+
                 # Copiar posición del usuario objetivo
                 target_position = None
                 for u, pos in users:
                     if u.id == target_user.id:
                         target_position = pos
                         break
-                
+
                 if target_position and isinstance(target_position, Position):
                     mimic_position = Position(target_position.x + 0.5, target_position.y, target_position.z + 0.5)
                     await self.highrise.teleport(self.bot_id, mimic_position)
-                
+
                 await send_response( f"🎭 Bot imitando a @{target_username}")
                 await self.highrise.chat(f"🎭 ¡Soy @{target_username}!")
                 log_event("MIMIC", f"{user.username} activó mimic de {target_username}")
-                
+
             except Exception as e:
                 await send_response( f"❌ Error en mimic: {e}")
             return
-        
+
         # Comando !copyoutfit - copiar outfit del usuario al bot y guardarlo numerado
         if msg == "!copyoutfit":
             if not (user_id == OWNER_ID or self.is_admin(user_id)):
@@ -2131,7 +2054,7 @@ class Bot(BaseBot):
                     await send_response( f"❌ Error de moderación: {e}")
             return
 
-        # Comando !vip - показать comandos para VIP usuarios
+        # Comando !vip - mostrar comandos para VIP usuarios
         if msg == "!vip":
             if not self.is_vip_by_username(user.username):
                 await send_response( "❌ ¡Solo VIP pueden ver esta sección!")
@@ -2272,7 +2195,7 @@ class Bot(BaseBot):
             else:
                 await send_response( "📍 No hay puntos de teletransporte creados")
             return
-        
+
         # Comando !tele list - lista de ubicaciones de teletransporte (sin restricción)
         if msg == "!tele list":
             if TELEPORT_POINTS:
@@ -2428,7 +2351,7 @@ class Bot(BaseBot):
 
 
 
-        # Comando !heartall - отправить сердечки всем игрокам в комнате (только для Owner)
+        # Comando !heartall - enviar сердечки всем игрокам в комнате (только для Owner)
         if msg == "!heartall":
             if user_id != OWNER_ID:
                 await send_response( "❌ ¡Solo el propietario puede enviar corazones a todos!")
@@ -2643,7 +2566,7 @@ class Bot(BaseBot):
                         await self.highrise.send_emote(sender_emote_id, user.id)
                         # Animación para el objetivo (una sola vez)
                         await self.highrise.send_emote(receiver_emote_id, target_user.id)
-                        
+
                         # Si el comando fue privado, responder por privado; si no, por público
                         if is_whisper:
                             await send_response( action_message)
@@ -2853,7 +2776,7 @@ class Bot(BaseBot):
             role_info = self.get_user_role_info(user)
             await send_response(f"🎭 {role_info}")
             return
-        
+
         # Comando !role list - mostrar lista de todos los roles (sin restricción)
         if msg == "!role list":
             roles_message = "🎭 LISTA DE ROLES:\n"
@@ -2907,14 +2830,14 @@ class Bot(BaseBot):
                 # Dividir en grupos de 20 emotes por mensaje (límite seguro)
                 chunk_size = 20
                 total_emotes = len(emote_list)
-                
+
                 await send_response( f"📋 LISTA DE EMOTES ({total_emotes} total)")
                 await asyncio.sleep(0.3)
-                
+
                 for i in range(0, len(emote_list), chunk_size):
                     chunk = emote_list[i:i+chunk_size]
                     message = ", ".join(chunk)
-                    
+
                     # Asegurar que el mensaje no exceda 250 caracteres
                     if len(message) > 250:
                         # Si es muy largo, dividir en mensajes más pequeños
@@ -2926,11 +2849,11 @@ class Bot(BaseBot):
                         await send_response( message2)
                     else:
                         await send_response( message)
-                    
+
                     await asyncio.sleep(0.3)
-                
+
                 await send_response( f"✅ Usa el número o nombre del emote para ejecutarlo")
-                
+
             except Exception as e:
                 await send_response( f"❌ Error mostrando emotes: {str(e)[:50]}")
                 log_event("ERROR", f"Error en !emote list: {e}")
@@ -3521,12 +3444,12 @@ class Bot(BaseBot):
                         y_difference = abs(current_position.y - y)
                         x_difference = abs(current_position.x - x)
                         z_difference = abs(current_position.z - z)
-                        
+
                         # Flash solo para cambios de piso (Y) con movimiento mínimo en X y Z
                         if y_difference < 1.0:
                             await send_response( "❌ ¡Flash solo para subir/bajar entre pisos! Debe cambiar altura (Y)")
                             return
-                        
+
                         if x_difference > 3.0 or z_difference > 3.0:
                             await send_response( "❌ ¡Flash solo para subir/bajar pisos! No te alejes mucho horizontalmente")
                             return
@@ -3557,36 +3480,36 @@ class Bot(BaseBot):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo propietario y administradores pueden usar este comando!")
                 return
-            
+
             try:
                 inventory_response = await self.highrise.get_inventory()
                 if isinstance(inventory_response, Error):
                     await send_response( f"❌ Error obteniendo inventario: {inventory_response}")
                     return
-                
+
                 inventory = inventory_response.items
                 if inventory:
                     # Dividir en chunks para no exceder límite de mensaje
                     chunk_size = 10
                     total_items = len(inventory)
-                    
+
                     await send_response( f"👔 INVENTARIO DEL BOT ({total_items} items):")
-                    
+
                     for i in range(0, len(inventory), chunk_size):
                         chunk = inventory[i:i+chunk_size]
                         items_list = []
                         for idx, item in enumerate(chunk, i+1):
                             items_list.append(f"{idx}. {item.type}: {item.id}")
-                        
+
                         await send_response( "\n".join(items_list))
                         await asyncio.sleep(0.3)
                 else:
                     await send_response( "📦 El inventario del bot está vacío")
-                    
+
             except Exception as e:
                 await send_response( f"❌ Error consultando inventario: {e}")
             return
-        
+
         # Comando !wallet
         if msg == "!wallet":
             if user_id != OWNER_ID:
@@ -3615,7 +3538,7 @@ class Bot(BaseBot):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo propietario y administradores pueden usar este comando!")
                 return
-            
+
             message_to_send = msg[5:].strip()
             if message_to_send:
                 await self.highrise.chat(message_to_send)
@@ -3624,7 +3547,7 @@ class Bot(BaseBot):
             else:
                 await send_response( "❌ Usa: !say [mensaje]")
             return
-        
+
         # Comando !tome — teletransportar bot al propietario
         if msg == "!tome":
             if user_id != OWNER_ID:
@@ -3700,7 +3623,7 @@ class Bot(BaseBot):
             if len(parts) >= 2:
                 try:
                     outfit_number = int(parts[1])
-                    
+
                     if outfit_number in SAVED_OUTFITS:
                         # Usar outfit guardado
                         await self.highrise.set_outfit(SAVED_OUTFITS[outfit_number])
@@ -3708,7 +3631,7 @@ class Bot(BaseBot):
                         log_event("OUTFIT", f"Outfit #{outfit_number} aplicado por {user.username}")
                     else:
                         await send_response( f"❌ Outfit #{outfit_number} no existe. Usa !copyoutfit para guardar outfits.")
-                        
+
                 except ValueError:
                     await send_response( "❌ Usa: !outfit [número]")
                 except Exception as e:
@@ -3773,44 +3696,44 @@ class Bot(BaseBot):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo propietario y administradores pueden usar este comando!")
                 return
-            
+
             target_username = msg[7:].strip().replace("@", "")
             try:
                 users = (await self.highrise.get_room_users()).content
                 target_user = None
-                
+
                 for u, pos in users:
                     if u.username == target_username:
                         target_user = u
                         break
-                
+
                 if not target_user:
                     await send_response( f"❌ Usuario {target_username} no encontrado")
                     return
-                
+
                 # Copiar outfit del usuario objetivo
                 target_outfit = await self.highrise.get_user_outfit(target_user.id)
                 await self.highrise.set_outfit(target_outfit.outfit)
-                
+
                 # Copiar posición del usuario objetivo
                 target_position = None
                 for u, pos in users:
                     if u.id == target_user.id:
                         target_position = pos
                         break
-                
+
                 if target_position and isinstance(target_position, Position):
                     mimic_position = Position(target_position.x + 0.5, target_position.y, target_position.z + 0.5)
                     await self.highrise.teleport(self.bot_id, mimic_position)
-                
+
                 await send_response( f"🎭 Bot imitando a @{target_username}")
                 await self.highrise.chat(f"🎭 ¡Soy @{target_username}!")
                 log_event("MIMIC", f"{user.username} activó mimic de {target_username}")
-                
+
             except Exception as e:
                 await send_response( f"❌ Error en mimic: {e}")
             return
-        
+
         # Comando !copyoutfit - copiar outfit del usuario al bot y guardarlo numerado
         if msg == "!copyoutfit":
             if not (user_id == OWNER_ID or self.is_admin(user_id)):
@@ -4122,7 +4045,7 @@ class Bot(BaseBot):
                     await send_response( f"❌ Error de moderación: {e}")
             return
 
-        # Comando !vip - показать comandos para VIP usuarios
+        # Comando !vip - mostrar comandos para VIP usuarios
         if msg == "!vip":
             if not self.is_vip_by_username(user.username):
                 await send_response( "❌ ¡Solo VIP pueden ver esta sección!")
@@ -4263,7 +4186,7 @@ class Bot(BaseBot):
             else:
                 await send_response( "📍 No hay puntos de teletransporte creados")
             return
-        
+
         # Comando !tele list - lista de ubicaciones de teletransporte (sin restricción)
         if msg == "!tele list":
             if TELEPORT_POINTS:
@@ -4419,7 +4342,7 @@ class Bot(BaseBot):
 
 
 
-        # Comando !heartall - отправить сердечки всем игрокам в комнате (только для Owner)
+        # Comando !heartall - enviar сердечки всем игрокам в комнате (только для Owner)
         if msg == "!heartall":
             if user_id != OWNER_ID:
                 await send_response( "❌ ¡Solo el propietario puede enviar corazones a todos!")
@@ -4634,7 +4557,7 @@ class Bot(BaseBot):
                         await self.highrise.send_emote(sender_emote_id, user.id)
                         # Animación para el objetivo (una sola vez)
                         await self.highrise.send_emote(receiver_emote_id, target_user.id)
-                        
+
                         # Si el comando fue privado, responder por privado; si no, por público
                         if is_whisper:
                             await send_response( action_message)
@@ -4807,7 +4730,9 @@ class Bot(BaseBot):
             except Exception as e:
                 await send_response( f"❌ Error dando VIP: {e}")
             return
+
     async def on_chat(self, user: User, message: str) -> None:
+        """Manejador de mensajes de chat"""
         global VIP_ZONE
 
         msg = message.strip()
@@ -4819,18 +4744,18 @@ class Bot(BaseBot):
 
         # Detectar si es comando privado (susurro/whisper)
         is_whisper = hasattr(message, 'is_whisper') and message.is_whisper if hasattr(message, '__dict__') else False
-        
+
         # DETECCIÓN MEJORADA DE MENCIONES AL BOT
         # Verificar si el mensaje menciona al bot por su nombre de usuario
         bot_username = "NOCTURNO_BOT"  # Nombre exacto del bot en Highrise
         is_bot_mention = False
-        
+
         # Detectar @NOCTURNO_BOT o variaciones
         if f"@{bot_username}" in msg or "@nocturno" in msg.lower() or "@bot" in msg.lower():
             is_bot_mention = True
             # Remover la mención del mensaje para procesar el comando
             msg = msg.replace(f"@{bot_username}", "").replace("@nocturno", "").replace("@bot", "").strip()
-        
+
         # Registro de todos los mensajes
         log_event("CHAT", f"[{'WHISPER' if is_whisper else 'PUBLIC'}] {user.username}: {message}" + (f" [BOT_MENTION]" if is_bot_mention else ""))
 
@@ -4844,7 +4769,7 @@ class Bot(BaseBot):
                 return
             else:
                 log_event("BOT", f"Mención detectada de {username} con comando: {msg}")
-        
+
         # Verificación de ban y mute
         if self.is_banned(user_id):
             log_event("BANNED", f"Mensaje bloqueado de {user.username}")
@@ -4868,27 +4793,27 @@ class Bot(BaseBot):
         msg = message.strip()
         user_id = user.id
         username = user.username
-        
+
         # Añadimos el username al diccionario USER_NAMES
         USER_NAMES[user_id] = username
-        
+
         # Verificación de ban y mute
         if self.is_banned(user_id):
             log_event("BANNED", f"Whisper bloqueado de {user.username}")
             await self.highrise.send_whisper(user.id, f"@{user.username} está baneado hasta {BANNED_USERS[user_id]['time'].strftime('%d.%m.%Y %H:%M')}")
             return
-        
+
         if self.is_muted(user_id):
             log_event("MUTED", f"Whisper silenciado de {user.username}")
             await self.highrise.send_whisper(user.id, f"@{user.username} está silenciado hasta {MUTED_USERS[user_id].strftime('%H:%M:%S')}")
             return
-        
+
         # Actualización de actividad
         self.update_activity(user_id)
-        
+
         # Log whisper
         log_event("WHISPER", f"{user.username}: {message}")
-        
+
         # Call handle_command with is_whisper=True
         await self.handle_command(user, msg, is_whisper=True)
 
@@ -5016,7 +4941,7 @@ class Bot(BaseBot):
                 self.user_positions[user_id] = destination
                 return
 
-            # Extract coordinates - only proceed with flashmode if both are Position objects
+            # Extract coordinates - only proceed with flashmode logic if both are Position objects
             last_xyz = _coords(last_pos)
             dest_xyz = _coords(destination)
 
@@ -5157,7 +5082,7 @@ class Bot(BaseBot):
     def convert_to_gold_bars(self, amount: int) -> str:
         """Convierte la cantidad de oro en cadena de barras de oro"""
         bars_dictionary = {
-            10000: "gold_bar_10k", 
+            10000: "gold_bar_10k",
             5000: "gold_bar_5000",
             1000: "gold_bar_1k",
             500: "gold_bar_500",
@@ -5442,7 +5367,7 @@ class Bot(BaseBot):
                 custom_outfit = [
                     # Camisa - Mafia Suit
                     Item(type="clothing", id="shirt-n_guy_rise_par_rewards_2023_mafia_suit", amount=1),
-                    # Pantalones - Formal Slacks Black  
+                    # Pantalones - Formal Slacks Black
                     Item(type="clothing", id="pants-n_room1_2019formalslacksblack", amount=1),
                     # Lentes - Billie Glasses
                     Item(type="clothing", id="glasses-n_registrationavatars2023billieglasses", amount=1),
@@ -5523,28 +5448,28 @@ class Bot(BaseBot):
                 "emote-kicking",     # superkick - Brazo atrás
                 "idle-loop-tapdance" # taploop - Ritmo de cadera/reset
             ]
-            
+
             # Fases de aceleración [Tiempo, Número de Veces que Repite la secuencia]
             fases_aceleracion = [
                 (0.5, 2),  # Lento
                 (0.3, 2),  # Medio
                 (0.18, 5)  # Máximo (Velocidad final)
             ]
-            
+
             log_event("BOT", f"Iniciando floss falso acelerado para usuario {user_id} - Bucle infinito: {bucle_infinito}")
-            
+
             # Ejecutamos la secuencia de aceleración inicial
             for tiempo_sleep, num_repeticiones in fases_aceleracion:
                 for _ in range(num_repeticiones):
                     for emote_name in movimiento_floss:
                         await self.highrise.send_emote(emote_name, user_id)
                         await asyncio.sleep(tiempo_sleep)
-            
+
             # Si es bucle infinito, continuar con la velocidad máxima
             if bucle_infinito:
                 log_event("BOT", f"Iniciando bucle infinito de floss falso para usuario {user_id}")
                 print("🕺 FLOSS FALSO - Iniciando bucle infinito a velocidad máxima")
-                
+
                 while True:
                     for emote_name in movimiento_floss:
                         await self.highrise.send_emote(emote_name, user_id)
@@ -5553,65 +5478,50 @@ class Bot(BaseBot):
                 # El bot termina la aceleración y se pone en pose final
                 await self.highrise.send_emote("emote-celebrationstep", user_id)
                 log_event("BOT", f"Floss falso completado para usuario {user_id}")
-            
+
         except Exception as e:
             log_event("ERROR", f"Error en floss falso: {e}")
             print(f"⚠️ Error ejecutando floss falso: {e}")
 
     async def start_auto_emote_cycle(self):
-        """Inicia ciclo automático de todos los 224 emotes en secuencia infinita"""
+        """Ejecuta ciclo automático de 224 emotes en bucle infinito"""
         try:
-            self.bot_mode = "auto"
-            log_event("BOT", "Iniciando ciclo automático de 224 emotes")
-            print("🎭 Modo AUTOMÁTICO activado - ciclo de 224 emotes")
+            while True:
+                log_event("BOT", "Iniciando nuevo ciclo de emotes gratuitos")
 
-            emote_index = 1  # Empezamos desde el emote #1
+                for emote_num, emote_data in emotes.items():
+                    try:
+                        # Filtrar emotes no gratuitos
+                        if not emote_data.get("is_free", False):
+                            print(f"⏭️ Saltando emote #{emote_num} (no gratuito)")
+                            continue
 
-            while self.bot_mode == "auto":
-                try:
-                    # Obtener el emote actual por número
-                    emote_key = str(emote_index)
-                    if emote_key in emotes:
-                        emote_data = emotes[emote_key]
                         emote_id = emote_data["id"]
                         emote_name = emote_data["name"]
                         duration = emote_data["duration"]
 
-                        log_event("BOT", f"Reproduciendo emote #{emote_index}: {emote_name} ({emote_id}) - Duración: {duration}s")
-                        print(f"🎭 Bot emote #{emote_index}: {emote_name} - {duration}s")
-
-                        # Reproducir el emote
+                        # Enviar emote al bot
                         await self.highrise.send_emote(emote_id, self.bot_id)
+                        print(f"🎭 Bot emote #{emote_num}: {emote_name} - {duration}s")
 
                         # Esperar la duración del emote
                         await asyncio.sleep(duration)
 
-                        # Avanzar al siguiente emote
-                        emote_index += 1
+                    except Exception as e:
+                        log_event("ERROR", f"Error reproduciendo emote #{emote_num}: {e}")
+                        print(f"⚠️ Error en emote #{emote_num}: {e}")
+                        # Continuar con el siguiente emote
+                        await asyncio.sleep(2)
 
-                        # Si llegamos al final, volver al principio (ciclo infinito)
-                        if emote_index > 224:
-                            emote_index = 1
-                            log_event("BOT", "Ciclo de emotes completado, reiniciando desde el principio")
-                            print("🔄 Ciclo de emotes completado, reiniciando...")
-                    else:
-                        log_event("ERROR", f"Emote #{emote_index} no encontrado, saltando al siguiente")
-                        emote_index += 1
-                        if emote_index > 224:
-                            emote_index = 1
+                log_event("BOT", "Ciclo de emotes completado, reiniciando...")
+                await asyncio.sleep(1)  # Pequeña pausa antes de reiniciar el ciclo
 
-                except Exception as e:
-                    log_event("ERROR", f"Error reproduciendo emote #{emote_index}: {e}")
-                    print(f"⚠️ Error en emote #{emote_index}: {e}")
-                    # Continuar con el siguiente emote en caso de error
-                    emote_index += 1
-                    if emote_index > 224:
-                        emote_index = 1
-                    await asyncio.sleep(2)  # Pausa corta antes de continuar
-
+        except asyncio.CancelledError:
+            log_event("BOT", "Ciclo automático cancelado")
+            print("🛑 Ciclo automático detenido")
         except Exception as e:
-            log_event("ERROR", f"Error crítico en ciclo automático de emotes: {e}")
-            print(f"❌ Error crítico en ciclo de emotes: {e}")
+            log_event("ERROR", f"Error crítico en ciclo automático: {e}")
+            print(f"❌ Error crítico en ciclo automático: {e}")
 
     async def setup_initial_bot_appearance(self):
         """Configura la apariencia inicial del bot (outfit y emote)"""
@@ -5682,7 +5592,7 @@ if __name__ == "__main__":
             sys.exit(1)
 
         if not config.get("room_id"):
-            print("❌ Error: No se encontró room_id en config.json") 
+            print("❌ Error: No se encontró room_id en config.json")
             sys.exit(1)
 
         api_token = config["api_token"]
