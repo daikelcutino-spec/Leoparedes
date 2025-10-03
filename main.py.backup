@@ -730,6 +730,696 @@ class Bot(BaseBot):
         else:
             print(f"DEBUG: Usuario {user_id} NO encontrado en ACTIVE_EMOTES")
 
+# Функции для сохранения данных
+def save_user_info():
+    """Сохраняет информацию о пользователях"""
+    try:
+        os.makedirs("data", exist_ok=True)
+        with open("data/user_info.json", "w", encoding="utf-8") as f:
+            # Преобразуем datetime объекты в строки для сериализации
+            serializable_data = {}
+            for user_id, data in USER_INFO.items():
+                serializable_data[user_id] = {}
+                for key, value in data.items():
+                    if isinstance(value, datetime):
+                        serializable_data[user_id][key] = value.isoformat()
+                    else:
+                        serializable_data[user_id][key] = value
+            json.dump(serializable_data, f, indent=2, ensure_ascii=False)
+        print(f"Información de usuarios guardada: {len(USER_INFO)} usuarios")
+    except Exception as e:
+        print(f"Error guardando información de usuarios: {e}")
+
+def save_leaderboard_data():
+    """Сохраняет данные лидерборда"""
+    try:
+        os.makedirs("data", exist_ok=True)
+
+        # Сохраняем сердечки
+        with open("data/hearts.txt", "w", encoding="utf-8") as f:
+            f.write("# Сердечки пользователей (user_id:hearts)\n")
+            for user_id, hearts in USER_HEARTS.items():
+                username = USER_NAMES.get(user_id, f"User_{user_id[:8]}")
+                f.write(f"{user_id}:{hearts}:{username}\n")
+
+        # Сохраняем активность
+        with open("data/activity.txt", "w", encoding="utf-8") as f:
+            f.write("# Активность пользователей (user_id:messages:last_activity)\n")
+            for user_id, data in USER_ACTIVITY.items():
+                username = USER_NAMES.get(user_id, f"User_{user_id[:8]}")
+                last_activity = data["last_activity"].isoformat() if isinstance(data["last_activity"], datetime) else str(data["last_activity"])
+                f.write(f"{user_id}:{data['messages']}:{last_activity}:{username}\n")
+
+        print(f"Datos del leaderboard guardados: {len(USER_HEARTS)} usuarios con corazones, {len(USER_ACTIVITY)} usuarios con actividad")
+    except Exception as e:
+        print(f"Error guardando datos del leaderboard: {e}")
+
+def load_config():
+    """Загружает конфигурацию из файла"""
+    try:
+        with open("config.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error cargando configuración: {e}")
+        return {}
+
+# Загружаем конфигурацию
+config = load_config()
+ADMIN_IDS = config.get("admin_ids", [])
+OWNER_ID = config.get("owner_id", "")
+MODERATOR_IDS = config.get("moderator_ids", [])
+VIP_ZONE = config.get("vip_zone", {"x": 0, "y": 0, "z": 0})
+FORBIDDEN_ZONES = config.get("forbidden_zones", [])
+BOT_WALLET = config.get("bot_wallet", 0)
+
+# Lista de emotes específica con los 224 emotes solicitados
+emotes = {
+    "1": {"id": "emote-looping", "name": "fairytwirl", "duration": 9.89, "is_free": True},
+    "2": {"id": "idle-floating", "name": "fairyfloat", "duration": 27.60, "is_free": True},
+    "3": {"id": "emote-launch", "name": "launch", "duration": 10.88, "is_free": True},
+    "4": {"id": "emote-cutesalute", "name": "cutesalute", "duration": 3.79, "is_free": True},
+    "5": {"id": "emote-salute", "name": "atattention", "duration": 4.79, "is_free": True},
+    "6": {"id": "dance-tiktok11", "name": "tiktok", "duration": 11.37, "is_free": True},
+    "7": {"id": "emote-kissing", "name": "smooch", "duration": 6.69, "is_free": True},
+    "8": {"id": "dance-employee", "name": "pushit", "duration": 8.55, "is_free": True},
+    "9": {"id": "emote-gift", "name": "foryou", "duration": 6.09, "is_free": True},
+    "10": {"id": "dance-touch", "name": "touch", "duration": 13.15, "is_free": True},
+    "11": {"id": "dance-kawai", "name": "kawaii", "duration": 10.85, "is_free": True},
+    "12": {"id": "sit-relaxed", "name": "repose", "duration": 31.21, "is_free": True},
+    "13": {"id": "emote-sleigh", "name": "sleigh", "duration": 12.51, "is_free": True},
+    "14": {"id": "emote-hyped", "name": "hyped", "duration": 7.62, "is_free": True},
+    "15": {"id": "dance-jinglebell", "name": "jingle", "duration": 12.09, "is_free": True},
+    "16": {"id": "idle-toilet", "name": "gottago", "duration": 33.48, "is_free": True},
+    "17": {"id": "emote-timejump", "name": "timejump", "duration": 5.51, "is_free": True},
+    "18": {"id": "idle-wild", "name": "scritchy", "duration": 27.35, "is_free": True},
+    "19": {"id": "idle-nervous", "name": "bitnervous", "duration": 22.81, "is_free": True},
+    "20": {"id": "emote-iceskating", "name": "iceskating", "duration": 8.41, "is_free": True},
+    "21": {"id": "emote-celebrate", "name": "partytime", "duration": 4.35, "is_free": True},
+    "22": {"id": "emote-pose10", "name": "arabesque", "duration": 5.00, "is_free": True},
+    "23": {"id": "emote-shy2", "name": "bashful", "duration": 6.34, "is_free": True},
+    "24": {"id": "emote-headblowup", "name": "revelations", "duration": 13.66, "is_free": True},
+    "25": {"id": "emote-creepycute", "name": "watchyourback", "duration": 9.01, "is_free": True},
+    "26": {"id": "dance-creepypuppet", "name": "creepypuppet", "duration": 7.79, "is_free": True},
+    "27": {"id": "dance-anime", "name": "saunter", "duration": 9.60, "is_free": True},
+    "28": {"id": "emote-pose6", "name": "surprise", "duration": 6.46, "is_free": True},
+    "29": {"id": "emote-celebrationstep", "name": "celebration", "duration": 5.18, "is_free": True},
+    "30": {"id": "dance-pinguin", "name": "penguin", "duration": 12.81, "is_free": True},
+    "31": {"id": "emote-boxer", "name": "boxer", "duration": 6.75, "is_free": True},
+    "32": {"id": "idle-guitar", "name": "airguitar", "duration": 14.15, "is_free": True},
+    "33": {"id": "emote-stargazer", "name": "stargaze", "duration": 7.93, "is_free": True},
+    "34": {"id": "emote-pose9", "name": "ditzy", "duration": 6.00, "is_free": True},
+    "35": {"id": "idle-uwu", "name": "uwu", "duration": 25.50, "is_free": True},
+    "36": {"id": "dance-wrong", "name": "wrong", "duration": 13.60, "is_free": True},
+    "37": {"id": "emote-fashionista", "name": "fashion", "duration": 6.33, "is_free": True},
+    "38": {"id": "dance-icecream", "name": "icecream", "duration": 16.58, "is_free": True},
+    "39": {"id": "idle-dance-tiktok4", "name": "sayso", "duration": 16.55, "is_free": True},
+    "40": {"id": "idle_zombie", "name": "zombie", "duration": 31.39, "is_free": True},
+    "41": {"id": "emote-astronaut", "name": "astronaut", "duration": 13.93, "is_free": True},
+    "42": {"id": "emote-punkguitar", "name": "punk", "duration": 10.59, "is_free": True},
+    "43": {"id": "emote-gravity", "name": "zerogravity", "duration": 9.02, "is_free": True},
+    "44": {"id": "emote-pose5", "name": "beautiful", "duration": 5.49, "is_free": True},
+    "45": {"id": "emote-shocked", "name": "omg", "duration": 5.59, "is_free": False},
+    "46": {"id": "idle-dance-casual", "name": "casual", "duration": 9.57, "is_free": True},
+    "47": {"id": "emote-pose1", "name": "wink", "duration": 4.71, "is_free": True},
+    "48": {"id": "emote-pose3", "name": "fightme", "duration": 5.57, "is_free": True},
+    "49": {"id": "emote-superpose", "name": "icon", "duration": 5.43, "is_free": False},
+    "50": {"id": "emote-cute", "name": "cute", "duration": 7.20, "is_free": True},
+    "51": {"id": "emote-cutey", "name": "cutey", "duration": 4.07, "is_free": True},
+    "52": {"id": "emote-greedy", "name": "greedy", "duration": 5.72, "is_free": True},
+    "53": {"id": "dance-tiktok9", "name": "viralgroove", "duration": 13.04, "is_free": True},
+    "54": {"id": "dance-weird", "name": "weird", "duration": 22.87, "is_free": True},
+    "55": {"id": "dance-tiktok10", "name": "shuffle", "duration": 9.41, "is_free": True},
+    "56": {"id": "emoji-gagging", "name": "gagging", "duration": 6.84, "is_free": True},
+    "57": {"id": "emoji-celebrate", "name": "raise", "duration": 4.78, "is_free": True},
+    "58": {"id": "dance-tiktok8", "name": "savage", "duration": 13.10, "is_free": True},
+    "59": {"id": "dance-blackpink", "name": "blackpink", "duration": 7.97, "is_free": True},
+    "60": {"id": "emote-model", "name": "model", "duration": 7.43, "is_free": True},
+    "61": {"id": "dance-tiktok2", "name": "dontstartnow", "duration": 11.37, "is_free": True},
+    "62": {"id": "dance-pennywise", "name": "pennywise", "duration": 4.16, "is_free": True},
+    "63": {"id": "emote-bow", "name": "bow", "duration": 5.10, "is_free": True},
+    "64": {"id": "dance-russian", "name": "russian", "duration": 11.39, "is_free": True},
+    "65": {"id": "emote-curtsy", "name": "curtsy", "duration": 3.99, "is_free": True},
+    "66": {"id": "emote-snowball", "name": "snowball", "duration": 6.32, "is_free": True},
+    "67": {"id": "emote-hot", "name": "hot", "duration": 5.57, "is_free": True},
+    "68": {"id": "emote-snowangel", "name": "snowangel", "duration": 7.33, "is_free": True},
+    "69": {"id": "emote-charging", "name": "charging", "duration": 9.53, "is_free": True},
+    "70": {"id": "dance-shoppingcart", "name": "letsgoshopping", "duration": 5.56, "is_free": True},
+    "71": {"id": "emote-confused", "name": "confused", "duration": 9.58, "is_free": True},
+    "72": {"id": "idle-enthusiastic", "name": "enthused", "duration": 17.53, "is_free": True},
+    "73": {"id": "emote-telekinesis", "name": "telekinesis", "duration": 11.01, "is_free": True},
+    "74": {"id": "emote-float", "name": "float", "duration": 9.26, "is_free": True},
+    "75": {"id": "emote-teleporting", "name": "teleporting", "duration": 12.89, "is_free": True},
+    "76": {"id": "emote-swordfight", "name": "swordfight", "duration": 7.71, "is_free": True},
+    "77": {"id": "emote-maniac", "name": "maniac", "duration": 5.94, "is_free": True},
+    "78": {"id": "emote-energyball", "name": "energyball", "duration": 8.28, "is_free": True},
+    "79": {"id": "emote-snake", "name": "worm", "duration": 6.63, "is_free": True},
+    "80": {"id": "idle_singing", "name": "singalong", "duration": 11.31, "is_free": True},
+    "81": {"id": "emote-frog", "name": "frog", "duration": 16.14, "is_free": True},
+    "82": {"id": "dance-macarena", "name": "macarena", "duration": 15.0, "is_free": True},
+    "83": {"id": "emote-kissing-passionate", "name": "kiss", "duration": 10.47, "is_free": True},
+    "84": {"id": "emoji-shake-head", "name": "shakehead", "duration": 3.5, "is_free": True},
+    "85": {"id": "idle-sad", "name": "sad", "duration": 25.24, "is_free": True},
+    "86": {"id": "emoji-nod", "name": "nod", "duration": 2.5, "is_free": True},
+    "87": {"id": "emote-laughing2", "name": "laughing", "duration": 6.60, "is_free": True},
+    "88": {"id": "emoji-hello", "name": "hello", "duration": 3.0, "is_free": True},
+    "89": {"id": "emoji-thumbsup", "name": "thumbsup", "duration": 2.5, "is_free": True},
+    "90": {"id": "mining-fail", "name": "miningfail", "duration": 3.41, "is_free": True},
+    "91": {"id": "emote-shy", "name": "shy", "duration": 5.15, "is_free": True},
+    "92": {"id": "fishing-pull", "name": "fishingpull", "duration": 2.81, "is_free": True},
+    "93": {"id": "dance-thewave", "name": "thewave", "duration": 8.0, "is_free": True},
+    "94": {"id": "idle-angry", "name": "angry", "duration": 26.07, "is_free": True},
+    "95": {"id": "emote-rough", "name": "rough", "duration": 6.0, "is_free": True},
+    "96": {"id": "fishing-idle", "name": "fishingidle", "duration": 17.87, "is_free": True},
+    "97": {"id": "emote-dropped", "name": "dropped", "duration": 4.5, "is_free": True},
+    "98": {"id": "mining-success", "name": "miningsuccess", "duration": 3.11, "is_free": True},
+    "99": {"id": "emote-receive-happy", "name": "receivehappy", "duration": 5.0, "is_free": True},
+    "100": {"id": "emote-cold", "name": "cold", "duration": 5.17, "is_free": True},
+    "101": {"id": "fishing-cast", "name": "fishingcast", "duration": 2.82, "is_free": True},
+    "102": {"id": "emote-sit", "name": "sit", "duration": 20.0, "is_free": True},
+    "103": {"id": "dance-shuffle", "name": "shuffledance", "duration": 9.0, "is_free": True},
+    "104": {"id": "emote-receive-sad", "name": "receivesad", "duration": 5.0, "is_free": True},
+    "105": {"id": "idle-loop-tired", "name": "tired", "duration": 11.23, "is_free": True},
+    "106": {"id": "dance-hipshake", "name": "hipshake", "duration": 13.38, "is_free": True},
+    "107": {"id": "dance-fruity", "name": "fruity", "duration": 18.25, "is_free": True},
+    "108": {"id": "dance-cheerleader", "name": "cheerleader", "duration": 17.93, "is_free": True},
+    "109": {"id": "dance-tiktok14", "name": "magnetic", "duration": 11.20, "is_free": True},
+    "110": {"id": "emote-howl", "name": "nocturnal", "duration": 8.10, "is_free": True},
+    "111": {"id": "idle-howl", "name": "moonlit", "duration": 48.62, "is_free": True},
+    "112": {"id": "emote-trampoline", "name": "trampoline", "duration": 6.11, "is_free": True},
+    "113": {"id": "emote-attention", "name": "attention", "duration": 5.65, "is_free": True},
+    "114": {"id": "sit-open", "name": "laidback", "duration": 27.28, "is_free": True},
+    "115": {"id": "emote-shrink", "name": "shrink", "duration": 9.99, "is_free": True},
+    "116": {"id": "emote-puppet", "name": "puppet", "duration": 17.89, "is_free": True},
+    "117": {"id": "dance-aerobics", "name": "pushups", "duration": 9.89, "is_free": True},
+    "118": {"id": "dance-duckwalk", "name": "duckwalk", "duration": 12.48, "is_free": True},
+    "119": {"id": "dance-handsup", "name": "handsintheair", "duration": 23.18, "is_free": True},
+    "120": {"id": "dance-metal", "name": "rockout", "duration": 15.78, "is_free": True},
+    "121": {"id": "dance-orangejustice", "name": "orangejuice", "duration": 7.17, "is_free": True},
+    "122": {"id": "dance-singleladies", "name": "ringonit", "duration": 22.33, "is_free": True},
+    "123": {"id": "dance-smoothwalk", "name": "smoothwalk", "duration": 7.58, "is_free": True},
+    "124": {"id": "dance-voguehands", "name": "voguehands", "duration": 10.57, "is_free": True},
+    "125": {"id": "emoji-arrogance", "name": "arrogance", "duration": 8.16, "is_free": True},
+    "126": {"id": "emoji-give-up", "name": "giveup", "duration": 6.04, "is_free": True},
+    "127": {"id": "emoji-hadoken", "name": "fireball", "duration": 4.29, "is_free": True},
+    "128": {"id": "emoji-halo", "name": "levitate", "duration": 6.52, "is_free": True},
+    "129": {"id": "emoji-lying", "name": "lying", "duration": 7.39, "is_free": True},
+    "130": {"id": "emoji-naughty", "name": "naughty", "duration": 5.73, "is_free": True},
+    "131": {"id": "emoji-poop", "name": "stinky", "duration": 5.86, "is_free": True},
+    "132": {"id": "emoji-pray", "name": "pray", "duration": 6.00, "is_free": True},
+    "133": {"id": "emoji-punch", "name": "punch", "duration": 3.36, "is_free": True},
+    "134": {"id": "emoji-sick", "name": "sick", "duration": 6.22, "is_free": True},
+    "135": {"id": "emoji-smirking", "name": "smirk", "duration": 5.74, "is_free": True},
+    "136": {"id": "emoji-sneeze", "name": "sneeze", "duration": 4.33, "is_free": True},
+    "137": {"id": "emoji-there", "name": "point", "duration": 3.09, "is_free": True},
+    "138": {"id": "emote-death2", "name": "collapse", "duration": 5.54, "is_free": True},
+    "139": {"id": "emote-disco", "name": "disco", "duration": 6.14, "is_free": True},
+    "140": {"id": "emote-ghost-idle", "name": "ghostfloat", "duration": 20.43, "is_free": True},
+    "141": {"id": "emote-handstand", "name": "handstand", "duration": 5.89, "is_free": True},
+    "142": {"id": "emote-kicking", "name": "superkick", "duration": 6.21, "is_free": True},
+    "143": {"id": "emote-panic", "name": "panic", "duration": 4.5, "is_free": True},
+    "144": {"id": "emote-splitsdrop", "name": "splits", "duration": 5.31, "is_free": True},
+    "145": {"id": "idle_layingdown", "name": "attentive", "duration": 26.11, "is_free": True},
+    "146": {"id": "idle_layingdown2", "name": "relaxed", "duration": 22.59, "is_free": True},
+    "147": {"id": "emote-apart", "name": "fallingapart", "duration": 5.98, "is_free": True},
+    "148": {"id": "emote-baseball", "name": "homerun", "duration": 8.47, "is_free": True},
+    "149": {"id": "emote-boo", "name": "boo", "duration": 5.58, "is_free": True},
+    "150": {"id": "emote-bunnyhop", "name": "bunnyhop", "duration": 13.63, "is_free": True},
+    "151": {"id": "emote-death", "name": "revival", "duration": 8.00, "is_free": True},
+    "152": {"id": "emote-deathdrop", "name": "faintdrop", "duration": 4.18, "is_free": True},
+    "153": {"id": "emote-elbowbump", "name": "elbowbump", "duration": 6.44, "is_free": True},
+    "154": {"id": "emote-fail1", "name": "fall", "duration": 6.90, "is_free": True},
+    "155": {"id": "emote-fail2", "name": "clumsy", "duration": 7.74, "is_free": True},
+    "156": {"id": "emote-fainting", "name": "faint", "duration": 18.55, "is_free": True},
+    "157": {"id": "emote-hugyourself", "name": "hugyourself", "duration": 6.03, "is_free": True},
+    "158": {"id": "emote-jetpack", "name": "jetpack", "duration": 17.77, "is_free": True},
+    "159": {"id": "emote-judochop", "name": "judochop", "duration": 5.0, "is_free": True},
+    "160": {"id": "emote-jumpb", "name": "jump", "duration": 4.87, "is_free": True},
+    "161": {"id": "emote-laughing2", "name": "amused", "duration": 6.60, "is_free": True},
+    "162": {"id": "emote-levelup", "name": "levelup", "duration": 7.27, "is_free": True},
+    "163": {"id": "emote-monster_fail", "name": "monsterfail", "duration": 5.42, "is_free": True},
+    "164": {"id": "idle-dance-headbobbing", "name": "nightfever", "duration": 23.65, "is_free": True},
+    "165": {"id": "emote-ninjarun", "name": "ninjarun", "duration": 6.50, "is_free": True},
+    "166": {"id": "emoji-peace", "name": "peace", "duration": 3.5, "is_free": True},
+    "167": {"id": "emote-peekaboo", "name": "peekaboo", "duration": 4.52, "is_free": True},
+    "168": {"id": "emote-proposing", "name": "proposing", "duration": 5.91, "is_free": True},
+    "169": {"id": "emote-rainbow", "name": "rainbow", "duration": 8.0, "is_free": True},
+    "170": {"id": "emote-robot", "name": "robot", "duration": 10.0, "is_free": True},
+    "171": {"id": "emote-rofl", "name": "rofl", "duration": 7.65, "is_free": True},
+    "172": {"id": "emote-roll", "name": "roll", "duration": 4.31, "is_free": True},
+    "173": {"id": "emote-ropepull", "name": "ropepull", "duration": 10.69, "is_free": True},
+    "174": {"id": "emote-secrethandshake", "name": "secrethandshake", "duration": 6.28, "is_free": True},
+    "175": {"id": "emote-sumo", "name": "sumofight", "duration": 11.64, "is_free": True},
+    "176": {"id": "emote-superpunch", "name": "superpunch", "duration": 5.75, "is_free": True},
+    "177": {"id": "emote-superrun", "name": "superrun", "duration": 7.16, "is_free": True},
+    "178": {"id": "emote-theatrical", "name": "theatrical", "duration": 11.00, "is_free": True},
+    "179": {"id": "emote-wings", "name": "ibelieve", "duration": 14.21, "is_free": True},
+    "180": {"id": "emote-frustrated", "name": "irritated", "duration": 6.41, "is_free": True},
+    "181": {"id": "idle-floorsleeping", "name": "cozynap", "duration": 14.61, "is_free": True},
+    "182": {"id": "idle-floorsleeping2", "name": "relaxing", "duration": 18.83, "is_free": True},
+    "183": {"id": "idle-hero", "name": "heropose", "duration": 22.33, "is_free": True},
+    "184": {"id": "idle-lookup", "name": "ponder", "duration": 8.75, "is_free": True},
+    "185": {"id": "idle-posh", "name": "posh", "duration": 23.29, "is_free": True},
+    "186": {"id": "idle-sad", "name": "poutyface", "duration": 25.24, "is_free": True},
+    "187": {"id": "emote-dab", "name": "dab", "duration": 3.75, "is_free": True},
+    "188": {"id": "dance-gangnamstyle", "name": "gangnamstyle", "duration": 15.0, "is_free": True},
+    "189": {"id": "emoji-crying", "name": "sob", "duration": 4.91, "is_free": True},
+    "190": {"id": "idle-loop-tapdance", "name": "taploop", "duration": 7.81, "is_free": True},
+    "191": {"id": "idle-sleep", "name": "sleepy", "duration": 3.35, "is_free": True},
+    "192": {"id": "dance-sexy", "name": "wiggledance", "duration": 13.70, "is_free": True},
+    "193": {"id": "emoji-eyeroll", "name": "eyeroll", "duration": 3.75, "is_free": True},
+    "194": {"id": "dance-moonwalk", "name": "moonwalk", "duration": 12.0, "is_free": True},
+    "195": {"id": "idle-fighter", "name": "fighter", "duration": 18.64, "is_free": True},
+    "196": {"id": "idle-dance-tiktok7", "name": "renegade", "duration": 14.05, "is_free": True},
+    "197": {"id": "emote-facepalm", "name": "facepalm", "duration": 5.0, "is_free": True},
+    "198": {"id": "idle-dance-headbobbing", "name": "feelthebeat", "duration": 23.65, "is_free": True},
+    "199": {"id": "emote-pose8", "name": "happy", "duration": 5.62, "is_free": True},
+    "200": {"id": "emote-hug", "name": "hug", "duration": 4.53, "is_free": True},
+    "201": {"id": "emote-slap", "name": "slap", "duration": 4.06, "is_free": True},
+    "202": {"id": "emoji-clapping", "name": "clap", "duration": 2.98, "is_free": True},
+    "203": {"id": "emote-exasperated", "name": "exasperated", "duration": 4.10, "is_free": True},
+    "204": {"id": "emote-kissing-passionate", "name": "sweetsmooch", "duration": 10.47, "is_free": True},
+    "205": {"id": "emote-tapdance", "name": "tapdance", "duration": 6.0, "is_free": True},
+    "206": {"id": "emote-suckthumb", "name": "thumbsuck", "duration": 5.23, "is_free": True},
+    "207": {"id": "dance-harlemshake", "name": "harlemshake", "duration": 10.0, "is_free": True},
+    "208": {"id": "emote-heartfingers", "name": "heartfingers", "duration": 5.18, "is_free": True},
+    "209": {"id": "idle-loop-aerobics", "name": "aerobics", "duration": 10.08, "is_free": True},
+    "210": {"id": "emote-heartshape", "name": "heartshape", "duration": 7.60, "is_free": True},
+    "211": {"id": "emote-hearteyes", "name": "hearteyes", "duration": 5.99, "is_free": True},
+    "212": {"id": "dance-wild", "name": "karmadance", "duration": 16.25, "is_free": True},
+    "213": {"id": "emoji-scared", "name": "gasp", "duration": 4.06, "is_free": True},
+    "214": {"id": "emote-think", "name": "think", "duration": 4.81, "is_free": True},
+    "215": {"id": "emoji-dizzy", "name": "stunned", "duration": 5.38, "is_free": True},
+    "216": {"id": "emote-embarrassed", "name": "embarrassed", "duration": 9.09, "is_free": True},
+    "217": {"id": "emote-disappear", "name": "blastoff", "duration": 5.53, "is_free": True},
+    "218": {"id": "idle-loop-annoyed", "name": "annoyed", "duration": 18.62, "is_free": True},
+    "219": {"id": "dance-zombie", "name": "dancezombie", "duration": 13.83, "is_free": True},
+    "220": {"id": "idle-loop-happy", "name": "chillin", "duration": 19.80, "is_free": True},
+    "221": {"id": "emote-frustrated", "name": "frustrated", "duration": 6.41, "is_free": True},
+    "222": {"id": "idle-loop-sad", "name": "bummed", "duration": 21.80, "is_free": True},
+    "223": {"id": "emoji-ghost", "name": "ghost", "duration": 3.74, "is_free": True},
+    "224": {"id": "emoji-mind-blown", "name": "mindblown", "duration": 3.46, "is_free": True}
+}
+
+# Добавляем задержку и повторные попытки подключения
+MAX_RETRIES = 3
+RETRY_DELAY = 5
+
+class Bot(BaseBot):
+    def __init__(self):
+        super().__init__()
+        self.last_announcement = 0
+        self.user_positions = {}  # Словарь для хранения последних позиций пользователей
+        self.connection_retries = 0
+        self.bot_mode = "idle"  # Modo por defecto: idle (sin emotes automáticos)
+        self.current_emote_task = None  # Para controlar la tarea actual de emotes
+
+    async def connect_with_retry(self):
+        """Подключение к серверу с повторными попытками"""
+        # Esta función simplemente retorna True ya que la conexión real
+        # es manejada por el framework de Highrise automáticamente
+        print("✅ Conexión establecida con High Rise")
+        return True
+
+    async def on_start(self, session_metadata: SessionMetadata) -> None:
+        """Inicio del bot"""
+        try:
+            # Store bot ID from session metadata for reliable identification
+            self.bot_id = session_metadata.user_id
+            log_event("BOT", f"Bot ID stored: {self.bot_id}")
+
+            if await self.connect_with_retry():
+                print("Бот успешно подключен!")
+                self.load_data()
+                # Запускаем объявления
+                asyncio.create_task(self.start_announcements())
+                asyncio.create_task(self.check_console_messages())
+                # Configurar outfit y emote inicial del bot
+                await self.setup_initial_bot_appearance()
+                
+                # Ejecutar ciclo automático de 224 emotes en bucle infinito
+                try:
+                    await asyncio.sleep(2)  # Espera breve para estabilizar conexión
+                    log_event("BOT", "Preparando ciclo automático de 224 emotes en bucle infinito")
+                    await self.highrise.chat("¡El bot ha entrado en la sala! Iniciando CICLO AUTOMÁTICO DE EMOTES...")
+                    await self.highrise.chat("🎭 ¡MODO AUTOMÁTICO INFINITO ACTIVADO!")
+                    # Iniciar ciclo automático en tarea separada
+                    self.bot_mode = "auto"
+                    asyncio.create_task(self.start_auto_emote_cycle())
+                    log_event("BOT", "Ciclo automático de 224 emotes iniciado")
+                except Exception as e:
+                    log_event("ERROR", f"Error en ciclo automático: {e}")
+                    print(f"⚠️ Error en ciclo automático: {e}")
+            else:
+                print("Не удалось подключиться к серверу")
+                sys.exit(1)
+        except Exception as e:
+            print(f"Error en on_start: {e}")
+        # Bot iniciado - se muestra solo en consola
+        print("🤖 ¡Bot iniciado! Usa !help para ver los comandos.")
+
+    def load_data(self):
+        """Carga datos desde archivos"""
+        try:
+            # Carga de usuarios VIP
+            if os.path.exists("data/vip.txt"):
+                with open("data/vip.txt", "r", encoding="utf-8") as f:
+                    for line in f:
+                        if line.strip() and not line.startswith("#"):
+                            VIP_USERS.add(line.strip())
+            print(f"Datos VIP cargados: {len(VIP_USERS)} usuarios")
+
+            # Carga de puntos de teletransporte
+            if os.path.exists("data/teleport_points.txt"):
+                with open("data/teleport_points.txt", "r", encoding="utf-8") as f:
+                    for line in f:
+                        if line.strip() and not line.startswith("#"):
+                            parts = line.strip().split("|")
+                            if len(parts) == 4:
+                                name = parts[0]
+                                x = float(parts[1])
+                                y = float(parts[2])
+                                z = float(parts[3])
+                                TELEPORT_POINTS[name] = {"x": x, "y": y, "z": z}
+            print(f"Puntos de teletransporte cargados: {len(TELEPORT_POINTS)} puntos")
+        except Exception as e:
+            print(f"Error cargando datos: {e}")
+
+    def save_data(self):
+        """Guarda datos en archivos"""
+        try:
+            os.makedirs("data", exist_ok=True)
+            with open("data/vip.txt", "w", encoding="utf-8") as f:
+                f.write("# Usuarios VIP (un ID por línea)\n")
+                for user_id in VIP_USERS:
+                    f.write(f"{user_id}\n")
+            print(f"Datos VIP guardados: {len(VIP_USERS)} usuarios")
+
+            # Guardar puntos de teletransporte
+            with open("data/teleport_points.txt", "w", encoding="utf-8") as f:
+                f.write("# Puntos de teletransporte (nombre|x|y|z)\n")
+                for name, coords in TELEPORT_POINTS.items():
+                    f.write(f"{name}|{coords['x']}|{coords['y']}|{coords['z']}\n")
+            print(f"Puntos de teletransporte guardados: {len(TELEPORT_POINTS)} puntos")
+
+            # Salviamo le informazioni sui giocatori
+            save_user_info()
+            save_leaderboard_data()
+        except Exception as e:
+            print(f"Error guardando datos: {e}")
+
+    def is_admin(self, user_id: str) -> bool:
+        """Verifica si el usuario es administrador"""
+        return user_id in ADMIN_IDS or user_id == OWNER_ID
+
+    def is_moderator(self, user_id: str) -> bool:
+        """Verifica si el usuario es moderador"""
+        return user_id in MODERATOR_IDS or self.is_admin(user_id)
+
+    def is_vip(self, user_id: str) -> bool:
+        """Verifica si el usuario es VIP por user_id"""
+        # Buscamos el username correspondiente al user_id
+        username = USER_NAMES.get(user_id)
+        if username:
+            return username in VIP_USERS
+        return False
+
+    def is_vip_by_username(self, username: str) -> bool:
+        """Verifica si el usuario es VIP por username"""
+        return username in VIP_USERS
+
+    def is_banned(self, user_id: str) -> bool:
+        """Verifica si el usuario está baneado"""
+        if user_id in BANNED_USERS:
+            ban_data = BANNED_USERS[user_id]
+            if isinstance(ban_data, dict) and "time" in ban_data:
+                ban_time = ban_data["time"]
+                if isinstance(ban_time, str):
+                    try:
+                        ban_time = datetime.fromisoformat(ban_time.replace('Z', '+00:00'))
+                    except:
+                        return True
+                if datetime.now() > ban_time:
+                    del BANNED_USERS[user_id]
+                    return False
+                return True
+            return True
+        return False
+
+    def is_muted(self, user_id: str) -> bool:
+        """Verifica si el usuario está silenciado"""
+        if user_id in MUTED_USERS:
+            mute_time = MUTED_USERS[user_id]
+            if isinstance(mute_time, str):
+                try:
+                    mute_time = datetime.fromisoformat(mute_time.replace('Z', '+00:00'))
+                except:
+                    return True
+            if datetime.now() > mute_time:
+                del MUTED_USERS[user_id]
+                return False
+            return True
+        return False
+
+    def get_user_hearts(self, user_id: str) -> int:
+        """Obtiene la cantidad de corazones del usuario"""
+        return USER_HEARTS.get(user_id, 0)
+
+    def get_user_role_info(self, user: User) -> str:
+        """Obtiene información sobre el rol del usuario"""
+        user_id = user.id
+        username = user.username
+
+        if user_id == OWNER_ID:
+            return "👑 Propietario del Bot"
+        elif self.is_admin(user_id):
+            return "🛡️ Administrador"
+        elif self.is_moderator(user_id):
+            return "⚖️ Moderador"
+        elif self.is_vip_by_username(username):
+            return "⭐ Usuario VIP"
+        else:
+            return "👤 Usuario Normal"
+
+    def add_user_hearts(self, user_id: str, hearts: int, username: str | None = None):
+        """Añade corazones al usuario"""
+        print(f"DEBUG: add_user_hearts вызван с user_id={user_id}, hearts={hearts}, username={username}")
+
+        if user_id not in USER_HEARTS:
+            USER_HEARTS[user_id] = 0
+        USER_HEARTS[user_id] += hearts
+
+        # Обновляем username если предоставлен или если его нет в USER_NAMES
+        if username:
+            USER_NAMES[user_id] = username
+        elif user_id not in USER_NAMES:
+            # Если username не предоставлен, но его нет в USER_NAMES, попробуем найти в текущих пользователях
+            print(f"DEBUG: Username не найден для {user_id}, попробуем найти позже")
+
+        print(f"DEBUG: USER_HEARTS после добавления = {USER_HEARTS}")
+        print(f"DEBUG: USER_NAMES после добавления = {USER_NAMES}")
+
+        save_leaderboard_data()
+        display_username = username if username is not None else f"User_{user_id[:8]}"
+        print(f"DEBUG: Добавлено {hearts} сердечек пользователю {display_username}. Всего: {USER_HEARTS[user_id]}")
+
+    def update_activity(self, user_id: str):
+        """Actualiza la actividad del usuario"""
+        if user_id not in USER_ACTIVITY:
+            USER_ACTIVITY[user_id] = {"messages": 0, "last_activity": datetime.now()}
+        USER_ACTIVITY[user_id]["messages"] += 1
+        USER_ACTIVITY[user_id]["last_activity"] = datetime.now()
+
+        # Aggiorniamo le informazioni sul giocatore
+        if user_id in USER_INFO:
+            USER_INFO[user_id]["total_messages"] = USER_ACTIVITY[user_id]["messages"]
+
+    def update_user_info(self, user_id: str, username: str):
+        """Aggiorna le informazioni sul giocatore"""
+        if user_id not in USER_INFO:
+            USER_INFO[user_id] = {
+                "username": username,
+                "first_seen": datetime.now().isoformat(),
+                "account_created": None,  # Будет заполнено при получении данных пользователя
+                "total_time_in_room": 0,
+                "total_messages": 0,
+                "time_joined": time.time()  # Используем time.time() как в документации
+            }
+        else:
+            USER_INFO[user_id]["username"] = username
+            USER_INFO[user_id]["total_messages"] = USER_ACTIVITY.get(user_id, {}).get("messages", 0)
+
+    def get_user_total_time(self, user_id: str) -> int:
+        """Ottiene il tempo totale del giocatore nella stanza in secondi"""
+        return USER_INFO.get(user_id, {}).get("total_time_in_room", 0)
+
+    def format_time(self, seconds: int) -> str:
+        """Formatta il tempo in formato leggibile"""
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        seconds = seconds % 60
+
+        if hours > 0:
+            return f"{hours}o {minutes}m {seconds}s"
+        elif minutes > 0:
+            return f"{minutes}m {seconds}s"
+        else:
+            return f"{seconds}s"
+        save_leaderboard_data()
+
+    def get_help_for_user(self, user_id: str, username: str) -> str:
+        """Retorna comandos disponibles según el rol del usuario"""
+        is_owner = (user_id == OWNER_ID)
+        is_admin = self.is_admin(user_id)
+        is_vip = self.is_vip(user_id)
+
+        if is_owner:
+            return ("👑 COMANDOS PROPIETARIO:\n"
+                   "📊 !info, !role, !emote list\n"
+                   "💖 !heart @user (sin límites)\n"
+                   "🎮 Juego amorometro\n"
+                   "🎭 Emotes a todos: [emote] all\n"
+                   "⚡ !flash [x] [y] [z] - subir/bajar pisos\n"
+                   "🎯 !bring @user, !vip @user\n"
+                   "🔨 !freeze @user, !mute @user, !ban @user\n"
+                   "🗺️ !addzone [nombre] - crear zonas\n"
+                   "🤖 !bot @user - hacer punch/revival\n"
+                   "🕺 !flossmode - activar modo floss\n"
+                   "🎭 !automode - activar ciclo automático\n"
+                   "👥 Acceso a todas las zonas")
+
+        elif is_admin:
+            return ("⚔️ COMANDOS ADMIN:\n"
+                   "📊 !info, !role, !emote list\n"
+                   "💖 !heart @user (hasta 100)\n"
+                   "🎮 Juego amorometro\n"
+                   "🎭 Emotes a todos: [emote] all\n"
+                   "⚡ !flash [x] [y] [z] - subir/bajar pisos\n"
+                   "🎯 !bring @user, !vip @user\n"
+                   "🔨 !freeze @user, !mute @user, !ban @user\n"
+                   "🗺️ !addzone [nombre] - crear zonas\n"
+                   "🤖 !bot @user - hacer punch/revival\n"
+                   "🕺 !flossmode - activar modo floss\n"
+                   "🎭 !automode - activar ciclo automático")
+
+        elif is_vip:
+            return ("⭐ COMANDOS VIP:\n"
+                   "📊 !info, !role, !emote list\n"
+                   "💖 !heart @user (limitado)\n"
+                   "🎮 Juego amorometro\n"
+                   "🎭 Emotes personales únicamente\n"
+                   "⚡ !flash [x] [y] [z] - subir/bajar pisos\n"
+                   "🔥 vip - acceso a zona VIP")
+
+        else:
+            return ("👤 COMANDOS USUARIO:\n"
+                   "📊 !info, !role, !emote list\n"
+                   "💖 !heart @user (muy limitado)\n"
+                   "🎮 Juego amorometro\n"
+                   "🎭 Emotes personales únicamente\n"
+                   "⚡ !flash [x] [y] [z] - subir/bajar pisos")
+
+    def is_in_forbidden_zone(self, x: float, y: float, z: float) -> bool:
+        """Verifica si el punto está en zona prohibida"""
+        for zone in FORBIDDEN_ZONES:
+            distance = ((x - zone["x"])**2 + (y - zone["y"])**2 + (z - zone["z"])**2)**0.5
+            if distance <= zone["radius"]:
+                return True
+        return False
+
+    def calculate_distance(self, pos1, pos2) -> float:
+        """Calcula la distancia entre dos posiciones"""
+        return ((pos1.x - pos2.x)**2 + (pos1.y - pos2.y)**2 + (pos1.z - pos2.z)**2)**0.5
+
+    async def teleport_user(self, user_id: str, x: float, y: float, z: float):
+        """Teletransporta al usuario (método obsoleto)"""
+        try:
+
+            position = Position(x, y, z)
+            await self.highrise.teleport(user_id, position)
+            return True
+        except Exception:
+            return False
+
+    async def send_emote_loop(self, user_id: str, emote_id: str):
+        """Inicia la emoción en un bucle infinito"""
+        print(f"DEBUG: Iniciando send_emote_loop para usuario {user_id} con emote {emote_id}")
+        ACTIVE_EMOTES[user_id] = emote_id
+        print(f"DEBUG: ACTIVE_EMOTES después de agregar: {ACTIVE_EMOTES}")
+
+        # Проверяем, что эмоция существует
+        if emote_id not in [emote["id"] for emote in emotes.values()]:
+            # No hay usuario específico aquí, se mantiene como print
+            # Error en animación - este caso no tiene user context
+            if user_id in ACTIVE_EMOTES:
+                del ACTIVE_EMOTES[user_id]
+            return
+
+        # Получаем имя пользователя для сообщений
+        username = USER_NAMES.get(user_id, "Usuario")
+
+        while user_id in ACTIVE_EMOTES and ACTIVE_EMOTES[user_id] == emote_id and ACTIVE_EMOTES[user_id] is not None:
+            try:
+                print(f"DEBUG: Enviando emote {emote_id} a usuario {user_id}")
+                await self.highrise.send_emote(emote_id, user_id)
+                duration = emotes.get(emote_id, {}).get("duration", 5)
+                print(f"DEBUG: Esperando {duration} segundos antes del siguiente emote")
+                await asyncio.sleep(duration)
+            except Exception as e:
+                print(f"DEBUG: Error en send_emote_loop: {e}")
+                # Error handling for different types of errors
+                if "not found" in str(e).lower() or "invalid" in str(e).lower():
+                    print("Error: Animation not found or invalid")
+                elif "permission" in str(e).lower() or "access" in str(e).lower():
+                    print("Error: Permission or access denied")
+                else:
+                    print("Error: General error occurred")
+                break
+
+        print(f"DEBUG: Bucle terminado para usuario {user_id}")
+        # Limpiamos el diccionario si el usuario ya no está activo
+        if user_id in ACTIVE_EMOTES and ACTIVE_EMOTES[user_id] is None:
+            del ACTIVE_EMOTES[user_id]
+            print(f"DEBUG: Usuario {user_id} eliminado de ACTIVE_EMOTES al final del bucle")
+
+    async def stop_emote_loop(self, user_id: str):
+        """Detiene la emoción en el bucle"""
+        print(f"DEBUG: Intentando detener animación para usuario {user_id}")
+        print(f"DEBUG: ACTIVE_EMOTES antes: {ACTIVE_EMOTES}")
+
+        if user_id in ACTIVE_EMOTES:
+            print(f"DEBUG: Usuario {user_id} encontrado en ACTIVE_EMOTES")
+            # Cambiamos el emote_id a None para forzar la parada del bucle
+            ACTIVE_EMOTES[user_id] = None
+            print(f"DEBUG: ACTIVE_EMOTES después de None: {ACTIVE_EMOTES}")
+
+            # Enviamos múltiples animaciones de "idle" para asegurar que se detenga
+            try:
+                # Intentamos con diferentes animaciones de parada
+                stop_animations = ["idle", "idle-loop-happy", "idle-loop-sad", "idle-loop-tired"]
+                for stop_anim in stop_animations:
+                    try:
+                        print(f"DEBUG: Intentando enviar animación de parada: {stop_anim}")
+                        await self.highrise.send_emote(stop_anim, user_id)
+                        print(f"DEBUG: Animación de parada {stop_anim} enviada exitosamente")
+                        await asyncio.sleep(0.1)  # Pequeña pausa entre animaciones
+                    except Exception as e:
+                        print(f"DEBUG: Error enviando {stop_anim}: {e}")
+                        continue
+            except Exception as e:
+                print(f"DEBUG: Error general en stop_animations: {e}")
+
+            # Esperamos más tiempo para que el bucle se detenga completamente
+            await asyncio.sleep(1.0)  # Aumentamos el tiempo de espera
+
+            # Luego eliminamos completamente del diccionario
+            if user_id in ACTIVE_EMOTES:
+                del ACTIVE_EMOTES[user_id]
+                print(f"DEBUG: Usuario {user_id} eliminado de ACTIVE_EMOTES")
+
+            print(f"DEBUG: ACTIVE_EMOTES final: {ACTIVE_EMOTES}")
+        else:
+            print(f"DEBUG: Usuario {user_id} NO encontrado en ACTIVE_EMOTES")
+
     async def handle_command(self, user: User, message: str, is_whisper: bool) -> None:
         """
         Procesa el comando y responde.
