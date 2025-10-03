@@ -855,16 +855,17 @@ class Bot(BaseBot):
                 await asyncio.sleep(0.3)
 
                 # Construir mensajes respetando límite de 200 caracteres
+                # Cada emote en una línea separada
                 current_message = []
                 current_length = 0
                 
                 for emote_entry in emote_list:
-                    entry_length = len(emote_entry) + 2  # +2 por ", "
+                    entry_length = len(emote_entry) + 1  # +1 por salto de línea
                     
                     # Si agregar este emote excede 200 caracteres, enviar mensaje actual
                     if current_length + entry_length > 200:
                         if current_message:
-                            await send_response(", ".join(current_message))
+                            await send_response("\n".join(current_message))
                             await asyncio.sleep(0.3)
                         current_message = [emote_entry]
                         current_length = len(emote_entry)
@@ -874,7 +875,7 @@ class Bot(BaseBot):
 
                 # Enviar último mensaje si hay contenido
                 if current_message:
-                    await send_response(", ".join(current_message))
+                    await send_response("\n".join(current_message))
                     await asyncio.sleep(0.3)
 
                 await send_response(f"✅ Usa el número o nombre del emote para ejecutarlo")
