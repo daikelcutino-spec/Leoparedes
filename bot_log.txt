@@ -2146,3 +2146,4 @@
 [2025-10-03 14:27:44] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
 [2025-10-03 14:27:45] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-03 14:27:45] [BOT] Iniciando nuevo ciclo de emotes gratuitos
+[2025-10-03 14:33:32] [BOT] Ciclo automático cancelado
