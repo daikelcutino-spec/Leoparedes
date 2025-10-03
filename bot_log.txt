@@ -2102,3 +2102,47 @@
 [2025-10-03 01:50:40] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
 [2025-10-03 01:50:40] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-03 01:50:40] [BOT] Iniciando nuevo ciclo de emotes gratuitos
+[2025-10-03 01:51:45] [BOT] Ciclo automático cancelado
+[2025-10-03 01:51:48] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-03 01:51:48] [BOT] Starting initial bot appearance setup
+[2025-10-03 01:51:48] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-03 01:51:48] [BOT] Starting initial bot appearance setup
+[2025-10-03 01:51:50] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-03 01:51:50] [ERROR] Error cambiando outfit del bot: Cannot write to closing transport
+[2025-10-03 01:51:50] [ERROR] Error configurando outfit inicial: Cannot write to closing transport
+[2025-10-03 01:51:50] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-03 01:51:50] [BOT] Initial bot appearance setup completed
+[2025-10-03 01:51:50] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-03 01:51:50] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-03 01:51:50] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-03 01:51:50] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-03 01:51:50] [BOT] Initial bot appearance setup completed
+[2025-10-03 01:51:52] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-03 01:51:52] [ERROR] Error en ciclo automático: Cannot write to closing transport
+[2025-10-03 01:51:52] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-03 01:51:52] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-03 01:51:52] [BOT] Iniciando nuevo ciclo de emotes gratuitos
+[2025-10-03 01:52:25] [CHAT] [PUBLIC] Xx__Daikel__xX: !info
+[2025-10-03 01:52:33] [CHAT] [PUBLIC] Xx__Daikel__xX: !role
+[2025-10-03 01:52:48] [CHAT] [PUBLIC] Xx__Daikel__xX: !emote list
+[2025-10-03 01:53:22] [CHAT] [PUBLIC] Xx__Daikel__xX: !help
+[2025-10-03 01:53:40] [CHAT] [PUBLIC] Xx__Daikel__xX: !punch @NOCTURNO_BOT [BOT_MENTION]
+[2025-10-03 01:53:40] [BOT] Mención detectada de Xx__Daikel__xX con comando: !punch
+[2025-10-03 01:54:04] [CHAT] [PUBLIC] Xx__Daikel__xX: !bot @Xx__Daikel__xX
+[2025-10-03 01:54:33] [WHISPER] Xx__Daikel__xX: !bot @Xx__Daikel__xX
+[2025-10-03 01:54:55] [CHAT] [PUBLIC] Xx__Daikel__xX: !emote list
+[2025-10-03 01:55:07] [CHAT] [PUBLIC] Xx__Daikel__xX: !help
+[2025-10-03 01:57:55] [CHAT] [PUBLIC] Xx__Daikel__xX: !say
+[2025-10-03 01:58:07] [CHAT] [PUBLIC] Xx__Daikel__xX: !mimic
+[2025-10-03 01:58:14] [CHAT] [PUBLIC] Xx__Daikel__xX: !help
+[2025-10-03 01:58:22] [CHAT] [PUBLIC] Xx__Daikel__xX: vip
+[2025-10-03 14:27:40] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-03 14:27:40] [BOT] Starting initial bot appearance setup
+[2025-10-03 14:27:42] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-03 14:27:42] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-03 14:27:42] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-03 14:27:42] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-03 14:27:42] [BOT] Initial bot appearance setup completed
+[2025-10-03 14:27:44] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-03 14:27:45] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-03 14:27:45] [BOT] Iniciando nuevo ciclo de emotes gratuitos
