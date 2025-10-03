@@ -991,10 +991,15 @@ class Bot(BaseBot):
                     try:
                         # Aplicar emote a todos los usuarios objetivo
                         for target_id in target_user_ids:
-                            asyncio.create_task(self.send_emote_loop(target_id, emote["id"]))
+                            if apply_to_all:
+                                # Para !emote all, ejecutar solo una vez
+                                await self.highrise.send_emote(emote["id"], target_id)
+                            else:
+                                # Para usuarios individuales, mantener el bucle
+                                asyncio.create_task(self.send_emote_loop(target_id, emote["id"]))
                         
                         if apply_to_all:
-                            await send_response( f"🎭 Activaste la animación '{emote['name']}' en todos los {len(target_user_ids)} usuarios")
+                            await send_response( f"🎭 Activaste la animación '{emote['name']}' una vez en todos los {len(target_user_ids)} usuarios")
                         elif target_user_ids[0] == user.id:
                             await send_response( f"🎭 Iniciaste la animación: {emote['name']}")
                         else:
