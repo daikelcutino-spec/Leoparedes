@@ -2858,3 +2858,27 @@
 [2025-10-03 15:14:52] [BOT] Emote #10: touch (dance-touch) - 13.15s
 [2025-10-03 15:15:05] [BOT] Emote #11: kawaii (dance-kawai) - 10.85s
 [2025-10-03 15:15:16] [BOT] Emote #12: repose (sit-relaxed) - 31.21s
+[2025-10-03 15:15:47] [BOT] Emote #13: sleigh (emote-sleigh) - 12.51s
+[2025-10-03 15:16:00] [BOT] Emote #14: hyped (emote-hyped) - 7.62s
+[2025-10-03 15:16:07] [BOT] Emote #15: jingle (dance-jinglebell) - 12.09s
+[2025-10-03 15:16:19] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-03 15:16:19] [BOT] Starting initial bot appearance setup
+[2025-10-03 15:16:21] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-03 15:16:22] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-03 15:16:22] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-03 15:16:22] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-03 15:16:22] [BOT] Initial bot appearance setup completed
+[2025-10-03 15:16:24] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-03 15:16:24] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-03 15:16:24] [BOT] Iniciando ciclo automático de 224 emotes con pausas
+[2025-10-03 15:16:24] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-03 15:16:34] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
+[2025-10-03 15:17:02] [BOT] Emote #3: launch (emote-launch) - 10.88s
+[2025-10-03 15:17:09] [CHAT] [PUBLIC] Xx__Daikel__xX: !emote all 5
+[2025-10-03 15:17:13] [BOT] Emote #4: cutesalute (emote-cutesalute) - 3.79s
+[2025-10-03 15:17:17] [BOT] Emote #5: atattention (emote-salute) - 4.79s
+[2025-10-03 15:17:21] [BOT] Emote #6: tiktok (dance-tiktok11) - 11.37s
+[2025-10-03 15:17:33] [BOT] Emote #7: smooch (emote-kissing) - 6.69s
+[2025-10-03 15:17:40] [BOT] Emote #8: pushit (dance-employee) - 8.55s
+[2025-10-03 15:17:48] [BOT] Emote #9: foryou (emote-gift) - 6.09s
+[2025-10-03 15:17:55] [BOT] Emote #10: touch (dance-touch) - 13.15s
