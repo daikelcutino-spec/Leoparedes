@@ -1889,3 +1889,4 @@
 [2025-10-03 00:50:22] [BOT] Reproduciendo emote #16: gottago (idle-toilet) - Duración: 33.48s
 [2025-10-03 00:50:56] [BOT] Reproduciendo emote #17: timejump (emote-timejump) - Duración: 5.51s
 [2025-10-03 00:51:02] [BOT] Reproduciendo emote #18: scritchy (idle-wild) - Duración: 27.35s
+[2025-10-03 00:51:29] [BOT] Reproduciendo emote #19: bitnervous (idle-nervous) - Duración: 22.81s
