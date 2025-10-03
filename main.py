@@ -2758,7 +2758,7 @@ class Bot(BaseBot):
             return
 
     async def on_chat(self, user: User, message: str) -> None:
-        """Manejador de mensajes de chat"""
+        """Manejador de mensajes de chat - SIEMPRE PÚBLICO"""
         global VIP_ZONE
 
         msg = message.strip()
@@ -2767,9 +2767,6 @@ class Bot(BaseBot):
 
         # Añadimos el username al diccionario USER_NAMES para que funcione is_vip()
         USER_NAMES[user_id] = username
-
-        # Detectar si es comando privado (susurro/whisper)
-        is_whisper = hasattr(message, 'is_whisper') and message.is_whisper if hasattr(message, '__dict__') else False
 
         # DETECCIÓN MEJORADA DE MENCIONES AL BOT
         # Verificar si el mensaje menciona al bot por su nombre de usuario
@@ -2782,8 +2779,8 @@ class Bot(BaseBot):
             # Remover la mención del mensaje para procesar el comando
             msg = msg.replace(f"@{bot_username}", "").replace("@nocturno", "").replace("@bot", "").strip()
 
-        # Registro de todos los mensajes
-        log_event("CHAT", f"[{'WHISPER' if is_whisper else 'PUBLIC'}] {user.username}: {message}" + (f" [BOT_MENTION]" if is_bot_mention else ""))
+        # Registro de todos los mensajes como PÚBLICOS
+        log_event("CHAT", f"[PUBLIC] {user.username}: {message}" + (f" [BOT_MENTION]" if is_bot_mention else ""))
 
         # Si el bot fue mencionado, responder automáticamente
         if is_bot_mention:
@@ -2811,7 +2808,7 @@ class Bot(BaseBot):
         self.update_activity(user_id)
 
 
-        # Call handle_command to process all commands
+        # Los mensajes del chat público siempre responden de forma PÚBLICA (is_whisper=False)
         await self.handle_command(user, msg, is_whisper=False)
 
     async def on_whisper(self, user: User, message: str) -> None:
