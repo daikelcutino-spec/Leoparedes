@@ -2988,7 +2988,7 @@ class Bot(BaseBot):
             print(f"DEBUG: Реакция {str(reaction)} не является сердечком")
 
     async def on_user_move(self, user: User, destination: Position | AnchorPosition) -> None:
-        """Manejador de movimiento de usuario - FLASHMODE AUTOMÁTICO"""
+        """Manejador de movimiento de usuario - FLASHMODE AUTOMÁTICO SOLO PARA CAMBIOS DE PISO"""
         def _coords(p):
             return (p.x, p.y, p.z) if isinstance(p, Position) else None
 
@@ -3016,14 +3016,22 @@ class Bot(BaseBot):
                 self.user_positions[user_id] = destination
                 return
 
-            # Detectar cambio de piso (diferencia significativa en Y)
-            floor_change_threshold = 1.0  # Umbral para detectar cambio de piso
+            # Calcular diferencias en cada eje
+            x_difference = abs(dest_xyz[0] - last_xyz[0])
             y_difference = abs(dest_xyz[1] - last_xyz[1])
+            z_difference = abs(dest_xyz[2] - last_xyz[2])
+
+            # CONDICIONES PARA FLASHMODE AUTOMÁTICO:
+            # 1. Cambio significativo en altura (Y >= 1.0) - cambio de piso
+            # 2. Movimiento horizontal mínimo (X y Z < 2.0) - no moverse mucho en el mismo piso
+            floor_change_threshold = 1.0
+            horizontal_movement_max = 2.0
 
             is_floor_change = y_difference >= floor_change_threshold
+            is_minimal_horizontal = (x_difference < horizontal_movement_max and z_difference < horizontal_movement_max)
 
-            # FLASHMODE AUTOMÁTICO - Disponible para TODOS los usuarios sin restricciones
-            if is_floor_change:
+            # FLASHMODE AUTOMÁTICO - Solo si hay cambio de piso Y movimiento horizontal mínimo
+            if is_floor_change and is_minimal_horizontal:
                 # Verificar cooldown (evitar loops)
                 cooldown_time = 3.0  # 3 segundos de cooldown
                 if user_id in self.flashmode_cooldown:
