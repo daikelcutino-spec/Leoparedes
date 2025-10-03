@@ -1022,9 +1022,8 @@ class Bot(BaseBot):
 
         # Проверяем, если сообщение "vip" - телепорт в VIP зону
         if msg.lower() == "vip":
-            if self.is_vip_by_username(user.username) or user_id == OWNER_ID:
+            if self.is_vip_by_username(user.username) or self.is_admin(user_id) or user_id == OWNER_ID:
                 try:
-
                     vip_position = Position(VIP_ZONE["x"], VIP_ZONE["y"], VIP_ZONE["z"])
                     await self.highrise.teleport(user_id, vip_position)
                     await send_response( f"⭐ @{user.username} se teletransportó a la zona VIP!")
@@ -1034,7 +1033,7 @@ class Bot(BaseBot):
                 await send_response( "❌ No tienes estatus VIP!")
             return
 
-        # Проверяем, если сообщение "dj" - телепорт в DJ зону (solo admin y propietario)
+        # Проверяем, если сообщение "dj" - телепорт в DJ зону (admin y propietario)
         if msg.lower() == "dj":
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden usar la zona DJ!")
@@ -1049,7 +1048,6 @@ class Bot(BaseBot):
                     await send_response( "❌ ¡Zona DJ no establecida! Usa !setdj para establecerla.")
                     return
 
-
                 dj_position = Position(dj_zone["x"], dj_zone["y"], dj_zone["z"])
                 await self.highrise.teleport(user_id, dj_position)
                 await send_response( f"🎵 @{user.username} se teletransportó a la zona DJ!")
@@ -1057,7 +1055,7 @@ class Bot(BaseBot):
                 await send_response( f"❌ Error de teletransporte: {e}")
             return
 
-        # Проверяем, если сообщение "directivo" - телепорт en директорию (solo admin y propietario)
+        # Проверяем, если сообщение "directivo" - телепорт en директорию (admin y propietario)
         if msg.lower() == "directivo":
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden usar la zona directiva!")
@@ -1071,7 +1069,6 @@ class Bot(BaseBot):
                 if not directivo_zone:
                     await send_response( "❌ ¡Zona directiva no establecida! Usa !setdirectivo para establecerla.")
                     return
-
 
                 directivo_position = Position(directivo_zone["x"], directivo_zone["y"], directivo_zone["z"])
                 await self.highrise.teleport(user_id, directivo_position)
