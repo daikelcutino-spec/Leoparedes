@@ -1890,3 +1890,17 @@
 [2025-10-03 00:50:56] [BOT] Reproduciendo emote #17: timejump (emote-timejump) - Duración: 5.51s
 [2025-10-03 00:51:02] [BOT] Reproduciendo emote #18: scritchy (idle-wild) - Duración: 27.35s
 [2025-10-03 00:51:29] [BOT] Reproduciendo emote #19: bitnervous (idle-nervous) - Duración: 22.81s
+[2025-10-03 00:51:52] [BOT] Reproduciendo emote #20: iceskating (emote-iceskating) - Duración: 8.41s
+[2025-10-03 00:52:01] [BOT] Reproduciendo emote #21: partytime (emote-celebrate) - Duración: 4.35s
+[2025-10-03 00:52:05] [BOT] Reproduciendo emote #22: arabesque (emote-pose10) - Duración: 5.0s
+[2025-10-03 00:52:10] [BOT] Reproduciendo emote #23: bashful (emote-shy2) - Duración: 6.34s
+[2025-10-03 00:52:17] [BOT] Reproduciendo emote #24: revelations (emote-headblowup) - Duración: 13.66s
+[2025-10-03 00:52:30] [BOT] Reproduciendo emote #25: watchyourback (emote-creepycute) - Duración: 9.01s
+[2025-10-03 00:52:39] [BOT] Reproduciendo emote #26: creepypuppet (dance-creepypuppet) - Duración: 7.79s
+[2025-10-03 00:52:47] [BOT] Reproduciendo emote #27: saunter (dance-anime) - Duración: 9.6s
+[2025-10-03 00:52:57] [BOT] Reproduciendo emote #28: surprise (emote-pose6) - Duración: 6.46s
+[2025-10-03 00:53:04] [BOT] Reproduciendo emote #29: celebration (emote-celebrationstep) - Duración: 5.18s
+[2025-10-03 00:53:09] [BOT] Reproduciendo emote #30: penguin (dance-pinguin) - Duración: 12.81s
+[2025-10-03 00:53:22] [BOT] Reproduciendo emote #31: boxer (emote-boxer) - Duración: 6.75s
+[2025-10-03 00:53:29] [BOT] Reproduciendo emote #32: airguitar (idle-guitar) - Duración: 14.15s
+[2025-10-03 00:53:43] [BOT] Reproduciendo emote #33: stargaze (emote-stargazer) - Duración: 7.93s
