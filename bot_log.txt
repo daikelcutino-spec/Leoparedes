@@ -1885,3 +1885,7 @@
 [2025-10-03 00:49:19] [BOT] Reproduciendo emote #12: repose (sit-relaxed) - Duración: 31.21s
 [2025-10-03 00:49:50] [BOT] Reproduciendo emote #13: sleigh (emote-sleigh) - Duración: 12.51s
 [2025-10-03 00:50:03] [BOT] Reproduciendo emote #14: hyped (emote-hyped) - Duración: 7.62s
+[2025-10-03 00:50:10] [BOT] Reproduciendo emote #15: jingle (dance-jinglebell) - Duración: 12.09s
+[2025-10-03 00:50:22] [BOT] Reproduciendo emote #16: gottago (idle-toilet) - Duración: 33.48s
+[2025-10-03 00:50:56] [BOT] Reproduciendo emote #17: timejump (emote-timejump) - Duración: 5.51s
+[2025-10-03 00:51:02] [BOT] Reproduciendo emote #18: scritchy (idle-wild) - Duración: 27.35s
