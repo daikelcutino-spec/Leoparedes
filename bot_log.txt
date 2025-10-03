@@ -1750,3 +1750,70 @@
 [2025-10-02 19:22:35] [BOT] Reproduciendo emote #10: touch (dance-touch) - Duración: 13.15s
 [2025-10-02 19:22:48] [BOT] Reproduciendo emote #11: kawaii (dance-kawai) - Duración: 10.85s
 [2025-10-02 19:22:59] [BOT] Reproduciendo emote #12: repose (sit-relaxed) - Duración: 31.21s
+[2025-10-02 19:23:31] [BOT] Reproduciendo emote #13: sleigh (emote-sleigh) - Duración: 12.51s
+[2025-10-02 19:23:44] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-02 19:23:44] [BOT] Starting initial bot appearance setup
+[2025-10-02 19:23:46] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-02 19:23:46] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-02 19:23:46] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-02 19:23:46] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-02 19:23:46] [BOT] Initial bot appearance setup completed
+[2025-10-02 19:23:48] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-02 19:23:48] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-02 19:23:48] [BOT] Iniciando ciclo automático de 224 emotes
+[2025-10-02 19:23:48] [BOT] Reproduciendo emote #1: fairytwirl (emote-looping) - Duración: 9.89s
+[2025-10-02 19:23:58] [BOT] Reproduciendo emote #2: fairyfloat (idle-floating) - Duración: 27.6s
+[2025-10-02 19:24:26] [BOT] Reproduciendo emote #3: launch (emote-launch) - Duración: 10.88s
+[2025-10-02 19:24:37] [BOT] Reproduciendo emote #4: cutesalute (emote-cutesalute) - Duración: 3.79s
+[2025-10-02 19:24:41] [BOT] Reproduciendo emote #5: atattention (emote-salute) - Duración: 4.79s
+[2025-10-02 19:24:46] [BOT] Reproduciendo emote #6: tiktok (dance-tiktok11) - Duración: 11.37s
+[2025-10-02 19:24:57] [BOT] Reproduciendo emote #7: smooch (emote-kissing) - Duración: 6.69s
+[2025-10-02 19:25:04] [BOT] Reproduciendo emote #8: pushit (dance-employee) - Duración: 8.55s
+[2025-10-02 19:25:05] [CHAT] [PUBLIC] Xx__Daikel__xX: @NOCTURNO_BOT!info [BOT_MENTION]
+[2025-10-02 19:25:05] [BOT] Mención detectada de Xx__Daikel__xX con comando: !info
+[2025-10-02 19:25:12] [BOT] Reproduciendo emote #9: foryou (emote-gift) - Duración: 6.09s
+[2025-10-02 19:25:19] [BOT] Reproduciendo emote #10: touch (dance-touch) - Duración: 13.15s
+[2025-10-02 19:25:32] [BOT] Reproduciendo emote #11: kawaii (dance-kawai) - Duración: 10.85s
+[2025-10-02 19:25:39] [CHAT] [PUBLIC] Xx__Daikel__xX: !emote list
+[2025-10-02 19:25:43] [BOT] Reproduciendo emote #12: repose (sit-relaxed) - Duración: 31.21s
+[2025-10-02 19:26:05] [CHAT] [PUBLIC] Xx__Daikel__xX: !mimic
+[2025-10-02 19:26:14] [BOT] Reproduciendo emote #13: sleigh (emote-sleigh) - Duración: 12.51s
+[2025-10-02 19:26:27] [BOT] Reproduciendo emote #14: hyped (emote-hyped) - Duración: 7.62s
+[2025-10-02 19:26:34] [BOT] Reproduciendo emote #15: jingle (dance-jinglebell) - Duración: 12.09s
+[2025-10-02 19:26:36] [CHAT] [PUBLIC] Xx__Daikel__xX: !role list
+[2025-10-02 19:26:47] [BOT] Reproduciendo emote #16: gottago (idle-toilet) - Duración: 33.48s
+[2025-10-02 19:26:50] [CHAT] [PUBLIC] Xx__Daikel__xX: !tele list
+[2025-10-02 19:26:58] [CHAT] [PUBLIC] Xx__Daikel__xX: vip
+[2025-10-02 19:27:18] [CHAT] [PUBLIC] Xx__Daikel__xX: !info @NOCTURNO_BOT [BOT_MENTION]
+[2025-10-02 19:27:19] [BOT] Mención detectada de Xx__Daikel__xX con comando: !info
+[2025-10-02 19:27:20] [BOT] Reproduciendo emote #17: timejump (emote-timejump) - Duración: 5.51s
+[2025-10-02 19:27:26] [BOT] Reproduciendo emote #18: scritchy (idle-wild) - Duración: 27.35s
+[2025-10-02 19:27:40] [CHAT] [PUBLIC] Xx__Daikel__xX: !help
+[2025-10-02 19:27:53] [BOT] Reproduciendo emote #19: bitnervous (idle-nervous) - Duración: 22.81s
+[2025-10-02 19:28:16] [BOT] Reproduciendo emote #20: iceskating (emote-iceskating) - Duración: 8.41s
+[2025-10-02 19:28:24] [BOT] Reproduciendo emote #21: partytime (emote-celebrate) - Duración: 4.35s
+[2025-10-02 19:28:29] [BOT] Reproduciendo emote #22: arabesque (emote-pose10) - Duración: 5.0s
+[2025-10-02 19:28:34] [BOT] Reproduciendo emote #23: bashful (emote-shy2) - Duración: 6.34s
+[2025-10-02 19:28:40] [BOT] Reproduciendo emote #24: revelations (emote-headblowup) - Duración: 13.66s
+[2025-10-02 19:28:54] [BOT] Reproduciendo emote #25: watchyourback (emote-creepycute) - Duración: 9.01s
+[2025-10-02 19:29:03] [BOT] Reproduciendo emote #26: creepypuppet (dance-creepypuppet) - Duración: 7.79s
+[2025-10-02 19:29:05] [CHAT] [PUBLIC] Xx__Daikel__xX: !copyoutfit
+[2025-10-02 19:29:05] [ADMIN] Outfit copiado y guardado #1: Xx__Daikel__xX -> bot
+[2025-10-02 19:29:11] [BOT] Reproduciendo emote #27: saunter (dance-anime) - Duración: 9.6s
+[2025-10-02 19:29:21] [BOT] Reproduciendo emote #28: surprise (emote-pose6) - Duración: 6.46s
+[2025-10-02 19:29:27] [BOT] Reproduciendo emote #29: celebration (emote-celebrationstep) - Duración: 5.18s
+[2025-10-02 19:29:33] [BOT] Reproduciendo emote #30: penguin (dance-pinguin) - Duración: 12.81s
+[2025-10-02 19:29:45] [BOT] Reproduciendo emote #31: boxer (emote-boxer) - Duración: 6.75s
+[2025-10-02 19:29:52] [BOT] Reproduciendo emote #32: airguitar (idle-guitar) - Duración: 14.15s
+[2025-10-02 19:30:07] [BOT] Reproduciendo emote #33: stargaze (emote-stargazer) - Duración: 7.93s
+[2025-10-02 19:30:15] [BOT] Reproduciendo emote #34: ditzy (emote-pose9) - Duración: 6.0s
+[2025-10-02 19:30:21] [BOT] Reproduciendo emote #35: uwu (idle-uwu) - Duración: 25.5s
+[2025-10-02 19:30:41] [CHAT] [PUBLIC] Xx__Daikel__xX: ! copyoutfit
+[2025-10-02 19:30:46] [BOT] Reproduciendo emote #36: wrong (dance-wrong) - Duración: 13.6s
+[2025-10-02 19:30:50] [CHAT] [PUBLIC] Xx__Daikel__xX: hola
+[2025-10-02 19:30:55] [CHAT] [PUBLIC] Xx__Daikel__xX: ghostfloat
+[2025-10-02 19:31:00] [BOT] Reproduciendo emote #37: fashion (emote-fashionista) - Duración: 6.33s
+[2025-10-02 19:31:03] [CHAT] [PUBLIC] Xx__Daikel__xX: 2
+[2025-10-02 19:31:06] [BOT] Reproduciendo emote #38: icecream (dance-icecream) - Duración: 16.58s
+[2025-10-02 19:31:16] [CHAT] [PUBLIC] Xx__Daikel__xX: ghostfloat all
+[2025-10-02 19:31:23] [BOT] Reproduciendo emote #39: sayso (idle-dance-tiktok4) - Duración: 16.55s
