@@ -921,14 +921,36 @@ class Bot(BaseBot):
                     await send_response( f"❌ La animación #{emote_number} no es gratuita.")
             return
 
-        # Comando !emote <número o nombre> o !emote @username <número o nombre> (VIP)
+        # Comando !emote <número o nombre> o !emote @username <número o nombre> o !emote all <número o nombre> (VIP)
         if msg.startswith("!emote"):
             parts = msg.split()
-            target_user_id = user.id  # Por defecto, el usuario que ejecuta el comando
+            target_user_ids = [user.id]  # Por defecto, el usuario que ejecuta el comando
             emote_key = msg[7:].strip()  # Por defecto, todo después de "!emote "
+            apply_to_all = False
+
+            # Verificamos si es !emote all
+            if len(parts) >= 3 and parts[1].lower() == "all":
+                # Solo admin y propietario pueden usar !emote all
+                if not (self.is_admin(user_id) or user_id == OWNER_ID):
+                    await send_response( "❌ ¡Solo administradores y propietario pueden usar !emote all!")
+                    return
+                
+                apply_to_all = True
+                emote_key = " ".join(parts[2:])  # El resto es la animación
+                
+                # Obtener todos los usuarios excepto el bot
+                try:
+                    users = (await self.highrise.get_room_users()).content
+                    target_user_ids = []
+                    for u, pos in users:
+                        if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):
+                            target_user_ids.append(u.id)
+                except Exception as e:
+                    await send_response( f"❌ Error obteniendo usuarios: {e}")
+                    return
 
             # Verificamos si hay un @username en el comando
-            if len(parts) >= 3 and parts[1].startswith("@"):
+            elif len(parts) >= 3 and parts[1].startswith("@"):
                 target_username = parts[1][1:]  # Removemos el @
                 emote_key = " ".join(parts[2:])  # El resto es la animación
 
@@ -950,7 +972,7 @@ class Bot(BaseBot):
                         await send_response( f"❌ ¡Usuario {target_username} no encontrado en la sala!")
                         return
 
-                    target_user_id = target_user.id
+                    target_user_ids = [target_user.id]
 
                 except Exception as e:
                     await send_response( f"❌ Error buscando usuario: {e}")
@@ -967,8 +989,13 @@ class Bot(BaseBot):
             if emote:
                 if emote["is_free"]:
                     try:
-                        asyncio.create_task(self.send_emote_loop(target_user_id, emote["id"]))
-                        if target_user_id == user.id:
+                        # Aplicar emote a todos los usuarios objetivo
+                        for target_id in target_user_ids:
+                            asyncio.create_task(self.send_emote_loop(target_id, emote["id"]))
+                        
+                        if apply_to_all:
+                            await send_response( f"🎭 Activaste la animación '{emote['name']}' en todos los {len(target_user_ids)} usuarios")
+                        elif target_user_ids[0] == user.id:
                             await send_response( f"🎭 Iniciaste la animación: {emote['name']}")
                         else:
                             await send_response( f"⭐ Activaste la animación '{emote['name']}' en @{target_username}")
