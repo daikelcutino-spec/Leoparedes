@@ -584,49 +584,63 @@ class Bot(BaseBot):
 
         if is_owner:
             return ("👑 COMANDOS PROPIETARIO:\n"
-                   "📊 !info, !role, !emote list\n"
+                   "📊 !info\n"
+                   "🎭 !role\n"
+                   "📋 !emote list\n"
                    "💖 !heart @user (sin límites)\n"
                    "🎮 Juego amorometro\n"
-                   "🎭 Emotes a todos: [emote] all\n"
-                   "⚡ !flash [x] [y] [z] - subir/bajar pisos\n"
-                   "🎯 !bring @user, !vip @user\n"
-                   "🔨 !freeze @user, !mute @user, !ban @user\n"
-                   "🗺️ !addzone [nombre] - crear zonas\n"
-                   "🤖 !bot @user - hacer punch/revival\n"
-                   "🕺 !flossmode - activar modo floss\n"
-                   "🎭 !automode - activar ciclo automático\n"
+                   "🎭 Emotes a todos: [emote] all|||"
+                   "⚡ !flash [x] [y] [z]\n"
+                   "🎯 !bring @user\n"
+                   "⭐ !vip @user\n"
+                   "🔨 !freeze @user\n"
+                   "🔇 !mute @user\n"
+                   "🚫 !ban @user|||"
+                   "🗺️ !addzone [nombre]\n"
+                   "🤖 !bot @user\n"
+                   "🕺 !flossmode\n"
+                   "🎭 !automode\n"
                    "👥 Acceso a todas las zonas")
 
         elif is_admin:
             return ("⚔️ COMANDOS ADMIN:\n"
-                   "📊 !info, !role, !emote list\n"
+                   "📊 !info\n"
+                   "🎭 !role\n"
+                   "📋 !emote list\n"
                    "💖 !heart @user (hasta 100)\n"
-                   "🎮 Juego amorometro\n"
+                   "🎮 Juego amorometro|||"
                    "🎭 Emotes a todos: [emote] all\n"
-                   "⚡ !flash [x] [y] [z] - subir/bajar pisos\n"
-                   "🎯 !bring @user, !vip @user\n"
-                   "🔨 !freeze @user, !mute @user, !ban @user\n"
-                   "🗺️ !addzone [nombre] - crear zonas\n"
-                   "🤖 !bot @user - hacer punch/revival\n"
-                   "🕺 !flossmode - activar modo floss\n"
-                   "🎭 !automode - activar ciclo automático")
+                   "⚡ !flash [x] [y] [z]\n"
+                   "🎯 !bring @user\n"
+                   "⭐ !vip @user\n"
+                   "🔨 !freeze @user\n"
+                   "🔇 !mute @user|||"
+                   "🚫 !ban @user\n"
+                   "🗺️ !addzone [nombre]\n"
+                   "🤖 !bot @user\n"
+                   "🕺 !flossmode\n"
+                   "🎭 !automode")
 
         elif is_vip:
             return ("⭐ COMANDOS VIP:\n"
-                   "📊 !info, !role, !emote list\n"
+                   "📊 !info\n"
+                   "🎭 !role\n"
+                   "📋 !emote list\n"
                    "💖 !heart @user (limitado)\n"
-                   "🎮 Juego amorometro\n"
-                   "🎭 Emotes personales únicamente\n"
-                   "⚡ !flash [x] [y] [z] - subir/bajar pisos\n"
-                   "🔥 vip - acceso a zona VIP")
+                   "🎮 Juego amorometro|||"
+                   "🎭 Emotes personales\n"
+                   "⚡ !flash [x] [y] [z]\n"
+                   "🔥 vip - zona VIP")
 
         else:
             return ("👤 COMANDOS USUARIO:\n"
-                   "📊 !info, !role, !emote list\n"
-                   "💖 !heart @user (muy limitado)\n"
-                   "🎮 Juego amorometro\n"
-                   "🎭 Emotes personales únicamente\n"
-                   "⚡ !flash [x] [y] [z] - subir/bajar pisos")
+                   "📊 !info\n"
+                   "🎭 !role\n"
+                   "📋 !emote list\n"
+                   "💖 !heart @user (limitado)\n"
+                   "🎮 Juego amorometro|||"
+                   "🎭 Emotes personales\n"
+                   "⚡ !flash [x] [y] [z]")
 
     def is_in_forbidden_zone(self, x: float, y: float, z: float) -> bool:
         """Verifica si el punto está en zona prohibida"""
@@ -770,11 +784,14 @@ class Bot(BaseBot):
 
         # Comando !help - catálogo personalizado por rol
         if msg == "!help":
-            help_lines = self.get_help_for_user(user_id, username).split('\n')
-            for line in help_lines:
-                if line.strip():
-                    await send_response( line)
-                    await asyncio.sleep(0.2)  # Pequeña pausa entre mensajes
+            help_text = self.get_help_for_user(user_id, username)
+            # Dividir por grupos usando ||| como separador
+            help_groups = help_text.split('|||')
+            
+            for group in help_groups:
+                if group.strip():
+                    await send_response(group.strip())
+                    await asyncio.sleep(0.3)  # Pequeña pausa entre mensajes
             return
 
         # Comando !info - informazioni sul giocatore
