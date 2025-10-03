@@ -6,6 +6,16 @@ This is a Highrise bot application built with Python that manages automated inte
 
 ## Recent Changes
 
+**October 3, 2025**
+- ✅ **MAJOR REFACTORING**: Unified command handling system for public chat and whisper commands
+- ✅ Created central `handle_command` method that processes all commands with automatic response routing
+- ✅ Commands now work seamlessly in both public chat (with @ mention) and private whispers
+- ✅ Refactored `on_chat` method (reduced from 2000+ lines to 56 lines)
+- ✅ Added new `on_whisper` method to handle private whisper commands
+- ✅ Removed 690 lines of duplicate code (file reduced from 6397 to 5708 lines)
+- ✅ All commands now use unified `send_response()` helper for smart routing
+- ✅ Bot tested and running successfully with no errors
+
 **October 2, 2025**
 - ✅ Installed Python 3.11.13 runtime environment
 - ✅ Installed highrise-bot-sdk (v24.1.0) and dependencies via uv package manager
@@ -125,14 +135,33 @@ Preferred communication style: Simple, everyday language.
 
 ### Command System
 
-**Problem**: Users need to interact with bot features.
+**Problem**: Users need to interact with bot features through both public chat and private whispers.
 
-**Solution**: Chat-based command parser triggered by `!` prefix supporting:
-- User commands (!hearts, !emote, !list)
-- Moderation commands (!ban, !mute, !kick)
-- Admin commands (!vip, !announce, !zone)
+**Solution**: Unified command handling system with three-layer architecture:
 
-**Design Pattern**: Command pattern with role-based access checks before execution.
+1. **`handle_command` method** (Line 733): Central command processor that:
+   - Accepts `is_whisper` parameter to determine response routing
+   - Uses internal `send_response()` helper function
+   - Routes responses to whisper (private) or public chat based on context
+   - Contains all command logic in one place (~4000 lines)
+
+2. **`on_chat` method** (Line 4810): Handles public chat messages:
+   - Performs initialization (user tracking, ban/mute checks, bot mention detection)
+   - Calls `handle_command(user, msg, is_whisper=False)` for commands
+   - Sends public responses with @ mention
+
+3. **`on_whisper` method** (Line 4866): Handles private whisper messages:
+   - Performs initialization (user tracking, ban/mute checks)
+   - Calls `handle_command(user, msg, is_whisper=True)` for commands
+   - Sends responses via private whisper
+
+**Key Features**:
+- Commands work identically in both public chat and whispers
+- Role-based access control enforced in `handle_command`
+- Smart response routing via `send_response()` helper
+- Supports all command types: user commands (!hearts, !emote), moderation (!ban, !mute, !kick), admin (!vip, !zone)
+
+**Design Pattern**: Centralized command pattern with context-aware response routing and role-based access checks.
 
 ## External Dependencies
 

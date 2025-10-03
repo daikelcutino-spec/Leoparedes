@@ -1881,3 +1881,7 @@
 [2025-10-03 00:48:40] [BOT] Reproduciendo emote #8: pushit (dance-employee) - Duración: 8.55s
 [2025-10-03 00:48:48] [BOT] Reproduciendo emote #9: foryou (emote-gift) - Duración: 6.09s
 [2025-10-03 00:48:54] [BOT] Reproduciendo emote #10: touch (dance-touch) - Duración: 13.15s
+[2025-10-03 00:49:08] [BOT] Reproduciendo emote #11: kawaii (dance-kawai) - Duración: 10.85s
+[2025-10-03 00:49:19] [BOT] Reproduciendo emote #12: repose (sit-relaxed) - Duración: 31.21s
+[2025-10-03 00:49:50] [BOT] Reproduciendo emote #13: sleigh (emote-sleigh) - Duración: 12.51s
+[2025-10-03 00:50:03] [BOT] Reproduciendo emote #14: hyped (emote-hyped) - Duración: 7.62s
