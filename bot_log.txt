@@ -1976,3 +1976,5 @@
 [2025-10-03 01:02:37] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
 [2025-10-03 01:02:37] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-03 01:02:37] [BOT] Iniciando nuevo ciclo de emotes gratuitos
+[2025-10-03 01:17:09] [ERROR] Error reproduciendo emote #83: Emote is not free or owned by target user
+[2025-10-03 01:17:11] [ERROR] Error reproduciendo emote #84: Emote is not free or owned by target user
