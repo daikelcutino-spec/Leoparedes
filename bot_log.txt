@@ -2009,3 +2009,14 @@
 [2025-10-03 01:28:28] [CHAT] [PUBLIC] Xx__Daikel__xX: !help
 [2025-10-03 01:28:44] [CHAT] [PUBLIC] Xx__Daikel__xX: !emote list
 [2025-10-03 01:28:45] [ERROR] Error en !emote list: Message too long.
+[2025-10-03 01:30:02] [BOT] Ciclo automático cancelado
+[2025-10-03 01:30:04] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-03 01:30:04] [BOT] Starting initial bot appearance setup
+[2025-10-03 01:30:06] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-03 01:30:06] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-03 01:30:06] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-03 01:30:06] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-03 01:30:06] [BOT] Initial bot appearance setup completed
+[2025-10-03 01:30:08] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-03 01:30:08] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-03 01:30:08] [BOT] Iniciando nuevo ciclo de emotes gratuitos
