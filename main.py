@@ -1,3 +1,4 @@
+replit_final_file>
 import asyncio
 import json
 import os
@@ -801,7 +802,7 @@ class Bot(BaseBot):
             help_text = self.get_help_for_user(user_id, username)
             # Dividir por grupos usando ||| como separador
             help_groups = help_text.split('|||')
-            
+
             for group in help_groups:
                 if group.strip():
                     await send_response(group.strip())
@@ -872,10 +873,10 @@ class Bot(BaseBot):
                 # Cada emote en una línea separada
                 current_message = []
                 current_length = 0
-                
+
                 for emote_entry in emote_list:
                     entry_length = len(emote_entry) + 1  # +1 por salto de línea
-                    
+
                     # Si agregar este emote excede 200 caracteres, enviar mensaje actual
                     if current_length + entry_length > 200:
                         if current_message:
@@ -1193,7 +1194,7 @@ class Bot(BaseBot):
             print(f"DEBUG: Mensaje público enviado para {user.username}")
             return
 
-        # Comando !stop @username - detener animación de otros usuarios (VIP) 
+        # Comando !stop @username - detener animación de otros usuarios (VIP)
         # Comando !stop all - detener animaciones de todos (solo Admin)
         if msg.startswith("!stop "):
             stop_target = msg[6:].strip()  # Removemos "!stop "
@@ -2174,7 +2175,7 @@ class Bot(BaseBot):
                 await send_response( "❌ Usa: !freeze @username")
             return
 
-        # Comando !mute - silenciar usuario (solo Admin y Owner)  
+        # Comando !mute - silenciar usuario (solo Admin y Owner)
         if msg.startswith("!mute"):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden usar mute!")
@@ -3525,44 +3526,31 @@ class Bot(BaseBot):
             print(f"⚠️ Error ejecutando floss falso: {e}")
 
     async def start_auto_emote_cycle(self):
-        """Ejecuta ciclo automático de 224 emotes en bucle infinito"""
+        """Inicia ciclo automático de 224 emotes en bucle infinito SIN PAUSAS"""
         try:
-            while True:
-                log_event("BOT", "Iniciando nuevo ciclo de emotes gratuitos")
+            log_event("BOT", "Iniciando ciclo automático de 224 emotes sin pausas")
 
-                for emote_num, emote_data in emotes.items():
+            while True:  # Bucle infinito
+                for number, emote_data in emotes.items():
+                    emote_id = emote_data["id"]
+                    emote_name = emote_data["name"]
+
                     try:
-                        # Filtrar emotes no gratuitos
-                        if not emote_data.get("is_free", False):
-                            print(f"⏭️ Saltando emote #{emote_num} (no gratuito)")
-                            continue
-
-                        emote_id = emote_data["id"]
-                        emote_name = emote_data["name"]
-                        duration = emote_data["duration"]
-
-                        # Enviar emote al bot
+                        # Reproducir emote en el bot SIN ESPERAR
                         await self.highrise.send_emote(emote_id, self.bot_id)
-                        print(f"🎭 Bot emote #{emote_num}: {emote_name} - {duration}s")
+                        log_event("BOT", f"Emote #{number}: {emote_name} ({emote_id})")
+                        print(f"🎭 Bot emote #{number}: {emote_name}")
 
-                        # Esperar la duración del emote
-                        await asyncio.sleep(duration)
+                        # NO HAY ESPERA - emote siguiente inmediatamente
 
                     except Exception as e:
-                        log_event("ERROR", f"Error reproduciendo emote #{emote_num}: {e}")
-                        print(f"⚠️ Error en emote #{emote_num}: {e}")
-                        # Continuar con el siguiente emote
-                        await asyncio.sleep(2)
+                        log_event("ERROR", f"Error reproduciendo emote #{number}: {e}")
+                        continue
 
-                log_event("BOT", "Ciclo de emotes completado, reiniciando...")
-                await asyncio.sleep(1)  # Pequeña pausa antes de reiniciar el ciclo
+                # Sin pausa entre ciclos - reinicio inmediato
 
-        except asyncio.CancelledError:
-            log_event("BOT", "Ciclo automático cancelado")
-            print("🛑 Ciclo automático detenido")
         except Exception as e:
-            log_event("ERROR", f"Error crítico en ciclo automático: {e}")
-            print(f"❌ Error crítico en ciclo automático: {e}")
+            log_event("ERROR", f"Error en ciclo automático de emotes: {e}")
 
     async def setup_initial_bot_appearance(self):
         """Configura la apariencia inicial del bot (outfit y emote)"""
@@ -3657,3 +3645,4 @@ if __name__ == "__main__":
         print(f"❌ Error crítico ejecutando el bot: {e}")
         log_event("ERROR", f"Error crítico en main: {e}")
         sys.exit(1)
+</replit_final_file>
