@@ -411,15 +411,11 @@ class Bot(BaseBot):
                 await self.setup_initial_bot_appearance()
                 await save_bot_inventory(self)
 
-                # Iniciar ciclo automático de emotes
-                await asyncio.sleep(2)
-                log_event("BOT", "Preparando ciclo automático de 224 emotes")
-                await self.highrise.chat("¡El bot ha entrado en la sala! Iniciando CICLO AUTOMÁTICO DE EMOTES...")
-                await self.highrise.chat("🎭 ¡MODO AUTOMÁTICO INFINITO ACTIVADO!")
-
+                # Iniciar ciclo automático de emotes (sin esperar a que termine)
                 self.bot_mode = "auto"
                 asyncio.create_task(self.start_auto_emote_cycle())
-                log_event("BOT", "Ciclo automático iniciado")
+                print("🎭 Ciclo automático de 224 emotes iniciado")
+                log_event("BOT", "Ciclo automático de 224 emotes iniciado")
             else:
                 print("No se pudo conectar al servidor")
                 sys.exit(1)
@@ -1982,13 +1978,20 @@ class Bot(BaseBot):
         pass
 
     async def on_user_move(self, user: User, destination: Position) -> None:
-        """Manejador de movimiento de usuario para flashmode automático"""
+        """Manejador de movimiento de usuario para flashmode automático
+        Solo activa flashmode cuando:
+        - Hay cambio de piso (Y >= 1.0 unidades)
+        - Movimiento horizontal es mínimo (< 2.0 unidades en X y Z)
+        - NO está en cooldown (3 segundos)
+        - Destino no es zona prohibida
+        """
         try:
             user_id = user.id
             username = user.username
             current_time = time.time()
 
-            if not hasattr(self, 'flashmode_cooldown'): self.flashmode_cooldown = {}
+            if not hasattr(self, 'flashmode_cooldown'): 
+                self.flashmode_cooldown = {}
 
             last_pos = self.user_positions.get(user_id)
             if not last_pos:
@@ -2001,27 +2004,33 @@ class Bot(BaseBot):
             floor_change_threshold = 1.0
             horizontal_movement_max = 2.0
 
-            is_floor_change = abs(dest_xyz[1] - last_xyz[1]) >= floor_change_threshold
-            is_minimal_horizontal = (abs(dest_xyz[0] - last_xyz[0]) < horizontal_movement_max and abs(dest_xyz[2] - last_xyz[2]) < horizontal_movement_max)
+            y_change = abs(dest_xyz[1] - last_xyz[1])
+            x_change = abs(dest_xyz[0] - last_xyz[0])
+            z_change = abs(dest_xyz[2] - last_xyz[2])
+
+            is_floor_change = y_change >= floor_change_threshold
+            is_minimal_horizontal = (x_change < horizontal_movement_max and z_change < horizontal_movement_max)
 
             if is_floor_change and is_minimal_horizontal:
                 cooldown_time = 3.0
-                if user_id in self.flashmode_cooldown and current_time - self.flashmode_cooldown[user_id] < cooldown_time:
-                    self.user_positions[user_id] = destination
-                    return
+                if user_id in self.flashmode_cooldown:
+                    time_since_last = current_time - self.flashmode_cooldown[user_id]
+                    if time_since_last < cooldown_time:
+                        self.user_positions[user_id] = destination
+                        return
 
                 if not self.is_in_forbidden_zone(dest_xyz[0], dest_xyz[1], dest_xyz[2]):
                     await self.highrise.teleport(user_id, destination)
                     self.flashmode_cooldown[user_id] = current_time
-                    log_event("FLASHMODE", f"Auto-flashmode {username}: {last_xyz[1]:.1f} → {dest_xyz[1]:.1f}")
-                    print(f"🔄 FLASHMODE AUTO: {username} cambió de piso {last_xyz[1]:.1f} → {dest_xyz[1]:.1f}")
+                    log_event("FLASHMODE", f"Auto-flashmode {username}: Y:{last_xyz[1]:.1f}→{dest_xyz[1]:.1f}")
+                    print(f"⚡ FLASHMODE: {username} subió/bajó piso {last_xyz[1]:.1f} → {dest_xyz[1]:.1f}")
                 else:
-                    print(f"❌ Flashmode bloqueado: {username} intentó ir a zona prohibida")
+                    print(f"❌ Flashmode bloqueado: {username} intentó zona prohibida")
 
             self.user_positions[user_id] = destination
 
         except Exception as e:
-            print(f"Error en on_user_move: {e}")
+            print(f"❌ Error en on_user_move: {e}")
 
     # ========================================================================
     # TAREAS EN SEGUNDO PLANO
@@ -2083,23 +2092,39 @@ class Bot(BaseBot):
 
     async def start_auto_emote_cycle(self):
         """Ciclo automático de emotes"""
+        await asyncio.sleep(3)
+        print("🎭 INICIANDO CICLO AUTOMÁTICO DE 224 EMOTES...")
+        log_event("BOT", "Iniciando ciclo automático de 224 emotes")
+        
         try:
-            log_event("BOT", "Iniciando ciclo automático de 224 emotes")
+            cycle_count = 0
             while True:
+                cycle_count += 1
+                print(f"🔄 Ciclo #{cycle_count} - Iniciando secuencia de 224 emotes")
+                
                 for number, emote_data in emotes.items():
+                    if self.bot_mode != "auto":
+                        print("⏸️ Ciclo automático detenido (modo cambiado)")
+                        return
+                    
                     emote_id = emote_data["id"]
                     emote_name = emote_data["name"]
                     emote_duration = emote_data.get("duration", 5.0)
+                    
                     try:
                         await self.highrise.send_emote(emote_id, self.bot_id)
-                        log_event("BOT", f"Emote #{number}: {emote_name} ({emote_duration}s)")
+                        if int(number) % 20 == 0:
+                            print(f"🎭 Emote #{number}/{len(emotes)}: {emote_name}")
                         await asyncio.sleep(emote_duration)
                     except Exception as e:
-                        log_event("ERROR", f"Error emote #{number}: {e}")
+                        print(f"❌ Error emote #{number} ({emote_name}): {e}")
                         await asyncio.sleep(1.0)
                         continue
+                
+                print(f"✅ Ciclo #{cycle_count} completado. Esperando 2 segundos...")
                 await asyncio.sleep(2.0)
         except Exception as e:
+            print(f"❌ ERROR CRÍTICO en ciclo automático: {e}")
             log_event("ERROR", f"Error en ciclo automático: {e}")
 
     async def setup_initial_bot_appearance(self):

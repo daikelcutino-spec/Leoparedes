@@ -1,1 +1,1 @@
-# Активность пользователей (user_id:messages:last_activity)
+# Actividad de usuarios (user_id:messages:last_activity:username)

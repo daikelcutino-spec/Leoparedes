@@ -1,1 +1,1 @@
-# Сердечки пользователей (user_id:hearts)
+# Corazones de usuarios (user_id:hearts:username)
