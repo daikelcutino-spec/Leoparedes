@@ -3217,3 +3217,6 @@
 [2025-10-04 06:59:41] [BOT] Emote #13: sleigh (emote-sleigh) - 12.51s
 [2025-10-04 06:59:54] [BOT] Emote #14: hyped (emote-hyped) - 7.62s
 [2025-10-04 07:00:02] [BOT] Emote #15: jingle (dance-jinglebell) - 12.09s
+[2025-10-04 07:00:14] [BOT] Emote #16: gottago (idle-toilet) - 33.48s
+[2025-10-04 07:00:48] [BOT] Emote #17: timejump (emote-timejump) - 5.51s
+[2025-10-04 07:00:53] [BOT] Emote #18: scritchy (idle-wild) - 27.35s

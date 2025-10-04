@@ -1562,17 +1562,10 @@ class Bot(BaseBot):
                     await send_response( f"👔 INVENTARIO: {total_items} items")
                     await asyncio.sleep(0.3)
 
-                    # Agrupar por tipo
-                    items_by_type = {}
-                    for item in inventory:
-                        item_type = item.type
-                        if item_type not in items_by_type:
-                            items_by_type[item_type] = 0
-                        items_by_type[item_type] += 1
-
-                    # Enviar resumen por tipo
-                    for item_type, count in items_by_type.items():
-                        await send_response( f"{item_type}: {count}")
+                    # Mostrar cada ítem con su nombre
+                    for i, item in enumerate(inventory, 1):
+                        item_name = getattr(item, 'item_name', 'Sin nombre')
+                        await send_response( f"{i}. {item_name}")
                         await asyncio.sleep(0.2)
                 else:
                     await send_response( "📦 Inventario vacío")
