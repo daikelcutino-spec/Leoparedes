@@ -1578,8 +1578,11 @@ class Bot(BaseBot):
         # Comando !tplist
         if msg == "!tplist":
             if TELEPORT_POINTS:
-                points_list = ", ".join(TELEPORT_POINTS.keys())
-                await send_response( f"📍 Puntos de teletransporte disponibles: {points_list}")
+                tele_message = "📍 PUNTOS DE TELETRANSPORTE:\n"
+                for name in TELEPORT_POINTS.keys():
+                    tele_message += f"🔹 {name}\n"
+                tele_message += "\n💡 Usa: !tp [nombre] o escribe el nombre directamente"
+                await send_response(tele_message)
             else: await send_response("📍 No hay puntos de teletransporte creados")
             return
         if msg == "!tele list":
@@ -1587,6 +1590,7 @@ class Bot(BaseBot):
                 tele_message = "🗺️ UBICACIONES DE TELETRANSPORTE:\n"
                 for i, (name, coords) in enumerate(TELEPORT_POINTS.items(), 1):
                     tele_message += f"{i}. {name} (X:{coords['x']:.1f}, Y:{coords['y']:.1f}, Z:{coords['z']:.1f})\n"
+                tele_message += "\n💡 Usa: !tp [nombre]"
                 await send_response( tele_message)
             else: await send_response("📍 No hay ubicaciones de teletransporte creadas")
             return
@@ -1825,13 +1829,28 @@ class Bot(BaseBot):
             else: await send_response("❌ Usa: !comando @usuario")
             return
 
-        # Teletransporte a puntos
-        if msg in TELEPORT_POINTS:
-            point = TELEPORT_POINTS[msg]
+        # Comando !tp [punto]
+        if msg.startswith("!tp "):
+            point_name = msg[4:].strip().lower()
+            if point_name in TELEPORT_POINTS:
+                point = TELEPORT_POINTS[point_name]
+                try:
+                    teleport_position = Position(point["x"], point["y"], point["z"])
+                    await self.highrise.teleport(user_id, teleport_position)
+                    await send_response(f"🚀 Te teletransportaste a '{point_name}'!")
+                except Exception as e: 
+                    await send_response(f"❌ Error de teletransporte: {e}")
+            else:
+                await send_response(f"❌ Punto '{point_name}' no encontrado. Usa !tplist para ver los disponibles")
+            return
+
+        # Teletransporte a puntos (escribiendo el nombre directamente)
+        if msg.lower() in TELEPORT_POINTS:
+            point = TELEPORT_POINTS[msg.lower()]
             try:
                 teleport_position = Position(point["x"], point["y"], point["z"])
                 await self.highrise.teleport(user_id, teleport_position)
-                await send_response( f"🚀 @{user.username} se teletransportó al punto '{msg}'!")
+                await send_response( f"🚀 @{user.username} se teletransportó al punto '{msg.lower()}'!")
             except Exception as e: await send_response( f"❌ Error de teletransporte: {e}")
             return
 
