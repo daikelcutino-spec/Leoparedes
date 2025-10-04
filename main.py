@@ -1786,7 +1786,7 @@ class Bot(BaseBot):
                 await send_response( "❌ Usa: !say [mensaje]")
             return
 
-        # Comando !tome — hacer que el bot camine hacia el propietario
+        # Comando !tome — teletransportar bot al propietario
         if msg == "!tome":
             if user_id != OWNER_ID:
                 await send_response( "❌ ¡Solo el propietario puede usar este comando!")
@@ -1794,76 +1794,30 @@ class Bot(BaseBot):
             try:
                 users = (await self.highrise.get_room_users()).content
 
-                # Debug: mostrar todos los usuarios en la sala
-                print(f"DEBUG !tome: Usuarios en sala:")
-                for u, pos in users:
-                    print(f"  - {u.username} (ID: {u.id})")
-
-                # Busca el bot automáticamente - mejor detección
+                # Buscar bot y propietario
                 bot_user = None
-                bot_pos = None
+                user_pos = None
 
-                # Método 1: Buscar por ID específico conocido
-                if not bot_user:
-                    for u, pos in users:
-                        if u.id == "681d54aa4cedce763169580f":
-                            bot_user = u
-                            bot_pos = pos
-                            print(f"DEBUG !tome: Bot encontrado por ID: {u.username}")
-                            break
+                for u, pos in users:
+                    # Buscar bot por ID o nombre
+                    if u.id == "681d54aa4cedce763169580f" or "nocturno" in u.username.lower() or u.username == "NOCTURNO_BOT":
+                        bot_user = u
+                    # Buscar posición del propietario
+                    if u.id == user_id:
+                        user_pos = pos
 
-                # Método 2: Buscar por nombres específicos del bot
-                if not bot_user:
-                    for u, pos in users:
-                        username_upper = u.username.upper()
-                        username_lower = u.username.lower()
-                        # Buscar nombre exacto primero
-                        if u.username == "NOCTURNO_BOT" or username_upper == "NOCTURNO_BOT":
-                            bot_user = u
-                            bot_pos = pos
-                            print(f"DEBUG !tome: Bot NOCTURNO_BOT encontrado: {u.username}")
-                            break
-                        # Luego buscar patrones comunes
-                        elif any(name in username_lower for name in ["nocturno", "bot", "glux", "highrise"]):
-                            bot_user = u
-                            bot_pos = pos
-                            print(f"DEBUG !tome: Bot encontrado por patrón: {u.username}")
-                            break
-
-                # Método 3: Si no se encuentra, usar el primer usuario que no sea el propietario
-                if not bot_user and len(users) > 1:
-                    for u, pos in users:
-                        if u.id != user_id:  # No el usuario que ejecuta el comando
-                            bot_user = u
-                            bot_pos = pos
-                            print(f"DEBUG !tome: Usando primer usuario como bot: {u.username}")
-                            break
-
-                if bot_user:
-                    user_pos = next((pos for u, pos in users if u.id == user_id), None)
-                    if user_pos and bot_pos:
-                        # Caminar gradualmente hacia el propietario
-                        await send_response( f"🚶 Bot {bot_user.username} caminando hacia @{user.username}...")
-                        
-                        steps = 10
-                        for i in range(1, steps + 1):
-                            new_x = bot_pos.x + (user_pos.x - bot_pos.x) * (i / steps)
-                            new_y = bot_pos.y + (user_pos.y - bot_pos.y) * (i / steps)
-                            new_z = bot_pos.z + (user_pos.z - bot_pos.z) * (i / steps)
-                            await self.highrise.teleport(bot_user.id, Position(new_x, new_y, new_z))
-                            await asyncio.sleep(0.3)
-                        
-                        await send_response( f"🤖 Bot {bot_user.username} llegó a @{user.username}")
-                        print(f"DEBUG !tome: Éxito - {bot_user.username} caminó hasta el propietario")
-                    else:
-                        await send_response( "❌ No se pudo obtener tu posición!")
-                        print(f"DEBUG !tome: Error - no se pudo obtener posición del propietario")
-                else:
+                if bot_user and user_pos:
+                    # Teletransportar bot cerca del propietario (offset de 1 bloque)
+                    from highrise.models import Position as Pos
+                    target_pos = Pos(user_pos.x + 1.0, user_pos.y, user_pos.z)
+                    await self.highrise.teleport(bot_user.id, target_pos)
+                    await send_response( f"🤖 Bot {bot_user.username} teletransportado a @{user.username}")
+                elif not bot_user:
                     await send_response( "❌ ¡Bot no encontrado en la sala!")
-                    print(f"DEBUG !tome: Error - bot no encontrado")
+                else:
+                    await send_response( "❌ No se pudo obtener tu posición!")
             except Exception as e:
-                await send_response( f"❌ Error de movimiento: {e}")
-                print(f"DEBUG !tome: Excepción: {e}")
+                await send_response( f"❌ Error: {e}")
             return
 
         # Comando !outfit [número] - cambio de ropa del bot usando outfits guardados
