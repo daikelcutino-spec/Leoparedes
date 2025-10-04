@@ -741,12 +741,12 @@ class Bot(BaseBot):
         username = user.username
 
         public_commands = [
-            "!game love", "!info", "!role", "!leaderboard", "!bot "
+            "!game love", "!stats", "!online"
         ]
         force_public = any(msg.startswith(cmd) for cmd in public_commands)
 
         async def send_response(text: str):
-            if force_public:
+            if force_public or not is_whisper:
                 await self.highrise.chat(text)
             else:
                 await self.highrise.send_whisper(user.id, text)
@@ -1009,8 +1009,7 @@ class Bot(BaseBot):
                     if hearts_count > 100: await send_response("❌ ¡Máximo 100 corazones por comando!"); return
                     self.add_user_hearts(target_user_obj.id, hearts_count, target_username)
                     heart_message = f"💖 {username} envió {hearts_count} ❤️ a {target_username}"
-                    if is_whisper: await self.highrise.send_whisper(user.id, heart_message)
-                    else: await self.highrise.chat(heart_message)
+                    await send_response(heart_message)
                     for _ in range(min(hearts_count, 30)):
                         await self.highrise.react("heart", target_user_obj.id)
                         await asyncio.sleep(0.05)
@@ -1822,8 +1821,7 @@ class Bot(BaseBot):
                 if sender_emote_id and receiver_emote_id:
                     await self.highrise.send_emote(sender_emote_id, user.id)
                     await self.highrise.send_emote(receiver_emote_id, target_user.id)
-                    if is_whisper: await self.highrise.send_whisper(user.id, action_message)
-                    else: await self.highrise.chat(action_message)
+                    await send_response(action_message)
             else: await send_response("❌ Usa: !comando @usuario")
             return
 
