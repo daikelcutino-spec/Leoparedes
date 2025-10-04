@@ -3819,3 +3819,54 @@
 [2025-10-04 07:41:13] [BOT] Emote #154: fall (emote-fail1) - 6.9s
 [2025-10-04 07:41:14] [ERROR] Error con emote floss real: Emote is not free or owned by target user
 [2025-10-04 07:41:16] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:18] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:20] [BOT] Emote #155: clumsy (emote-fail2) - 7.74s
+[2025-10-04 07:41:21] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:23] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:25] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:27] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:28] [BOT] Emote #156: faint (emote-fainting) - 18.55s
+[2025-10-04 07:41:29] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:31] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:33] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:35] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:37] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:39] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:42] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:44] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:46] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:46] [BOT] Emote #157: hugyourself (emote-hugyourself) - 6.03s
+[2025-10-04 07:41:48] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:50] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:52] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:52] [BOT] Emote #158: jetpack (emote-jetpack) - 17.77s
+[2025-10-04 07:41:54] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:56] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:41:58] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:00] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:02] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:05] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:07] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:09] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:10] [BOT] Emote #159: judochop (emote-judochop) - 5.0s
+[2025-10-04 07:42:11] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:13] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:15] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:15] [BOT] Emote #160: jump (emote-jumpb) - 4.87s
+[2025-10-04 07:42:17] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:19] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:20] [BOT] Emote #161: amused (emote-laughing2) - 6.6s
+[2025-10-04 07:42:21] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:23] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:26] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:27] [BOT] Emote #162: levelup (emote-levelup) - 7.27s
+[2025-10-04 07:42:28] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:30] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:32] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:34] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:34] [BOT] Emote #163: monsterfail (emote-monster_fail) - 5.42s
+[2025-10-04 07:42:36] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:38] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:40] [BOT] Emote #164: nightfever (idle-dance-headbobbing) - 23.65s
+[2025-10-04 07:42:40] [ERROR] Error con emote floss real: Emote is not free or owned by target user
+[2025-10-04 07:42:42] [ERROR] Error con emote floss real: Emote is not free or owned by target user
