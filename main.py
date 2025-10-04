@@ -934,10 +934,10 @@ class Bot(BaseBot):
                 if not (self.is_admin(user_id) or user_id == OWNER_ID):
                     await send_response( "❌ ¡Solo administradores y propietario pueden usar !emote all!")
                     return
-                
+
                 apply_to_all = True
                 emote_key = " ".join(parts[2:])  # El resto es la animación
-                
+
                 # Obtener todos los usuarios excepto el bot
                 try:
                     users = (await self.highrise.get_room_users()).content
@@ -997,7 +997,7 @@ class Bot(BaseBot):
                             else:
                                 # Para usuarios individuales, mantener el bucle
                                 asyncio.create_task(self.send_emote_loop(target_id, emote["id"]))
-                        
+
                         if apply_to_all:
                             await send_response( f"🎭 Activaste la animación '{emote['name']}' una vez en todos los {len(target_user_ids)} usuarios")
                         elif target_user_ids[0] == user.id:
@@ -1553,30 +1553,33 @@ class Bot(BaseBot):
             try:
                 inventory_response = await self.highrise.get_inventory()
                 if isinstance(inventory_response, Error):
-                    await send_response( f"❌ Error obteniendo inventario: {inventory_response}")
+                    await send_response( f"❌ Error: {str(inventory_response)[:100]}")
                     return
 
                 inventory = inventory_response.items
                 if inventory:
-                    # Dividir en chunks para no exceder límite de mensaje
-                    chunk_size = 10
                     total_items = len(inventory)
+                    await send_response( f"👔 INVENTARIO: {total_items} items")
+                    await asyncio.sleep(0.3)
 
-                    await send_response( f"👔 INVENTARIO DEL BOT ({total_items} items):")
+                    # Agrupar por tipo
+                    items_by_type = {}
+                    for item in inventory:
+                        item_type = item.type
+                        if item_type not in items_by_type:
+                            items_by_type[item_type] = 0
+                        items_by_type[item_type] += 1
 
-                    for i in range(0, len(inventory), chunk_size):
-                        chunk = inventory[i:i+chunk_size]
-                        items_list = []
-                        for idx, item in enumerate(chunk, i+1):
-                            items_list.append(f"{idx}. {item.type}: {item.id}")
-
-                        await send_response( "\n".join(items_list))
-                        await asyncio.sleep(0.3)
+                    # Enviar resumen por tipo
+                    for item_type, count in items_by_type.items():
+                        await send_response( f"{item_type}: {count}")
+                        await asyncio.sleep(0.2)
                 else:
-                    await send_response( "📦 El inventario del bot está vacío")
+                    await send_response( "📦 Inventario vacío")
 
             except Exception as e:
-                await send_response( f"❌ Error consultando inventario: {e}")
+                error_msg = str(e)[:150]
+                await send_response( f"❌ Error: {error_msg}")
             return
 
         # Comando !wallet
