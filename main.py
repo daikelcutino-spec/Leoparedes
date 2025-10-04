@@ -3315,18 +3315,24 @@ class Bot(BaseBot):
                     await send_response( f"❌ ¡Usuario {target_username} no encontrado!")
                     return
 
+                # Verificar que bot_pos y target_pos sean Position objects
+                if not isinstance(bot_pos, Position) or not isinstance(target_pos, Position):
+                    await send_response( "❌ Error: Posiciones inválidas")
+                    return
+
                 # Guardar coordenadas originales del bot
-                original_x = bot_pos.x
-                original_y = bot_pos.y
-                original_z = bot_pos.z
+                original_x = float(bot_pos.x)
+                original_y = float(bot_pos.y)
+                original_z = float(bot_pos.z)
 
                 # Calcular nueva posición cerca del usuario
-                new_x = target_pos.x + 1.0
-                new_y = target_pos.y
-                new_z = target_pos.z
+                new_x = float(target_pos.x) + 1.0
+                new_y = float(target_pos.y)
+                new_z = float(target_pos.z)
                 
-                # Teletransportar bot al usuario
-                target_position = Position(new_x, new_y, new_z)
+                # Teletransportar bot al usuario usando la clase Position importada
+                from highrise import Position as BotPosition
+                target_position = BotPosition(new_x, new_y, new_z)
                 await self.highrise.teleport(self.bot_id, target_position)
                 await send_response( f"🤖 Bot teletransportado a @{target_username}!")
 
@@ -3343,7 +3349,7 @@ class Bot(BaseBot):
                 await asyncio.sleep(3)
                 
                 # Retornar a posición original
-                original_position = Position(original_x, original_y, original_z)
+                original_position = BotPosition(original_x, original_y, original_z)
                 await self.highrise.teleport(self.bot_id, original_position)
                 await send_response( "✅ Bot retornó a su posición original")
                 log_event("BOT_MOVE", f"{user.username} teletransportó bot a {target_username} y retornó")
