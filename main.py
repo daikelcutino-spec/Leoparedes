@@ -1711,27 +1711,11 @@ class Bot(BaseBot):
                     await send_response( "📦 No hay outfits guardados. Usa !copyoutfit para guardar uno.")
             return
 
-        # Comando !flossmode - activar modo floss falso
+        # Comando !flossmode - deshabilitado
         if msg == "!flossmode":
             if not (user_id == OWNER_ID or self.is_admin(user_id)):
                 await send_response( "❌ ¡Solo el propietario y administradores pueden cambiar el modo del bot!")
                 return
-
-            try:
-                # Detener tarea actual si existe
-                if self.current_emote_task and not self.current_emote_task.done():
-                    self.current_emote_task.cancel()
-                    await asyncio.sleep(0.5)  # Esperar a que se cancele
-
-                # Iniciar modo floss real
-                self.current_emote_task = asyncio.create_task(self.start_floss_mode())
-                await send_response( "🕺 ¡Modo FLOSS activado! El bot solo hará dance-floss en bucle infinito")
-                await self.highrise.chat("🕺 Modo FLOSS activado por admin")
-                log_event("BOT", f"Modo floss activado por {user.username}")
-
-            except Exception as e:
-                await send_response( f"❌ Error activando modo floss: {e}")
-                log_event("ERROR", f"Error activando modo floss: {e}")
             return
 
         # Comando !automode - activar ciclo automático de 224 emotes
@@ -3489,29 +3473,6 @@ class Bot(BaseBot):
             print(f"❌ Error cambiando outfit del bot: {e}")
             raise e
 
-    async def start_floss_mode(self):
-        """Inicia modo floss real - solo emote dance-floss en bucle infinito"""
-        try:
-            self.bot_mode = "floss"
-            log_event("BOT", "Iniciando modo FLOSS REAL en bucle infinito")
-            print("🕺 Modo FLOSS REAL activado - bucle infinito")
-
-            while self.bot_mode == "floss":
-                try:
-                    # EMOTE FLOSS REAL - dance-floss
-                    await self.highrise.send_emote("dance-floss", self.bot_id)
-                    log_event("BOT", "Emote floss real ejecutado: dance-floss")
-                    print("🕺 Bot ejecutando emote floss real (dance-floss)")
-                    await asyncio.sleep(6.0)  # Duración del emote floss real
-
-                except Exception as e:
-                    log_event("ERROR", f"Error con emote floss real: {e}")
-                    print(f"⚠️ Error con emote floss real: {e}")
-                    await asyncio.sleep(2)  # Pausa corta antes de reintentar
-
-        except Exception as e:
-            log_event("ERROR", f"Error crítico en modo floss: {e}")
-            print(f"❌ Error crítico en modo floss: {e}")
 
     async def fake_floss_acelerado(self, user_id, bucle_infinito=False):
         """
