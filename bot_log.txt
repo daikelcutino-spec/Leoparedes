@@ -3176,3 +3176,42 @@
 [2025-10-04 06:54:52] [BOT] Emote #77: maniac (emote-maniac) - 5.94s
 [2025-10-04 06:54:58] [BOT] Emote #78: energyball (emote-energyball) - 8.28s
 [2025-10-04 06:55:06] [BOT] Emote #79: worm (emote-snake) - 6.63s
+[2025-10-04 06:55:13] [BOT] Emote #80: singalong (idle_singing) - 11.31s
+[2025-10-04 06:55:24] [BOT] Emote #81: frog (emote-frog) - 16.14s
+[2025-10-04 06:55:41] [BOT] Emote #82: macarena (dance-macarena) - 15.0s
+[2025-10-04 06:55:56] [ERROR] Error reproduciendo emote #83: Emote is not free or owned by target user
+[2025-10-04 06:55:57] [ERROR] Error reproduciendo emote #84: Emote is not free or owned by target user
+[2025-10-04 06:55:58] [BOT] Emote #85: sad (idle-sad) - 25.24s
+[2025-10-04 06:56:23] [ERROR] Error reproduciendo emote #86: Emote is not free or owned by target user
+[2025-10-04 06:56:24] [BOT] Emote #87: laughing (emote-laughing2) - 6.6s
+[2025-10-04 06:56:31] [ERROR] Error reproduciendo emote #88: Emote is not free or owned by target user
+[2025-10-04 06:56:32] [BOT] Emote #89: thumbsup (emoji-thumbsup) - 2.5s
+[2025-10-04 06:56:35] [BOT] Emote #90: miningfail (mining-fail) - 3.41s
+[2025-10-04 06:56:38] [BOT] Emote #91: shy (emote-shy) - 5.15s
+[2025-10-04 06:56:43] [BOT] Emote #92: fishingpull (fishing-pull) - 2.81s
+[2025-10-04 06:56:46] [ERROR] Error reproduciendo emote #93: Emote is not free or owned by target user
+[2025-10-04 06:56:47] [BOT] Emote #94: angry (idle-angry) - 26.07s
+[2025-10-04 06:57:11] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-04 06:57:11] [BOT] Starting initial bot appearance setup
+[2025-10-04 06:57:13] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-04 06:57:13] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-04 06:57:13] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-04 06:57:13] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-04 06:57:13] [BOT] Initial bot appearance setup completed
+[2025-10-04 06:57:15] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-04 06:57:15] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-04 06:57:15] [BOT] Iniciando ciclo automático de 224 emotes con pausas
+[2025-10-04 06:57:15] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-04 06:57:25] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
+[2025-10-04 06:57:53] [BOT] Emote #3: launch (emote-launch) - 10.88s
+[2025-10-04 06:58:04] [BOT] Emote #4: cutesalute (emote-cutesalute) - 3.79s
+[2025-10-04 06:58:08] [BOT] Emote #5: atattention (emote-salute) - 4.79s
+[2025-10-04 06:58:13] [BOT] Emote #6: tiktok (dance-tiktok11) - 11.37s
+[2025-10-04 06:58:24] [BOT] Emote #7: smooch (emote-kissing) - 6.69s
+[2025-10-04 06:58:31] [BOT] Emote #8: pushit (dance-employee) - 8.55s
+[2025-10-04 06:58:32] [CHAT] [PUBLIC] Xx__Daikel__xX: !inventory
+[2025-10-04 06:58:40] [BOT] Emote #9: foryou (emote-gift) - 6.09s
+[2025-10-04 06:58:46] [BOT] Emote #10: touch (dance-touch) - 13.15s
+[2025-10-04 06:58:59] [BOT] Emote #11: kawaii (dance-kawai) - 10.85s
+[2025-10-04 06:59:10] [BOT] Emote #12: repose (sit-relaxed) - 31.21s
+[2025-10-04 06:59:41] [BOT] Emote #13: sleigh (emote-sleigh) - 12.51s
