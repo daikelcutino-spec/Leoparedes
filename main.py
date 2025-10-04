@@ -3490,24 +3490,41 @@ class Bot(BaseBot):
             raise e
 
     async def start_floss_mode(self):
-        """Inicia modo floss real - solo emote dance-floss en bucle infinito"""
+        """Inicia modo floss - intenta dance-floss real, si falla usa floss falso"""
         try:
             self.bot_mode = "floss"
-            log_event("BOT", "Iniciando modo FLOSS REAL en bucle infinito")
-            print("🕺 Modo FLOSS REAL activado - bucle infinito")
+            log_event("BOT", "Iniciando modo FLOSS en bucle infinito")
+            print("🕺 Modo FLOSS activado - bucle infinito")
+            
+            # Intentar usar emote real primero
+            floss_real_funciona = True
 
             while self.bot_mode == "floss":
                 try:
-                    # EMOTE FLOSS REAL - dance-floss
-                    await self.highrise.send_emote("dance-floss", self.bot_id)
-                    log_event("BOT", "Emote floss real ejecutado: dance-floss")
-                    print("🕺 Bot ejecutando emote floss real (dance-floss)")
-                    await asyncio.sleep(6.0)  # Duración del emote floss real
+                    if floss_real_funciona:
+                        # Intentar EMOTE FLOSS REAL - dance-floss
+                        await self.highrise.send_emote("dance-floss", self.bot_id)
+                        log_event("BOT", "Emote floss real ejecutado: dance-floss")
+                        print("🕺 Bot ejecutando emote floss real (dance-floss)")
+                        await asyncio.sleep(6.0)  # Duración del emote floss real
+                    else:
+                        # Usar floss falso si el real no funciona
+                        await self.fake_floss_acelerado(self.bot_id, bucle_infinito=False)
+                        await asyncio.sleep(1.0)
 
                 except Exception as e:
-                    log_event("ERROR", f"Error con emote floss real: {e}")
-                    print(f"⚠️ Error con emote floss real: {e}")
-                    await asyncio.sleep(2)  # Pausa corta antes de reintentar
+                    error_msg = str(e).lower()
+                    if "not owned" in error_msg or "inventory" in error_msg or "item" in error_msg:
+                        log_event("BOT", "Emote dance-floss no disponible, usando floss falso")
+                        print("🕺 Bot no tiene dance-floss, usando floss falso (simulación)")
+                        floss_real_funciona = False
+                        # Ejecutar floss falso
+                        await self.fake_floss_acelerado(self.bot_id, bucle_infinito=False)
+                        await asyncio.sleep(1.0)
+                    else:
+                        log_event("ERROR", f"Error con emote floss: {e}")
+                        print(f"⚠️ Error con emote floss: {e}")
+                        await asyncio.sleep(2)
 
         except Exception as e:
             log_event("ERROR", f"Error crítico en modo floss: {e}")

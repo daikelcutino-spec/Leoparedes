@@ -3305,3 +3305,24 @@
 [2025-10-04 07:11:48] [BOT] Emote #24: revelations (emote-headblowup) - 13.66s
 [2025-10-04 07:12:02] [BOT] Emote #25: watchyourback (emote-creepycute) - 9.01s
 [2025-10-04 07:12:11] [BOT] Emote #26: creepypuppet (dance-creepypuppet) - 7.79s
+[2025-10-04 07:12:19] [BOT] Emote #27: saunter (dance-anime) - 9.6s
+[2025-10-04 07:12:28] [BOT] Emote #28: surprise (emote-pose6) - 6.46s
+[2025-10-04 07:12:35] [BOT] Emote #29: celebration (emote-celebrationstep) - 5.18s
+[2025-10-04 07:12:40] [BOT] Emote #30: penguin (dance-pinguin) - 12.81s
+[2025-10-04 07:12:53] [BOT] Emote #31: boxer (emote-boxer) - 6.75s
+[2025-10-04 07:13:00] [BOT] Emote #32: airguitar (idle-guitar) - 14.15s
+[2025-10-04 07:13:14] [BOT] Emote #33: stargaze (emote-stargazer) - 7.93s
+[2025-10-04 07:13:22] [BOT] Emote #34: ditzy (emote-pose9) - 6.0s
+[2025-10-04 07:13:28] [BOT] Emote #35: uwu (idle-uwu) - 25.5s
+[2025-10-04 07:13:33] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-04 07:13:33] [BOT] Starting initial bot appearance setup
+[2025-10-04 07:13:35] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-04 07:13:35] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-04 07:13:35] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-04 07:13:35] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-04 07:13:35] [BOT] Initial bot appearance setup completed
+[2025-10-04 07:13:37] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-04 07:13:38] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-04 07:13:38] [BOT] Iniciando ciclo automático de 224 emotes con pausas
+[2025-10-04 07:13:38] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-04 07:13:48] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
