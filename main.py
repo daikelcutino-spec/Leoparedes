@@ -1465,7 +1465,13 @@ class Bot(BaseBot):
                             return
 
                         self.add_user_hearts(target_user_id, hearts_count, target_username)
-                        await send_response( f"Enviaste {hearts_count} ❤️ a {target_username}")
+                        
+                        # SIEMPRE responder de forma pública en chat público, privada en whisper
+                        heart_message = f"💖 {user.username} envió {hearts_count} ❤️ a {target_username}"
+                        if is_whisper:
+                            await self.highrise.send_whisper(user.id, heart_message)
+                        else:
+                            await self.highrise.chat(heart_message)
 
                         # Отправляем визуальные реакции сердечек (максимум 30 для производительности)
                         visual_hearts = min(hearts_count, 30)  # Ограничиваем визуальные сердечки до 30
@@ -1480,7 +1486,14 @@ class Bot(BaseBot):
                             return
 
                         self.add_user_hearts(target_user_id, 1, target_username)
-                        await send_response( f"Enviaste ❤️ a {target_username}")
+                        
+                        # SIEMPRE responder de forma pública en chat público, privada en whisper
+                        heart_message = f"💖 {user.username} envió ❤️ a {target_username}"
+                        if is_whisper:
+                            await self.highrise.send_whisper(user.id, heart_message)
+                        else:
+                            await self.highrise.chat(heart_message)
+                        
                         # Отправляем визуальную реакцию сердечка
                         await self.highrise.react("heart", target_user_id)
 
@@ -3253,9 +3266,9 @@ class Bot(BaseBot):
                         # Animación para el objetivo (una sola vez)
                         await self.highrise.send_emote(receiver_emote_id, target_user.id)
 
-                        # Si el comando fue privado, responder por privado; si no, por público
+                        # SIEMPRE responder de forma pública en chat público, privada en whisper
                         if is_whisper:
-                            await send_response( action_message)
+                            await self.highrise.send_whisper(user.id, action_message)
                         else:
                             await self.highrise.chat(action_message)
 
