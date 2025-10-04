@@ -600,8 +600,7 @@ class Bot(BaseBot):
                    "🗺️ !addzone [nombre]\n"
                    "🤖 !bot @user\n"
                    "🕺 !flossmode\n"
-                   "🎭 !automode\n"
-                   "👥 Acceso a todas las zonas")
+                   "🎭 !automode")
 
         elif is_admin:
             return ("⚔️ COMANDOS ADMIN:\n"
@@ -1478,24 +1477,6 @@ class Bot(BaseBot):
                         for _ in range(visual_hearts):
                             await self.highrise.react("heart", target_user_id)
                             await asyncio.sleep(0.05)  # Уменьшаем задержку для быстрой отправки
-
-                    elif is_vip or True:  # VIP и обычные игроки
-                        # VIP и обычные игроки могут давать только 1 сердечко
-                        if hearts_count > 1:
-                            await send_response( "❌ ¡Solo puedes enviar 1 corazón por comando!")
-                            return
-
-                        self.add_user_hearts(target_user_id, 1, target_username)
-
-                        # SIEMPRE responder de forma pública en chat público, privada en whisper
-                        heart_message = f"💖 {user.username} envió ❤️ a {target_username}"
-                        if is_whisper:
-                            await self.highrise.send_whisper(user.id, heart_message)
-                        else:
-                            await self.highrise.chat(heart_message)
-
-                        # Отправляем визуальную реакцию сердечка
-                        await self.highrise.react("heart", target_user_id)
 
                 except Exception as e:
                     print(f"DEBUG: Ошибка в команде !heart: {e}")
@@ -3282,76 +3263,74 @@ class Bot(BaseBot):
             target_username = msg[5:].strip().replace("@", "")
             try:
                 users = (await self.highrise.get_room_users()).content
-                target_user = None
                 bot_user = None
-                bot_original_pos = None
+                bot_pos = None
+                target_user = None
+                target_pos = None
 
-                # Buscar bot y usuario objetivo
                 for u, pos in users:
-                    if u.id == self.bot_id:
+                    if u.id == self.bot_id: # Usamos el bot_id almacenado
                         bot_user = u
-                        bot_original_pos = pos
+                        bot_pos = pos
                     if u.username == target_username:
                         target_user = u
+                        target_pos = pos
 
+                if not bot_user:
+                    await send_response( "❌ Bot no encontrado en la sala!")
+                    return
                 if not target_user:
                     await send_response( f"❌ ¡Usuario {target_username} no encontrado!")
                     return
 
-                if not bot_user or not bot_original_pos:
-                    await send_response( "❌ ¡No se pudo encontrar el bot!")
-                    return
+                # Guardar posición original del bot para retorno
+                original_pos = Position(bot_pos.x, bot_pos.y, bot_pos.z)
 
-                # Copiar outfit del usuario objetivo
-                try:
-                    outfit_response = await self.highrise.get_user_outfit(target_user.id)
-                    if isinstance(outfit_response, Error):
-                        await send_response( f"❌ No se pudo obtener outfit de {target_username}")
-                        return
+                # Mover bot hacia el usuario con movimiento gradual
+                await send_response( f"🤖 Bot moviéndose hacia @{target_username}...")
 
-                    await self.highrise.set_outfit(outfit_response.outfit)
-                    await asyncio.sleep(0.5)
-                except Exception as e:
-                    log_event("ERROR", f"Error copiando outfit: {e}")
-                    await send_response( f"⚠️ Error copiando outfit, continuando...")
-
-                # Obtener posición del usuario objetivo
-                target_pos = None
-                for u, pos in users:
-                    if u.id == target_user.id:
-                        target_pos = pos
-                        break
-
-                if not target_pos:
-                    await send_response( "❌ ¡No se pudo obtener posición del usuario!")
-                    return
-
-                # Caminar gradualmente hacia el usuario
                 steps = 10
                 for i in range(1, steps + 1):
-                    new_x = bot_original_pos.x + (target_pos.x - bot_original_pos.x) * (i / steps)
-                    new_y = bot_original_pos.y + (target_pos.y - bot_original_pos.y) * (i / steps)
-                    new_z = bot_original_pos.z + (target_pos.z - bot_original_pos.z) * (i / steps)
+                    new_x = bot_pos.x + (target_pos.x - bot_pos.x) * (i / steps)
+                    new_y = bot_pos.y + (target_pos.y - bot_pos.y) * (i / steps)
+                    new_z = bot_pos.z + (target_pos.z - bot_pos.z) * (i / steps)
                     await self.highrise.teleport(self.bot_id, Position(new_x, new_y, new_z))
                     await asyncio.sleep(0.3)
 
-                # Esperar un momento junto al usuario
-                await asyncio.sleep(2)
+                # Bot hace un emote al llegar
+                try:
+                    await self.highrise.send_emote("emoji-hello", self.bot_id)
+                except Exception as emote_error:
+                    log_event("WARNING", f"No se pudo hacer emote: {emote_error}")
 
-                # Volver a la posición original
-                for i in range(1, steps + 1):
-                    new_x = target_pos.x + (bot_original_pos.x - target_pos.x) * (i / steps)
-                    new_y = target_pos.y + (bot_original_pos.y - target_pos.y) * (i / steps)
-                    new_z = target_pos.z + (bot_original_pos.z - target_pos.z) * (i / steps)
-                    await self.highrise.teleport(self.bot_id, Position(new_x, new_y, new_z))
-                    await asyncio.sleep(0.3)
+                await send_response( f"✅ Bot llegó a @{target_username}")
 
-                await send_response( f"🤖 Bot imitó a @{target_username}")
-                log_event("BOT", f"{user.username} activó bot para imitar a {target_username}")
+                # Esperar 3 segundos y retornar a posición original
+                await asyncio.sleep(3)
+                await send_response( "🔙 Bot retornando a posición original...")
+
+                # Retornar gradualmente
+                current_users = (await self.highrise.get_room_users()).content
+                current_bot_pos = None
+                for u, pos in current_users:
+                    if u.id == self.bot_id:
+                        current_bot_pos = pos
+                        break
+
+                if current_bot_pos:
+                    for i in range(1, steps + 1):
+                        new_x = current_bot_pos.x + (original_pos.x - current_bot_pos.x) * (i / steps)
+                        new_y = current_bot_pos.y + (original_pos.y - current_bot_pos.y) * (i / steps)
+                        new_z = current_bot_pos.z + (original_pos.z - current_bot_pos.z) * (i / steps)
+                        await self.highrise.teleport(self.bot_id, Position(new_x, new_y, new_z))
+                        await asyncio.sleep(0.3)
+
+                await send_response( "✅ Bot retornó a su posición")
+                log_event("BOT_MOVE", f"{user.username} movió bot hacia {target_username} y retornó")
 
             except Exception as e:
+                await send_response( f"❌ Error: {e}")
                 log_event("ERROR", f"Error en comando !bot: {e}")
-                await send_response( f"❌ Error en comando bot: {str(e)[:100]}")
             return
 
         # Comando !addzone [nombre] - Crear nueva zona de teletransportación (solo admin/owner)
@@ -3551,8 +3530,6 @@ class Bot(BaseBot):
 
     async def on_tip(self, sender: User, receiver: User, tip: CurrencyItem | Item) -> None:
         """Manejador de propinas"""
-        global BOT_WALLET
-
         print(f"{sender.username} tipped {receiver.username} an amount of {tip.amount}")
 
                     # Obtenemos el ID del bot
@@ -3947,7 +3924,7 @@ class Bot(BaseBot):
 
         # Enviar como mensaje público o privado según el parámetro
         if public_response:
-            await self.highrise.chat(info_message)
+            await self.highise.chat(info_message)
         else:
             await self.highrise.send_whisper(user_id, info_message)
 
