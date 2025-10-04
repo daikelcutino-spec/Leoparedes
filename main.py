@@ -1024,30 +1024,85 @@ class Bot(BaseBot):
                 await send_response( "❌ Usa: !heart @username [cantidad]")
             return
 
-        # Reacciones
-        if msg.startswith("!thumbs "):
-            target_username = msg[8:].strip().replace("@", "")
-            users = (await self.highrise.get_room_users()).content
-            target_user = next((u for u, _ in users if u.username == target_username), None)
-            if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
-            await self.highrise.react("thumbs", target_user.id)
-            await send_response( f"👍 Enviaste pulgar arriba a @{target_username}")
+        # Comando !thumbs
+        if msg.startswith("!thumbs"):
+            parts = msg.split()
+            if len(parts) >= 2:
+                target = parts[1].replace("@", "")
+                thumbs_count = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 1
+                users = (await self.highrise.get_room_users()).content
+                
+                if target.lower() == "all":
+                    count = 0
+                    for u, _ in users:
+                        if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):
+                            await self.highrise.react("thumbs", u.id)
+                            count += 1
+                            await asyncio.sleep(0.1)
+                    await send_response(f"👍 Enviaste pulgar arriba a todos los {count} usuarios!")
+                else:
+                    target_user = next((u for u, _ in users if u.username == target), None)
+                    if not target_user: await send_response( f"❌ Usuario {target} no encontrado!"); return
+                    for _ in range(min(thumbs_count, 30)):
+                        await self.highrise.react("thumbs", target_user.id)
+                        await asyncio.sleep(0.05)
+                    await send_response( f"👍 Enviaste {thumbs_count} pulgar(es) arriba a @{target}")
+            else:
+                await send_response( "❌ Usa: !thumbs @username [cantidad] o !thumbs all")
             return
-        if msg.startswith("!clap "):
-            target_username = msg[6:].strip().replace("@", "")
-            users = (await self.highrise.get_room_users()).content
-            target_user = next((u for u, _ in users if u.username == target_username), None)
-            if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
-            await self.highrise.react("clap", target_user.id)
-            await send_response( f"👏 Enviaste aplauso a @{target_username}")
+
+        # Comando !clap
+        if msg.startswith("!clap"):
+            parts = msg.split()
+            if len(parts) >= 2:
+                target = parts[1].replace("@", "")
+                clap_count = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 1
+                users = (await self.highrise.get_room_users()).content
+                
+                if target.lower() == "all":
+                    count = 0
+                    for u, _ in users:
+                        if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):
+                            await self.highrise.react("clap", u.id)
+                            count += 1
+                            await asyncio.sleep(0.1)
+                    await send_response(f"👏 Enviaste aplauso a todos los {count} usuarios!")
+                else:
+                    target_user = next((u for u, _ in users if u.username == target), None)
+                    if not target_user: await send_response( f"❌ Usuario {target} no encontrado!"); return
+                    for _ in range(min(clap_count, 30)):
+                        await self.highrise.react("clap", target_user.id)
+                        await asyncio.sleep(0.05)
+                    await send_response( f"👏 Enviaste {clap_count} aplauso(s) a @{target}")
+            else:
+                await send_response( "❌ Usa: !clap @username [cantidad] o !clap all")
             return
-        if msg.startswith("!wave "):
-            target_username = msg[6:].strip().replace("@", "")
-            users = (await self.highrise.get_room_users()).content
-            target_user = next((u for u, _ in users if u.username == target_username), None)
-            if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
-            await self.highrise.react("wave", target_user.id)
-            await send_response( f"👋 Enviaste ola a @{target_username}")
+
+        # Comando !wave
+        if msg.startswith("!wave"):
+            parts = msg.split()
+            if len(parts) >= 2:
+                target = parts[1].replace("@", "")
+                wave_count = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 1
+                users = (await self.highrise.get_room_users()).content
+                
+                if target.lower() == "all":
+                    count = 0
+                    for u, _ in users:
+                        if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):
+                            await self.highrise.react("wave", u.id)
+                            count += 1
+                            await asyncio.sleep(0.1)
+                    await send_response(f"👋 Enviaste ola a todos los {count} usuarios!")
+                else:
+                    target_user = next((u for u, _ in users if u.username == target), None)
+                    if not target_user: await send_response( f"❌ Usuario {target} no encontrado!"); return
+                    for _ in range(min(wave_count, 30)):
+                        await self.highrise.react("wave", target_user.id)
+                        await asyncio.sleep(0.05)
+                    await send_response( f"👋 Enviaste {wave_count} ola(s) a @{target}")
+            else:
+                await send_response( "❌ Usa: !wave @username [cantidad] o !wave all")
             return
 
         # Comando !flash
