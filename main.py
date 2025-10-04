@@ -3281,7 +3281,7 @@ class Bot(BaseBot):
                 await send_response( f"Error: {e}")
             return
 
-        # Comando !bot @user — copiar completamente a otro usuario (solo admin)
+        # Comando !bot @user — teletransportar bot directamente al usuario (solo admin)
         if msg.startswith("!bot "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden usar este comando!")
@@ -3296,7 +3296,7 @@ class Bot(BaseBot):
                 target_pos = None
 
                 for u, pos in users:
-                    if u.id == self.bot_id: # Usamos el bot_id almacenado
+                    if u.id == self.bot_id:
                         bot_user = u
                         bot_pos = pos
                     if u.username == target_username:
@@ -3310,20 +3310,13 @@ class Bot(BaseBot):
                     await send_response( f"❌ ¡Usuario {target_username} no encontrado!")
                     return
 
-                # Guardar posición original del bot para retorno
-                from highrise.models import Position as Pos
-                original_pos = Pos(bot_pos.x, bot_pos.y, bot_pos.z)
+                # Guardar posición original del bot
+                original_pos = Position(bot_pos.x, bot_pos.y, bot_pos.z)
 
-                # Mover bot hacia el usuario con movimiento gradual
-                await send_response( f"🤖 Bot moviéndose hacia @{target_username}...")
-
-                steps = 10
-                for i in range(1, steps + 1):
-                    new_x = bot_pos.x + (target_pos.x - bot_pos.x) * (i / steps)
-                    new_y = bot_pos.y + (target_pos.y - bot_pos.y) * (i / steps)
-                    new_z = bot_pos.z + (target_pos.z - bot_pos.z) * (i / steps)
-                    await self.highrise.teleport(self.bot_id, Pos(new_x, new_y, new_z))
-                    await asyncio.sleep(0.3)
+                # Teletransportar bot DIRECTAMENTE al lado del usuario (offset de 1 bloque)
+                target_position = Position(target_pos.x + 1.0, target_pos.y, target_pos.z)
+                await self.highrise.teleport(self.bot_id, target_position)
+                await send_response( f"🤖 Bot teletransportado a @{target_username}!")
 
                 # Bot hace un emote al llegar
                 try:
@@ -3331,30 +3324,13 @@ class Bot(BaseBot):
                 except Exception as emote_error:
                     log_event("WARNING", f"No se pudo hacer emote: {emote_error}")
 
-                await send_response( f"✅ Bot llegó a @{target_username}")
-
                 # Esperar 3 segundos y retornar a posición original
                 await asyncio.sleep(3)
-                await send_response( "🔙 Bot retornando a posición original...")
-
-                # Retornar gradualmente
-                current_users = (await self.highrise.get_room_users()).content
-                current_bot_pos = None
-                for u, pos in current_users:
-                    if u.id == self.bot_id:
-                        current_bot_pos = pos
-                        break
-
-                if current_bot_pos:
-                    for i in range(1, steps + 1):
-                        new_x = current_bot_pos.x + (original_pos.x - current_bot_pos.x) * (i / steps)
-                        new_y = current_bot_pos.y + (original_pos.y - current_bot_pos.y) * (i / steps)
-                        new_z = current_bot_pos.z + (original_pos.z - current_bot_pos.z) * (i / steps)
-                        await self.highrise.teleport(self.bot_id, Pos(new_x, new_y, new_z))
-                        await asyncio.sleep(0.3)
-
-                await send_response( "✅ Bot retornó a su posición")
-                log_event("BOT_MOVE", f"{user.username} movió bot hacia {target_username} y retornó")
+                
+                # Retornar DIRECTAMENTE a posición original
+                await self.highrise.teleport(self.bot_id, original_pos)
+                await send_response( "✅ Bot retornó a su posición original")
+                log_event("BOT_MOVE", f"{user.username} teletransportó bot a {target_username} y retornó")
 
             except Exception as e:
                 await send_response( f"❌ Error: {e}")
