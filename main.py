@@ -85,6 +85,29 @@ def save_leaderboard_data():
     except Exception as e:
         print(f"Error guardando datos del leaderboard: {e}")
 
+async def save_bot_inventory(bot_instance):
+    """Guarda el inventario del bot en archivo JSON"""
+    try:
+        inventory_response = await bot_instance.highrise.get_inventory()
+        if not isinstance(inventory_response, Error):
+            inventory = inventory_response.items
+            inventory_data = [
+                {
+                    "type": item.type,
+                    "id": item.id,
+                    "amount": item.amount
+                }
+                for item in inventory
+            ]
+            
+            os.makedirs("data", exist_ok=True)
+            with open("data/bot_inventory.json", "w", encoding="utf-8") as f:
+                json.dump(inventory_data, f, indent=2, ensure_ascii=False)
+            
+            print(f"✅ Inventario del bot guardado: {len(inventory_data)} items")
+    except Exception as e:
+        print(f"❌ Error guardando inventario del bot: {e}")
+
 def load_config():
     """Загружает конфигурацию из файла"""
     try:
@@ -364,8 +387,12 @@ class Bot(BaseBot):
                 # Запускаем объявления
                 asyncio.create_task(self.start_announcements())
                 asyncio.create_task(self.check_console_messages())
+                asyncio.create_task(self.periodic_inventory_save())
                 # Configurar outfit y emote inicial del bot
                 await self.setup_initial_bot_appearance()
+                
+                # Guardar inventario inicial
+                await save_bot_inventory(self)
 
                 # Ejecutar ciclo automático de 224 emotes en bucle infinito
                 try:
@@ -3732,6 +3759,15 @@ class Bot(BaseBot):
                 print(f"Error verificando mensajes de consola: {e}")
 
             await asyncio.sleep(1)  # Verificación cada segundo
+    
+    async def periodic_inventory_save(self):
+        """Guarda el inventario del bot cada 5 minutos"""
+        while True:
+            try:
+                await asyncio.sleep(300)  # 5 minutos
+                await save_bot_inventory(self)
+            except Exception as e:
+                print(f"Error en guardado periódico de inventario: {e}")
 
     async def delayed_restart(self):
         """Parada retrasada del bot"""

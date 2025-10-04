@@ -59,6 +59,16 @@ def load_user_data():
     
     return data
 
+def load_bot_inventory():
+    """Carga el inventario del bot desde archivo JSON"""
+    if os.path.exists("data/bot_inventory.json"):
+        try:
+            with open("data/bot_inventory.json", "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            return []
+    return []
+
 @app.route('/')
 def index():
     config = load_config()
@@ -69,6 +79,9 @@ def index():
     
     # Top 10 por actividad
     top_activity = sorted(user_data["activity"].items(), key=lambda x: x[1], reverse=True)[:10]
+    
+    # Inventario del bot (primeros 10 items)
+    bot_inventory = load_bot_inventory()[:10]
     
     # Estadísticas adicionales
     total_users = len(user_data["user_info"])
@@ -83,7 +96,8 @@ def index():
                          total_messages=total_messages,
                          avg_hearts=round(avg_hearts, 1),
                          top_hearts=top_hearts,
-                         top_activity=top_activity)
+                         top_activity=top_activity,
+                         bot_inventory=bot_inventory)
 
 @app.route('/vip')
 def vip_management():
@@ -121,6 +135,30 @@ def analytics():
     return render_template('analytics.html', 
                          hearts_data=hearts_data,
                          activity_data=activity_data)
+
+@app.route('/inventory')
+def inventory():
+    bot_inventory = load_bot_inventory()
+    
+    # Contar items por tipo
+    item_counts = {
+        "clothing": 0,
+        "furniture": 0,
+        "emote": 0,
+        "other": 0
+    }
+    
+    for item in bot_inventory:
+        item_type = item.get("type", "other")
+        if item_type in item_counts:
+            item_counts[item_type] += item.get("amount", 1)
+        else:
+            item_counts["other"] += item.get("amount", 1)
+    
+    return render_template('inventory.html',
+                         inventory=bot_inventory,
+                         total_items=len(bot_inventory),
+                         item_counts=item_counts)
 
 @app.route('/api/add_vip', methods=['POST'])
 def add_vip():
