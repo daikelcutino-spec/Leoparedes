@@ -900,19 +900,43 @@ class Bot(BaseBot):
         force_public = any(msg.startswith(cmd) for cmd in public_commands)
 
         async def send_response(text: str):
-            if force_public or not is_whisper:
+            # Si es un comando que debe ser público, siempre enviar al chat
+            if force_public:
                 await self.highrise.chat(text)
-            else:
+            # Si el mensaje original fue por whisper, responder por whisper
+            elif is_whisper:
                 await self.highrise.send_whisper(user.id, text)
+            # Si el mensaje fue público, responder público
+            else:
+                await self.highrise.chat(text)
 
         # Comando !help
         if msg == "!help":
             help_text = self.get_help_for_user(user_id, username)
             help_groups = help_text.split('|||')
+            
+            # Enviar cada grupo de comandos por separado con delay
             for group in help_groups:
                 if group.strip():
-                    await send_response(group.strip())
-                    await asyncio.sleep(0.3)
+                    # Dividir grupos muy largos en sub-mensajes si exceden ~450 caracteres
+                    group_text = group.strip()
+                    if len(group_text) > 450:
+                        lines = group_text.split('\n')
+                        current_msg = ""
+                        for line in lines:
+                            if len(current_msg) + len(line) + 1 > 450:
+                                if current_msg:
+                                    await send_response(current_msg)
+                                    await asyncio.sleep(0.5)
+                                current_msg = line
+                            else:
+                                current_msg += ("\n" if current_msg else "") + line
+                        if current_msg:
+                            await send_response(current_msg)
+                            await asyncio.sleep(0.5)
+                    else:
+                        await send_response(group_text)
+                        await asyncio.sleep(0.5)
             return
 
         # Comando !info
@@ -2036,22 +2060,27 @@ class Bot(BaseBot):
 
         bot_username = "NOCTURNO_BOT"
         is_bot_mention = False
+        treat_as_whisper = False
+        
+        # Detectar si mencionan al bot
         if f"@{bot_username}" in msg or "@nocturno" in msg.lower() or "@bot" in msg.lower():
             is_bot_mention = True
+            treat_as_whisper = True  # Tratar menciones como si fueran whispers
             msg = msg.replace(f"@{bot_username}", "").replace("@nocturno", "").replace("@bot", "").strip()
 
         log_event("CHAT", f"[PUBLIC] {username}: {message}" + (" [BOT_MENTION]" if is_bot_mention else ""))
 
         if is_bot_mention:
             await self.highrise.send_whisper(user_id, f"👋 ¡Hola @{username}! Me mencionaste.")
-            await self.highrise.send_whisper(user_id, "💡 Usa !help para ver todos los comandos")
+            await self.highrise.send_whisper(user_id, "💡 Usa !help en privado para ver todos los comandos")
             if not msg or msg.isspace(): return
 
         if self.is_banned(user_id) or self.is_muted(user_id):
             return
 
         self.update_activity(user_id)
-        await self.handle_command(user, msg, is_whisper=False)
+        # Si mencionaron al bot, tratar como whisper para que responda por privado
+        await self.handle_command(user, msg, is_whisper=treat_as_whisper)
 
     async def on_whisper(self, user: User, message: str) -> None:
         """Manejador de susurros"""
