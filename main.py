@@ -670,8 +670,6 @@ class Bot(BaseBot):
                     "!unmute @user - Quitar silencio\n"
                     "!banlist - Lista baneados\n"
                     "!mutelist - Lista silenciados\n"
-                    "!setmod @user - Dar moderador\n"
-                    "!removemod @user - Quitar moderador\n"
                     "!privilege @user - Ver privilegios|||"
                     "🤖 BOT:\n"
                     "!bot @user - Atacar con bot\n"
@@ -1680,16 +1678,6 @@ class Bot(BaseBot):
                     mute_list += f"{i}. {username} (hasta {mute_time})\n"
                 await send_response( mute_list)
             else: await send_response("✅ No hay usuarios silenciados")
-            return
-
-        # Comando !setmod
-        if msg.startswith("!setmod "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden dar privilegios!"); return
-            target_username = msg[8:].strip().replace("@", "")
-            target_user = next((u for u, _ in (await self.highrise.get_room_users()).content if u.username == target_username), None)
-            if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
-            await self.highrise.moderate_room(target_user.id, "moderator", 3600)
-            await send_response( f"👮 @{target_username} ahora tiene privilegios de moderador")
             return
 
         # Comando !privilege
