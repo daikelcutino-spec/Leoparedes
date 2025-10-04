@@ -5103,3 +5103,22 @@
 [2025-10-04 16:39:36] [BOT] Emote #17: timejump (emote-timejump) - 5.51s
 [2025-10-04 16:39:41] [BOT] Emote #18: scritchy (idle-wild) - 27.35s
 [2025-10-04 16:40:09] [BOT] Emote #19: bitnervous (idle-nervous) - 22.81s
+[2025-10-04 16:40:32] [BOT] Emote #20: iceskating (emote-iceskating) - 8.41s
+[2025-10-04 16:40:40] [BOT] Emote #21: partytime (emote-celebrate) - 4.35s
+[2025-10-04 16:40:45] [BOT] Emote #22: arabesque (emote-pose10) - 5.0s
+[2025-10-04 16:40:50] [BOT] Emote #23: bashful (emote-shy2) - 6.34s
+[2025-10-04 16:40:56] [BOT] Emote #24: revelations (emote-headblowup) - 13.66s
+[2025-10-04 16:41:10] [BOT] Emote #25: watchyourback (emote-creepycute) - 9.01s
+[2025-10-04 16:41:18] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-04 16:41:18] [BOT] Starting initial bot appearance setup
+[2025-10-04 16:41:20] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-04 16:41:20] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-04 16:41:20] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-04 16:41:20] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-04 16:41:20] [BOT] Initial bot appearance setup completed
+[2025-10-04 16:41:22] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-04 16:41:22] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-04 16:41:22] [BOT] Iniciando ciclo automático de 224 emotes con pausas
+[2025-10-04 16:41:22] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-04 16:41:32] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
+[2025-10-04 16:42:00] [BOT] Emote #3: launch (emote-launch) - 10.88s
