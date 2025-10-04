@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Bot Highrise</title>
+    <title>Panel Bot NOCTURNO</title>
     <style>
         * {
             margin: 0;
@@ -16,370 +16,404 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
         
         .header {
             background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
             text-align: center;
         }
         
         .header h1 {
             color: #667eea;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .refresh-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9em;
-            margin-top: 10px;
-            transition: all 0.3s;
-        }
-        
-        .refresh-btn:hover {
-            background: #764ba2;
-            transform: scale(1.05);
+            font-size: 1.5em;
+            margin-bottom: 5px;
         }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
         }
         
         .stat-card {
             background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 12px;
+            border-radius: 8px;
             text-align: center;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
-        }
-        
-        .stat-card .icon {
-            font-size: 3em;
-            margin-bottom: 15px;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
         
         .stat-card .value {
-            font-size: 2.5em;
+            font-size: 1.5em;
             font-weight: bold;
             color: #667eea;
-            margin-bottom: 10px;
         }
         
         .stat-card .label {
             color: #666;
-            font-size: 1.1em;
+            font-size: 0.85em;
+            margin-top: 3px;
         }
         
-        .main-content {
+        .main-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
         }
         
-        .leaderboard {
+        .panel {
             background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
         
-        .leaderboard h2 {
+        .panel h2 {
             color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.8em;
+            font-size: 1.2em;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
-        .leaderboard-list {
+        .list {
             list-style: none;
-            max-height: 350px;
+            max-height: 200px;
             overflow-y: auto;
         }
         
-        .leaderboard-item {
-            padding: 15px;
+        .list-item {
+            padding: 8px;
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.3s;
+            font-size: 0.9em;
         }
         
-        .leaderboard-item:hover {
+        .list-item:hover {
             background: #f8f9fa;
-            transform: translateX(5px);
         }
         
-        .leaderboard-item:last-child {
-            border-bottom: none;
-        }
-        
-        .leaderboard-item .rank {
-            font-weight: bold;
-            color: #667eea;
-            margin-right: 15px;
-            font-size: 1.2em;
-            min-width: 40px;
-        }
-        
-        .leaderboard-item .rank.gold { color: #ffd700; }
-        .leaderboard-item .rank.silver { color: #c0c0c0; }
-        .leaderboard-item .rank.bronze { color: #cd7f32; }
-        
-        .leaderboard-item .username {
-            flex-grow: 1;
-            font-size: 1.1em;
-        }
-        
-        .leaderboard-item .score {
-            font-weight: bold;
-            color: #764ba2;
-            font-size: 1.2em;
-        }
-        
-        .nav-buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
         }
         
         .btn {
             background: #667eea;
             color: white;
-            padding: 15px 30px;
+            padding: 10px 15px;
             border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
+            border-radius: 8px;
+            font-size: 0.9em;
             cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
+            transition: all 0.2s;
+            text-align: center;
         }
         
         .btn:hover {
             background: #764ba2;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transform: scale(1.02);
         }
         
-        .footer {
-            text-align: center;
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .input-group input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
             padding: 20px;
-            color: white;
-            margin-top: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
         }
         
-        @media (max-width: 1200px) {
-            .main-content {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8em;
-                flex-direction: column;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .close {
+            float: right;
+            font-size: 1.5em;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>
-                <span>🤖</span>
-                <span>Panel de Administración</span>
-                <span>🎮</span>
-            </h1>
-            <p style="color: #666; margin-top: 10px;">Bot de Highrise NOCTURNO - Control Total</p>
-            <button class="refresh-btn" onclick="location.reload()">
-                🔄 Actualizar Datos
-            </button>
+            <h1>🤖 Panel Bot NOCTURNO</h1>
+            <p style="color: #666; font-size: 0.9em;">Control Total del Bot</p>
         </div>
         
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="icon">⭐</div>
                 <div class="value">{{ vip_count }}</div>
-                <div class="label">Usuarios VIP</div>
+                <div class="label">⭐ VIPs</div>
             </div>
-            
             <div class="stat-card">
-                <div class="icon">💖</div>
                 <div class="value">{{ total_hearts }}</div>
-                <div class="label">Total Corazones</div>
+                <div class="label">💖 Corazones</div>
             </div>
-            
             <div class="stat-card">
-                <div class="icon">👥</div>
                 <div class="value">{{ total_users }}</div>
-                <div class="label">Total Usuarios</div>
+                <div class="label">👥 Usuarios</div>
             </div>
-            
             <div class="stat-card">
-                <div class="icon">💬</div>
                 <div class="value">{{ total_messages }}</div>
-                <div class="label">Total Mensajes</div>
-            </div>
-            
-            <div class="stat-card">
-                <div class="icon">📊</div>
-                <div class="value">{{ avg_hearts }}</div>
-                <div class="label">Promedio Corazones</div>
+                <div class="label">💬 Mensajes</div>
             </div>
         </div>
         
-        <div class="main-content">
-            <div class="leaderboard">
-                <h2>🏆 Top 10 Corazones</h2>
-                <ul class="leaderboard-list">
-                    {% for username, hearts in top_hearts %}
-                    <li class="leaderboard-item">
-                        <span class="rank {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">
-                            {% if loop.index == 1 %}🥇
-                            {% elif loop.index == 2 %}🥈
-                            {% elif loop.index == 3 %}🥉
-                            {% else %}#{{ loop.index }}
-                            {% endif %}
-                        </span>
-                        <span class="username">{{ username }}</span>
-                        <span class="score">{{ hearts }} ❤️</span>
+        <div class="main-grid">
+            <div class="panel">
+                <h2>🏆 Top Corazones</h2>
+                <ul class="list">
+                    {% for username, hearts in top_hearts[:5] %}
+                    <li class="list-item">
+                        <span>{{ username }}</span>
+                        <span style="color: #667eea; font-weight: bold;">{{ hearts }} ❤️</span>
                     </li>
                     {% endfor %}
                 </ul>
             </div>
             
-            <div class="leaderboard">
-                <h2>💬 Top 10 Actividad</h2>
-                <ul class="leaderboard-list">
-                    {% for username, messages in top_activity %}
-                    <li class="leaderboard-item">
-                        <span class="rank {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">
-                            {% if loop.index == 1 %}🥇
-                            {% elif loop.index == 2 %}🥈
-                            {% elif loop.index == 3 %}🥉
-                            {% else %}#{{ loop.index }}
-                            {% endif %}
-                        </span>
-                        <span class="username">{{ username }}</span>
-                        <span class="score">{{ messages }} 💬</span>
+            <div class="panel">
+                <h2>💬 Top Actividad</h2>
+                <ul class="list">
+                    {% for username, msgs in top_activity[:5] %}
+                    <li class="list-item">
+                        <span>{{ username }}</span>
+                        <span style="color: #764ba2; font-weight: bold;">{{ msgs }}</span>
                     </li>
                     {% endfor %}
                 </ul>
             </div>
             
-            <div class="leaderboard">
-                <h2>👔 Inventario Bot</h2>
-                <ul class="leaderboard-list">
-                    {% for item in bot_inventory[:10] %}
-                    <li class="leaderboard-item">
-                        <span class="rank">#{{ loop.index }}</span>
-                        <span class="username" style="font-size: 0.85em;">{{ item.type }}</span>
-                        <span class="score" style="font-size: 0.75em;">{{ item.amount }}x</span>
-                    </li>
-                    {% else %}
-                    <li class="leaderboard-item">
-                        <span class="username">Sin items</span>
-                    </li>
-                    {% endfor %}
-                </ul>
+            <div class="panel">
+                <h2>⭐ Gestión VIP</h2>
+                <div class="input-group">
+                    <input type="text" id="vipUsername" placeholder="@username">
+                    <button class="btn btn-success" onclick="addVIP()">Agregar</button>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="removeVipUsername" placeholder="@username">
+                    <button class="btn btn-danger" onclick="removeVIP()">Quitar</button>
+                </div>
             </div>
         </div>
         
-        <div class="nav-buttons">
-            <a href="/vip" class="btn">⭐ Gestionar VIP</a>
-            <a href="/users" class="btn">👥 Ver Todos los Usuarios</a>
-            <a href="/analytics" class="btn">📊 Análisis y Gráficos</a>
-            <a href="/inventory" class="btn">👔 Inventario Completo</a>
+        <div class="panel">
+            <h2>🎮 Acciones del Bot</h2>
+            <div class="actions">
+                <button class="btn" onclick="sendCommand('!help')">📖 Ayuda</button>
+                <button class="btn" onclick="sendCommand('!leaderboard heart')">🏆 Leaderboard</button>
+                <button class="btn" onclick="openModal('tipModal')">💰 Dar Oro</button>
+                <button class="btn" onclick="openModal('tpModal')">📍 Teletransporte</button>
+                <button class="btn" onclick="openModal('emoteModal')">🎭 Emotes</button>
+                <button class="btn" onclick="openModal('outfitModal')">👔 Outfit</button>
+                <button class="btn btn-danger" onclick="sendCommand('!stopall')">⏹️ Detener Todo</button>
+                <button class="btn" onclick="location.reload()">🔄 Actualizar</button>
+            </div>
         </div>
-        
-        <div class="footer">
-            <p>🌌 Bot NOCTURNO © 2024 - Panel de Administración</p>
-            <p style="font-size: 0.9em; margin-top: 5px;">Actualizado: {{ config.get('last_update', 'Ahora') }}</p>
+    </div>
+    
+    <!-- Modal Dar Oro -->
+    <div id="tipModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('tipModal')">&times;</span>
+            <h2>💰 Dar Oro</h2>
+            <div class="input-group">
+                <input type="number" id="tipAmount" placeholder="Cantidad" min="1" max="5">
+                <button class="btn" onclick="tipAll()">Dar a Todos</button>
+            </div>
+            <div class="input-group">
+                <input type="number" id="tipOnlyAmount" placeholder="Número de usuarios" min="1">
+                <button class="btn" onclick="tipRandom()">Dar Aleatorio</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Teletransporte -->
+    <div id="tpModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('tpModal')">&times;</span>
+            <h2>📍 Teletransporte</h2>
+            <div class="input-group">
+                <input type="text" id="tpUser" placeholder="@username">
+                <input type="text" id="tpPoint" placeholder="punto">
+                <button class="btn" onclick="teleportUser()">Teletransportar</button>
+            </div>
+            <p style="margin-top: 10px; font-size: 0.85em; color: #666;">Puntos: vip, dj, directivo</p>
+        </div>
+    </div>
+    
+    <!-- Modal Emotes -->
+    <div id="emoteModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('emoteModal')">&times;</span>
+            <h2>🎭 Emotes</h2>
+            <div class="input-group">
+                <input type="text" id="emoteUser" placeholder="@username">
+                <input type="text" id="emoteId" placeholder="emote (1-224)">
+                <button class="btn" onclick="sendEmote()">Enviar</button>
+            </div>
+            <button class="btn" style="width: 100%; margin-top: 10px;" onclick="sendCommand('!automode')">🎭 Modo Auto</button>
+        </div>
+    </div>
+    
+    <!-- Modal Outfit -->
+    <div id="outfitModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('outfitModal')">&times;</span>
+            <h2>👔 Cambiar Outfit</h2>
+            <div class="input-group">
+                <input type="number" id="outfitNum" placeholder="Número de outfit" min="1">
+                <button class="btn" onclick="changeOutfit()">Aplicar</button>
+            </div>
+            <button class="btn" style="width: 100%; margin-top: 10px;" onclick="sendCommand('!copyoutfit')">📋 Copiar Mi Outfit</button>
         </div>
     </div>
     
     <script>
-        // Auto-refresh cada 30 segundos
-        setTimeout(() => {
-            location.reload();
-        }, 30000);
+        function sendCommand(cmd) {
+            fetch('/api/send_command', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({command: cmd})
+            }).then(r => r.json()).then(d => {
+                alert(d.message || 'Comando enviado');
+            });
+        }
+        
+        function addVIP() {
+            const username = document.getElementById('vipUsername').value.replace('@', '');
+            if (!username) return alert('Ingresa un username');
+            
+            fetch('/api/add_vip', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'username=' + username
+            }).then(r => r.json()).then(d => {
+                alert(d.message);
+                if (d.success) location.reload();
+            });
+        }
+        
+        function removeVIP() {
+            const username = document.getElementById('removeVipUsername').value.replace('@', '');
+            if (!username) return alert('Ingresa un username');
+            
+            fetch('/api/remove_vip', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'username=' + username
+            }).then(r => r.json()).then(d => {
+                alert(d.message);
+                if (d.success) location.reload();
+            });
+        }
+        
+        function tipAll() {
+            const amount = document.getElementById('tipAmount').value;
+            if (!amount || amount < 1 || amount > 5) return alert('Cantidad debe ser 1-5');
+            sendCommand('!tip all ' + amount);
+            closeModal('tipModal');
+        }
+        
+        function tipRandom() {
+            const amount = document.getElementById('tipOnlyAmount').value;
+            if (!amount || amount < 1) return alert('Ingresa número de usuarios');
+            sendCommand('!tip only ' + amount);
+            closeModal('tipModal');
+        }
+        
+        function teleportUser() {
+            const user = document.getElementById('tpUser').value.replace('@', '');
+            const point = document.getElementById('tpPoint').value;
+            if (!user || !point) return alert('Completa todos los campos');
+            sendCommand('!bring @' + user);
+            closeModal('tpModal');
+        }
+        
+        function sendEmote() {
+            const user = document.getElementById('emoteUser').value.replace('@', '');
+            const emote = document.getElementById('emoteId').value;
+            if (!user || !emote) return alert('Completa todos los campos');
+            sendCommand('!emote @' + user + ' ' + emote);
+            closeModal('emoteModal');
+        }
+        
+        function changeOutfit() {
+            const num = document.getElementById('outfitNum').value;
+            if (!num) return alert('Ingresa número de outfit');
+            sendCommand('!outfit ' + num);
+            closeModal('outfitModal');
+        }
+        
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+        
+        // Cerrar modal al hacer click fuera
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
     </script>
 </body>
 </html>

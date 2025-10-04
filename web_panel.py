@@ -69,6 +69,15 @@ def load_bot_inventory():
             return []
     return []
 
+def write_console_command(command):
+    """Escribe un comando para que el bot lo ejecute"""
+    try:
+        with open("console_message.txt", "w", encoding="utf-8") as f:
+            f.write(command)
+        return True
+    except:
+        return False
+
 @app.route('/')
 def index():
     config = load_config()
@@ -198,6 +207,24 @@ def remove_vip():
                 f.write(f"{vip_user}\n")
         
         return jsonify({"success": True, "message": f"{username} removido de VIP"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
+@app.route('/api/send_command', methods=['POST'])
+def send_command():
+    """Envía un comando al bot a través de console_message.txt"""
+    try:
+        data = request.json
+        command = data.get('command', '').strip()
+        
+        if not command:
+            return jsonify({"success": False, "message": "Comando vacío"})
+        
+        if write_console_command(command):
+            return jsonify({"success": True, "message": f"Comando enviado: {command}"})
+        else:
+            return jsonify({"success": False, "message": "Error escribiendo comando"})
+            
     except Exception as e:
         return jsonify({"success": False, "message": str(e)})
 
