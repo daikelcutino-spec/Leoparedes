@@ -366,6 +366,7 @@ class Bot(BaseBot):
         self.connection_retries = 0
         self.bot_mode = "idle"  # Modo por defecto: idle (sin emotes automáticos)
         self.current_emote_task = None  # Para controlar la tarea actual de emotes
+        self.webapi = None  # Se inicializará en on_start si es necesario
 
     async def connect_with_retry(self):
         """Подключение к серверу с повторными попытками"""
@@ -3868,8 +3869,10 @@ class Bot(BaseBot):
         crew_info = "Sin crew"
 
         try:
-            # Используем WebAPI para obtener datos del usuario
-            user_info = await self.webapi.get_user(user_id)
+            # Intentar usar WebAPI solo si está disponible
+            user_info = None
+            if hasattr(self, 'webapi') and self.webapi:
+                user_info = await self.webapi.get_user(user_id)
 
             # Otteniamo la data di creazione dell'account
             if user_info and hasattr(user_info.user, 'joined_at'):
@@ -3934,7 +3937,7 @@ class Bot(BaseBot):
 
         # Enviar como mensaje público o privado según el parámetro
         if public_response:
-            await self.highise.chat(info_message)
+            await self.highrise.chat(info_message)
         else:
             await self.highrise.send_whisper(user_id, info_message)
 
