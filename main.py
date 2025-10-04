@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 from highrise import BaseBot, User, Reaction, AnchorPosition, Position
-from highrise.models import SessionMetadata, CurrencyItem, Item, Error
+from highrise.models import SessionMetadata, CurrencyItem, Item, Error, Position as PositionModel
 
 # Функция логирования событий
 def log_event(event_type: str, message: str):
@@ -3289,7 +3289,12 @@ class Bot(BaseBot):
 
             target_username = msg[5:].strip().replace("@", "")
             try:
-                users = (await self.highrise.get_room_users()).content
+                room_response = await self.highrise.get_room_users()
+                if isinstance(room_response, Error):
+                    await send_response( f"❌ Error obteniendo usuarios: {room_response}")
+                    return
+                
+                users = room_response.content
                 bot_user = None
                 bot_pos = None
                 target_user = None
@@ -3310,11 +3315,20 @@ class Bot(BaseBot):
                     await send_response( f"❌ ¡Usuario {target_username} no encontrado!")
                     return
 
+                # Verificar que las posiciones sean Position objects
+                if not isinstance(bot_pos, Position) or not isinstance(target_pos, Position):
+                    await send_response( "❌ Error: Posiciones inválidas")
+                    return
+
                 # Guardar posición original del bot
-                original_pos = Position(bot_pos.x, bot_pos.y, bot_pos.z)
+                original_x, original_y, original_z = bot_pos.x, bot_pos.y, bot_pos.z
 
                 # Teletransportar bot DIRECTAMENTE al lado del usuario (offset de 1 bloque)
-                target_position = Position(target_pos.x + 1.0, target_pos.y, target_pos.z)
+                new_x = target_pos.x + 1.0
+                new_y = target_pos.y
+                new_z = target_pos.z
+                
+                target_position = Position(new_x, new_y, new_z)
                 await self.highrise.teleport(self.bot_id, target_position)
                 await send_response( f"🤖 Bot teletransportado a @{target_username}!")
 
@@ -3328,7 +3342,8 @@ class Bot(BaseBot):
                 await asyncio.sleep(3)
                 
                 # Retornar DIRECTAMENTE a posición original
-                await self.highrise.teleport(self.bot_id, original_pos)
+                original_position = Position(original_x, original_y, original_z)
+                await self.highrise.teleport(self.bot_id, original_position)
                 await send_response( "✅ Bot retornó a su posición original")
                 log_event("BOT_MOVE", f"{user.username} teletransportó bot a {target_username} y retornó")
 
