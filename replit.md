@@ -6,6 +6,19 @@ This is a Highrise bot application built with Python that manages automated inte
 
 ## Recent Changes
 
+**October 4, 2025 - Session 3**
+- ✅ **Fixed Auto Emote Cycle Startup**: Resolved issue where 224-emote cycle wasn't starting
+  - Simplified on_start method by removing blocking chat messages
+  - Enhanced start_auto_emote_cycle with cycle counter and progress logging (every 20 emotes)
+  - Added bot_mode check to allow stopping cycle if needed
+  - Added better error handling and recovery
+- ✅ **Improved Flashmode Auto-teleport**: Enhanced on_user_move for better reliability
+  - Clarified logic: only activates for floor changes (Y >= 1.0) with minimal horizontal movement
+  - Added explicit axis delta calculations for better precision
+  - Improved cooldown messaging and logging
+  - Added comprehensive documentation in code
+- ✅ Verified all features working correctly with no errors
+
 **October 4, 2025 - Session 2**
 - ✅ **Enhanced Reaction Commands**: Modified !thumbs, !clap, !wave to support advanced features
 - ✅ **Multiple Reactions**: Commands now support !thumbs/@clap/@wave @user [cantidad] to send multiple reactions (up to 30)
