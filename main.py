@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 from highrise import BaseBot, User, Reaction, AnchorPosition, Position
-from highrise.models import SessionMetadata, CurrencyItem, Item, Error, Position as PositionModel
+from highrise.models import SessionMetadata, CurrencyItem, Item, Error
 
 # Функция логирования событий
 def log_event(event_type: str, message: str):
@@ -3315,23 +3315,15 @@ class Bot(BaseBot):
                     await send_response( f"❌ ¡Usuario {target_username} no encontrado!")
                     return
 
-                # Guardar coordenadas originales del bot directamente
-                if isinstance(bot_pos, Position):
-                    original_x = bot_pos.x
-                    original_y = bot_pos.y
-                    original_z = bot_pos.z
-                else:
-                    await send_response( "❌ Error: Posición del bot inválida")
-                    return
+                # Guardar coordenadas originales del bot
+                original_x = bot_pos.x
+                original_y = bot_pos.y
+                original_z = bot_pos.z
 
                 # Calcular nueva posición cerca del usuario
-                if isinstance(target_pos, Position):
-                    new_x = target_pos.x + 1.0
-                    new_y = target_pos.y
-                    new_z = target_pos.z
-                else:
-                    await send_response( "❌ Error: Posición del usuario inválida")
-                    return
+                new_x = target_pos.x + 1.0
+                new_y = target_pos.y
+                new_z = target_pos.z
                 
                 # Teletransportar bot al usuario
                 target_position = Position(new_x, new_y, new_z)
@@ -3340,13 +3332,9 @@ class Bot(BaseBot):
 
                 # Bot hace punch y usuario reacciona con revival
                 try:
-                    # Bot ejecuta punch
                     await self.highrise.send_emote("emoji-punch", self.bot_id)
-                    await asyncio.sleep(0.5)  # Pausa breve
-                    
-                    # Usuario reacciona con revival
+                    await asyncio.sleep(0.5)
                     await self.highrise.send_emote("emote-death", target_user.id)
-                    
                     await send_response( f"🥊 Bot golpeó a @{target_username}!")
                 except Exception as emote_error:
                     log_event("WARNING", f"No se pudo hacer emote: {emote_error}")
@@ -3354,7 +3342,7 @@ class Bot(BaseBot):
                 # Esperar 3 segundos y retornar a posición original
                 await asyncio.sleep(3)
                 
-                # Retornar a posición original usando coordenadas guardadas
+                # Retornar a posición original
                 original_position = Position(original_x, original_y, original_z)
                 await self.highrise.teleport(self.bot_id, original_position)
                 await send_response( "✅ Bot retornó a su posición original")
