@@ -11,23 +11,28 @@ from typing import Dict, List, Optional, Set, Tuple, Union
 from highrise import BaseBot, User, Reaction
 from highrise.models import SessionMetadata, CurrencyItem, Item, Error, Position
 
-# Функция логирования событий
-def log_event(event_type: str, message: str):
-    """Логирование событий в файл"""
+# ============================================================================
+# CONFIGURACIÓN Y CONSTANTES
+# ============================================================================
+
+def load_config():
+    """Carga la configuración desde config.json"""
     try:
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log_message = f"[{timestamp}] [{event_type}] {message}\n"
-
-        with open("bot_log.txt", "a", encoding="utf-8") as f:
-            f.write(log_message)
-
-        # Выводим в консоль только важные события
-        if event_type in ["ERROR", "WARNING", "ADMIN", "MOD"]:
-            print(log_message.strip())
+        with open("config.json", "r", encoding="utf-8") as f:
+            return json.load(f)
     except Exception as e:
-        print(f"Error logging event: {e}")
+        print(f"Error cargando configuración: {e}")
+        return {}
 
-# Глобальные переменные для хранения данных
+config = load_config()
+ADMIN_IDS = config.get("admin_ids", [])
+OWNER_ID = config.get("owner_id", "")
+MODERATOR_IDS = config.get("moderator_ids", [])
+VIP_ZONE = config.get("vip_zone", {"x": 0, "y": 0, "z": 0})
+FORBIDDEN_ZONES = config.get("forbidden_zones", [])
+BOT_WALLET = config.get("bot_wallet", 0)
+
+# Variables globales
 VIP_USERS = set()
 BANNED_USERS = {}
 MUTED_USERS = {}
@@ -37,55 +42,80 @@ USER_INFO = {}
 USER_NAMES = {}
 TELEPORT_POINTS = {}
 ACTIVE_EMOTES = {}
-USER_JOIN_TIMES = {}  # Словарь для хранения времени входа пользователей
-SAVED_OUTFITS = {}  # Diccionario para almacenar outfits guardados {número: outfit}
+USER_JOIN_TIMES = {}
+SAVED_OUTFITS = {}
 
-# Función para sохранения данных
+# Constantes de reintentos
+MAX_RETRIES = 3
+RETRY_DELAY = 5
+
+# ============================================================================
+# SISTEMA DE LOGGING
+# ============================================================================
+
+def log_event(event_type: str, message: str):
+    """Sistema de logging de eventos"""
+    try:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_message = f"[{timestamp}] [{event_type}] {message}\n"
+
+        with open("bot_log.txt", "a", encoding="utf-8") as f:
+            f.write(log_message)
+
+        if event_type in ["ERROR", "WARNING", "ADMIN", "MOD"]:
+            print(log_message.strip())
+    except Exception as e:
+        print(f"Error logging event: {e}")
+
+# ============================================================================
+# SISTEMA DE PERSISTENCIA DE DATOS
+# ============================================================================
+
 def save_user_info():
-    """Сохраняет информацию о пользователях"""
+    """Guarda información de usuarios"""
     try:
         os.makedirs("data", exist_ok=True)
+        serializable_data = {}
+        for user_id, data in USER_INFO.items():
+            serializable_data[user_id] = {}
+            for key, value in data.items():
+                if isinstance(value, datetime):
+                    serializable_data[user_id][key] = value.isoformat()
+                else:
+                    serializable_data[user_id][key] = value
+
         with open("data/user_info.json", "w", encoding="utf-8") as f:
-            # Преобразуем datetime объекты в строки для сериализации
-            serializable_data = {}
-            for user_id, data in USER_INFO.items():
-                serializable_data[user_id] = {}
-                for key, value in data.items():
-                    if isinstance(value, datetime):
-                        serializable_data[user_id][key] = value.isoformat()
-                    else:
-                        serializable_data[user_id][key] = value
             json.dump(serializable_data, f, indent=2, ensure_ascii=False)
         print(f"Información de usuarios guardada: {len(USER_INFO)} usuarios")
     except Exception as e:
         print(f"Error guardando información de usuarios: {e}")
 
 def save_leaderboard_data():
-    """Сохраняет данные лидерборда"""
+    """Guarda datos del leaderboard"""
     try:
         os.makedirs("data", exist_ok=True)
 
-        # Сохраняем сердечки
+        # Guardar corazones
         with open("data/hearts.txt", "w", encoding="utf-8") as f:
-            f.write("# Сердечки пользователей (user_id:hearts)\n")
+            f.write("# Corazones de usuarios (user_id:hearts:username)\n")
             for user_id, hearts in USER_HEARTS.items():
                 username = USER_NAMES.get(user_id, f"User_{user_id[:8]}")
                 f.write(f"{user_id}:{hearts}:{username}\n")
 
-        # Сохраняем активность
+        # Guardar actividad
         with open("data/activity.txt", "w", encoding="utf-8") as f:
-            f.write("# Активность пользователей (user_id:messages:last_activity)\n")
+            f.write("# Actividad de usuarios (user_id:messages:last_activity:username)\n")
             for user_id, data in USER_ACTIVITY.items():
                 username = USER_NAMES.get(user_id, f"User_{user_id[:8]}")
                 last_activity = data["last_activity"].isoformat() if isinstance(data["last_activity"], datetime) else str(data["last_activity"])
                 f.write(f"{user_id}:{data['messages']}:{last_activity}:{username}\n")
 
-        print(f"Datos del leaderboard guardados: {len(USER_HEARTS)} usuarios con corazones, {len(USER_ACTIVITY)} usuarios con actividad")
+        print(f"Datos del leaderboard guardados: {len(USER_HEARTS)} corazones, {len(USER_ACTIVITY)} actividad")
     except Exception as e:
         print(f"Error guardando datos del leaderboard: {e}")
 
 async def save_bot_inventory(bot_instance):
-    """Guarda el inventario del bot en archivo JSON"""
+    """Guarda el inventario del bot"""
     try:
         inventory_response = await bot_instance.highrise.get_inventory()
         if not isinstance(inventory_response, Error):
@@ -98,34 +128,19 @@ async def save_bot_inventory(bot_instance):
                 }
                 for item in inventory
             ]
-            
+
             os.makedirs("data", exist_ok=True)
             with open("data/bot_inventory.json", "w", encoding="utf-8") as f:
                 json.dump(inventory_data, f, indent=2, ensure_ascii=False)
-            
+
             print(f"✅ Inventario del bot guardado: {len(inventory_data)} items")
     except Exception as e:
         print(f"❌ Error guardando inventario del bot: {e}")
 
-def load_config():
-    """Загружает конфигурацию из файла"""
-    try:
-        with open("config.json", "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception as e:
-        print(f"Error cargando configuración: {e}")
-        return {}
+# ============================================================================
+# CATÁLOGO DE EMOTES
+# ============================================================================
 
-# Загружаем конфигурацию
-config = load_config()
-ADMIN_IDS = config.get("admin_ids", [])
-OWNER_ID = config.get("owner_id", "")
-MODERATOR_IDS = config.get("moderator_ids", [])
-VIP_ZONE = config.get("vip_zone", {"x": 0, "y": 0, "z": 0})
-FORBIDDEN_ZONES = config.get("forbidden_zones", [])
-BOT_WALLET = config.get("bot_wallet", 0)
-
-# Lista de emotes específica con los 224 emotes solicitados
 emotes = {
     "1": {"id": "emote-looping", "name": "fairytwirl", "duration": 9.89, "is_free": True},
     "2": {"id": "idle-floating", "name": "fairyfloat", "duration": 27.60, "is_free": True},
@@ -353,72 +368,74 @@ emotes = {
     "224": {"id": "emoji-mind-blown", "name": "mindblown", "duration": 3.46, "is_free": True}
 }
 
-# Добавляем задержку и повторные попытки подключения
-MAX_RETRIES = 3
-RETRY_DELAY = 5
+# ============================================================================
+# CLASE PRINCIPAL DEL BOT
+# ============================================================================
 
 class Bot(BaseBot):
     def __init__(self):
         super().__init__()
         self.last_announcement = 0
-        self.user_positions = {}  # Словарь для хранения последних позиций пользователей
+        self.user_positions = {}
         self.connection_retries = 0
-        self.bot_mode = "idle"  # Modo por defecto: idle (sin emotes automáticos)
-        self.current_emote_task = None  # Para controlar la tarea actual de emotes
-        self.webapi = None  # Se inicializará en on_start si es necesario
+        self.bot_mode = "idle"
+        self.current_emote_task = None
+        self.webapi = None
+        self.flashmode_cooldown = {}
+
+    # ========================================================================
+    # MÉTODOS DE INICIALIZACIÓN Y CONEXIÓN
+    # ========================================================================
 
     async def connect_with_retry(self):
-        """Подключение к серверу с повторными попытками"""
-        # Esta función simplemente retorna True ya que la conexión real
-        # es manejada por el framework de Highrise automáticamente
+        """Conexión con reintentos"""
         print("✅ Conexión establecida con High Rise")
         return True
 
     async def on_start(self, session_metadata: SessionMetadata) -> None:
         """Inicio del bot"""
         try:
-            # Store bot ID from session metadata for reliable identification
             self.bot_id = session_metadata.user_id
-            log_event("BOT", f"Bot ID stored: {self.bot_id}")
+            log_event("BOT", f"Bot ID almacenado: {self.bot_id}")
 
             if await self.connect_with_retry():
                 print("Бот успешно подключен!")
                 self.load_data()
-                # Запускаем объявления
+
+                # Iniciar tareas en segundo plano
                 asyncio.create_task(self.start_announcements())
                 asyncio.create_task(self.check_console_messages())
                 asyncio.create_task(self.periodic_inventory_save())
-                # Configurar outfit y emote inicial del bot
+
+                # Configurar apariencia inicial
                 await self.setup_initial_bot_appearance()
-                
-                # Guardar inventario inicial
                 await save_bot_inventory(self)
 
-                # Ejecutar ciclo automático de 224 emotes en bucle infinito
-                try:
-                    await asyncio.sleep(2)  # Espera breve para estabilizar conexión
-                    log_event("BOT", "Preparando ciclo automático de 224 emotes en bucle infinito")
-                    await self.highrise.chat("¡El bot ha entrado en la sala! Iniciando CICLO AUTOMÁTICO DE EMOTES...")
-                    await self.highrise.chat("🎭 ¡MODO AUTOMÁTICO INFINITO ACTIVADO!")
-                    # Iniciar ciclo automático en tarea separada
-                    self.bot_mode = "auto"
-                    asyncio.create_task(self.start_auto_emote_cycle())
-                    log_event("BOT", "Ciclo automático de 224 emotes iniciado")
-                except Exception as e:
-                    log_event("ERROR", f"Error en ciclo automático: {e}")
-                    print(f"⚠️ Error en ciclo automático: {e}")
+                # Iniciar ciclo automático de emotes
+                await asyncio.sleep(2)
+                log_event("BOT", "Preparando ciclo automático de 224 emotes")
+                await self.highrise.chat("¡El bot ha entrado en la sala! Iniciando CICLO AUTOMÁTICO DE EMOTES...")
+                await self.highrise.chat("🎭 ¡MODO AUTOMÁTICO INFINITO ACTIVADO!")
+
+                self.bot_mode = "auto"
+                asyncio.create_task(self.start_auto_emote_cycle())
+                log_event("BOT", "Ciclo automático iniciado")
             else:
-                print("Не удалось подключиться к серверу")
+                print("No se pudo conectar al servidor")
                 sys.exit(1)
         except Exception as e:
             print(f"Error en on_start: {e}")
-        # Bot iniciado - se muestra solo en consola
+
         print("🤖 ¡Bot iniciado! Usa !help para ver los comandos.")
+
+    # ========================================================================
+    # SISTEMA DE CARGA Y GUARDADO DE DATOS
+    # ========================================================================
 
     def load_data(self):
         """Carga datos desde archivos"""
         try:
-            # Carga de usuarios VIP
+            # Cargar VIP
             if os.path.exists("data/vip.txt"):
                 with open("data/vip.txt", "r", encoding="utf-8") as f:
                     for line in f:
@@ -426,7 +443,7 @@ class Bot(BaseBot):
                             VIP_USERS.add(line.strip())
             print(f"Datos VIP cargados: {len(VIP_USERS)} usuarios")
 
-            # Carga de puntos de teletransporte
+            # Cargar puntos de teletransporte
             if os.path.exists("data/teleport_points.txt"):
                 with open("data/teleport_points.txt", "r", encoding="utf-8") as f:
                     for line in f:
@@ -434,9 +451,7 @@ class Bot(BaseBot):
                             parts = line.strip().split("|")
                             if len(parts) == 4:
                                 name = parts[0]
-                                x = float(parts[1])
-                                y = float(parts[2])
-                                z = float(parts[3])
+                                x, y, z = float(parts[1]), float(parts[2]), float(parts[3])
                                 TELEPORT_POINTS[name] = {"x": x, "y": y, "z": z}
             print(f"Puntos de teletransporte cargados: {len(TELEPORT_POINTS)} puntos")
         except Exception as e:
@@ -446,6 +461,8 @@ class Bot(BaseBot):
         """Guarda datos en archivos"""
         try:
             os.makedirs("data", exist_ok=True)
+
+            # Guardar VIP
             with open("data/vip.txt", "w", encoding="utf-8") as f:
                 f.write("# Usuarios VIP (un ID por línea)\n")
                 for user_id in VIP_USERS:
@@ -457,36 +474,38 @@ class Bot(BaseBot):
                 f.write("# Puntos de teletransporte (nombre|x|y|z)\n")
                 for name, coords in TELEPORT_POINTS.items():
                     f.write(f"{name}|{coords['x']}|{coords['y']}|{coords['z']}\n")
-            print(f"Puntos de teletransporte guardados: {len(TELEPORT_POINTS)} puntos")
+            print(f"Puntos guardados: {len(TELEPORT_POINTS)}")
 
-            # Salviamo le informazioni sui giocatori
             save_user_info()
             save_leaderboard_data()
         except Exception as e:
             print(f"Error guardando datos: {e}")
 
+    # ========================================================================
+    # SISTEMA DE VERIFICACIÓN DE PERMISOS
+    # ========================================================================
+
     def is_admin(self, user_id: str) -> bool:
-        """Verifica si el usuario es administrador"""
+        """Verifica si es administrador"""
         return user_id in ADMIN_IDS or user_id == OWNER_ID
 
     def is_moderator(self, user_id: str) -> bool:
-        """Verifica si el usuario es moderador"""
+        """Verifica si es moderador"""
         return user_id in MODERATOR_IDS or self.is_admin(user_id)
 
     def is_vip(self, user_id: str) -> bool:
-        """Verifica si el usuario es VIP por user_id"""
-        # Buscamos el username correspondiente al user_id
+        """Verifica si es VIP por user_id"""
         username = USER_NAMES.get(user_id)
         if username:
             return username in VIP_USERS
         return False
 
     def is_vip_by_username(self, username: str) -> bool:
-        """Verifica si el usuario es VIP por username"""
+        """Verifica si es VIP por username"""
         return username in VIP_USERS
 
     def is_banned(self, user_id: str) -> bool:
-        """Verifica si el usuario está baneado"""
+        """Verifica si está baneado"""
         if user_id in BANNED_USERS:
             ban_data = BANNED_USERS[user_id]
             if isinstance(ban_data, dict) and "time" in ban_data:
@@ -504,7 +523,7 @@ class Bot(BaseBot):
         return False
 
     def is_muted(self, user_id: str) -> bool:
-        """Verifica si el usuario está silenciado"""
+        """Verifica si está silenciado"""
         if user_id in MUTED_USERS:
             mute_time = MUTED_USERS[user_id]
             if isinstance(mute_time, str):
@@ -518,9 +537,49 @@ class Bot(BaseBot):
             return True
         return False
 
+    # ========================================================================
+    # SISTEMA DE GESTIÓN DE USUARIOS
+    # ========================================================================
+
     def get_user_hearts(self, user_id: str) -> int:
-        """Obtiene la cantidad de corazones del usuario"""
+        """Obtiene corazones del usuario"""
         return USER_HEARTS.get(user_id, 0)
+
+    def add_user_hearts(self, user_id: str, hearts: int, username: str | None = None):
+        """Añade corazones al usuario"""
+        if user_id not in USER_HEARTS:
+            USER_HEARTS[user_id] = 0
+        USER_HEARTS[user_id] += hearts
+
+        if username:
+            USER_NAMES[user_id] = username
+
+        save_leaderboard_data()
+
+    def update_activity(self, user_id: str):
+        """Actualiza actividad del usuario"""
+        if user_id not in USER_ACTIVITY:
+            USER_ACTIVITY[user_id] = {"messages": 0, "last_activity": datetime.now()}
+        USER_ACTIVITY[user_id]["messages"] += 1
+        USER_ACTIVITY[user_id]["last_activity"] = datetime.now()
+
+        if user_id in USER_INFO:
+            USER_INFO[user_id]["total_messages"] = USER_ACTIVITY[user_id]["messages"]
+
+    def update_user_info(self, user_id: str, username: str):
+        """Actualiza información del usuario"""
+        if user_id not in USER_INFO:
+            USER_INFO[user_id] = {
+                "username": username,
+                "first_seen": datetime.now().isoformat(),
+                "account_created": None,
+                "total_time_in_room": 0,
+                "total_messages": 0,
+                "time_joined": time.time()
+            }
+        else:
+            USER_INFO[user_id]["username"] = username
+            USER_INFO[user_id]["total_messages"] = USER_ACTIVITY.get(user_id, {}).get("messages", 0)
 
     def get_user_role_info(self, user: User) -> str:
         """Obtiene información sobre el rol del usuario"""
@@ -538,71 +597,18 @@ class Bot(BaseBot):
         else:
             return "👤 Usuario Normal"
 
-    def add_user_hearts(self, user_id: str, hearts: int, username: str | None = None):
-        """Añade corazones al usuario"""
-        print(f"DEBUG: add_user_hearts вызван с user_id={user_id}, hearts={hearts}, username={username}")
-
-        if user_id not in USER_HEARTS:
-            USER_HEARTS[user_id] = 0
-        USER_HEARTS[user_id] += hearts
-
-        # Обновляем username если предоставлен или если его нет в USER_NAMES
-        if username:
-            USER_NAMES[user_id] = username
-        elif user_id not in USER_NAMES:
-            # Если username не предоставлен, но его нет в USER_NAMES, попробуем найти в текущих пользователях
-            print(f"DEBUG: Username не найден для {user_id}, попробуем найти позже")
-
-        print(f"DEBUG: USER_HEARTS после добавления = {USER_HEARTS}")
-        print(f"DEBUG: USER_NAMES после добавления = {USER_NAMES}")
-
-        save_leaderboard_data()
-        display_username = username if username is not None else f"User_{user_id[:8]}"
-        print(f"DEBUG: Добавлено {hearts} сердечек пользователю {display_username}. Всего: {USER_HEARTS[user_id]}")
-
-    def update_activity(self, user_id: str):
-        """Actualiza la actividad del usuario"""
-        if user_id not in USER_ACTIVITY:
-            USER_ACTIVITY[user_id] = {"messages": 0, "last_activity": datetime.now()}
-        USER_ACTIVITY[user_id]["messages"] += 1
-        USER_ACTIVITY[user_id]["last_activity"] = datetime.now()
-
-        # Aggiorniamo le informazioni sul giocatore
-        if user_id in USER_INFO:
-            USER_INFO[user_id]["total_messages"] = USER_ACTIVITY[user_id]["messages"]
-
-    def update_user_info(self, user_id: str, username: str):
-        """Aggiorna le informazioni sul giocatore"""
-        if user_id not in USER_INFO:
-            USER_INFO[user_id] = {
-                "username": username,
-                "first_seen": datetime.now().isoformat(),
-                "account_created": None,  # Будет заполнено при получении данных пользователя
-                "total_time_in_room": 0,
-                "total_messages": 0,
-                "time_joined": time.time()  # Используем time.time() как в документации
-            }
-        else:
-            USER_INFO[user_id]["username"] = username
-            USER_INFO[user_id]["total_messages"] = USER_ACTIVITY.get(user_id, {}).get("messages", 0)
-
-    def get_user_total_time(self, user_id: str) -> int:
-        """Ottiene il tempo totale del giocatore nella stanza in secondi"""
-        return USER_INFO.get(user_id, {}).get("total_time_in_room", 0)
-
     def format_time(self, seconds: int) -> str:
-        """Formatta il tempo in formato leggibile"""
+        """Formatea el tiempo en formato legible"""
         hours = seconds // 3600
         minutes = (seconds % 3600) // 60
         seconds = seconds % 60
 
         if hours > 0:
-            return f"{hours}o {minutes}m {seconds}s"
+            return f"{hours}h {minutes}m {seconds}s"
         elif minutes > 0:
             return f"{minutes}m {seconds}s"
         else:
             return f"{seconds}s"
-        save_leaderboard_data()
 
     def get_help_for_user(self, user_id: str, username: str) -> str:
         """Retorna comandos disponibles según el rol del usuario"""
@@ -612,62 +618,62 @@ class Bot(BaseBot):
 
         if is_owner:
             return ("👑 COMANDOS PROPIETARIO:\n"
-                   "📊 !info\n"
-                   "🎭 !role\n"
-                   "📋 !emote list\n"
-                   "💖 !heart @user (sin límites)\n"
-                   "🎮 Juego amorometro\n"
-                   "🎭 Emotes a todos: [emote] all|||"
-                   "⚡ !flash [x] [y] [z]\n"
-                   "🎯 !bring @user\n"
-                   "⭐ !vip @user\n"
-                   "🔨 !freeze @user\n"
-                   "🔇 !mute @user\n"
-                   "🚫 !ban @user|||"
-                   "🗺️ !addzone [nombre]\n"
-                   "🤖 !bot @user\n"
-                   "🕺 !flossmode\n"
-                   "🎭 !automode")
+                    "📊 !info\n"
+                    "🎭 !role\n"
+                    "📋 !emote list\n"
+                    "💖 !heart @user (sin límites)\n"
+                    "🎮 Juego amorometro\n"
+                    "🎭 Emotes a todos: [emote] all|||"
+                    "⚡ !flash [x] [y] [z]\n"
+                    "🎯 !bring @user\n"
+                    "⭐ !vip @user\n"
+                    "🔨 !freeze @user\n"
+                    "🔇 !mute @user\n"
+                    "🚫 !ban @user|||"
+                    "🗺️ !addzone [nombre]\n"
+                    "🤖 !bot @user\n"
+                    "🕺 !flossmode\n"
+                    "🎭 !automode")
 
         elif is_admin:
             return ("⚔️ COMANDOS ADMIN:\n"
-                   "📊 !info\n"
-                   "🎭 !role\n"
-                   "📋 !emote list\n"
-                   "💖 !heart @user (hasta 100)\n"
-                   "🎮 Juego amorometro|||"
-                   "🎭 Emotes a todos: [emote] all\n"
-                   "⚡ !flash [x] [y] [z]\n"
-                   "🎯 !bring @user\n"
-                   "⭐ !vip @user\n"
-                   "🔨 !freeze @user\n"
-                   "🔇 !mute @user|||"
-                   "🚫 !ban @user\n"
-                   "🗺️ !addzone [nombre]\n"
-                   "🤖 !bot @user\n"
-                   "🕺 !flossmode\n"
-                   "🎭 !automode")
+                    "📊 !info\n"
+                    "🎭 !role\n"
+                    "📋 !emote list\n"
+                    "💖 !heart @user (hasta 100)\n"
+                    "🎮 Juego amorometro|||"
+                    "🎭 Emotes a todos: [emote] all\n"
+                    "⚡ !flash [x] [y] [z]\n"
+                    "🎯 !bring @user\n"
+                    "⭐ !vip @user\n"
+                    "🔨 !freeze @user\n"
+                    "🔇 !mute @user|||"
+                    "🚫 !ban @user\n"
+                    "🗺️ !addzone [nombre]\n"
+                    "🤖 !bot @user\n"
+                    "🕺 !flossmode\n"
+                    "🎭 !automode")
 
         elif is_vip:
             return ("⭐ COMANDOS VIP:\n"
-                   "📊 !info\n"
-                   "🎭 !role\n"
-                   "📋 !emote list\n"
-                   "💖 !heart @user (limitado)\n"
-                   "🎮 Juego amorometro|||"
-                   "🎭 Emotes personales\n"
-                   "⚡ !flash [x] [y] [z]\n"
-                   "🔥 vip - zona VIP")
+                    "📊 !info\n"
+                    "🎭 !role\n"
+                    "📋 !emote list\n"
+                    "💖 !heart @user (limitado)\n"
+                    "🎮 Juego amorometro|||"
+                    "🎭 Emotes personales\n"
+                    "⚡ !flash [x] [y] [z]\n"
+                    "🔥 vip - zona VIP")
 
         else:
             return ("👤 COMANDOS USUARIO:\n"
-                   "📊 !info\n"
-                   "🎭 !role\n"
-                   "📋 !emote list\n"
-                   "💖 !heart @user (limitado)\n"
-                   "🎮 Juego amorometro|||"
-                   "🎭 Emotes personales\n"
-                   "⚡ !flash [x] [y] [z]")
+                    "📊 !info\n"
+                    "🎭 !role\n"
+                    "📋 !emote list\n"
+                    "💖 !heart @user (limitado)\n"
+                    "🎮 Juego amorometro|||"
+                    "🎭 Emotes personales\n"
+                    "⚡ !flash [x] [y] [z]")
 
     def is_in_forbidden_zone(self, x: float, y: float, z: float) -> bool:
         """Verifica si el punto está en zona prohibida"""
@@ -693,240 +699,97 @@ class Bot(BaseBot):
 
     async def send_emote_loop(self, user_id: str, emote_id: str):
         """Inicia la emoción en un bucle infinito"""
-        print(f"DEBUG: Iniciando send_emote_loop para usuario {user_id} con emote {emote_id}")
         ACTIVE_EMOTES[user_id] = emote_id
-        print(f"DEBUG: ACTIVE_EMOTES después de agregar: {ACTIVE_EMOTES}")
 
-        # Проверяем, что эмоция существует
-        if emote_id not in [emote["id"] for emote in emotes.values()]:
-            # No hay usuario específico aquí, se mantiene como print
-            # Error en animación - este caso no tiene user context
-            if user_id in ACTIVE_EMOTES:
-                del ACTIVE_EMOTES[user_id]
+        emote_info = next((e for e in emotes.values() if e["id"] == emote_id), None)
+        if not emote_info:
+            if user_id in ACTIVE_EMOTES: del ACTIVE_EMOTES[user_id]
             return
-
-        # Получаем имя пользователя для сообщений
-        username = USER_NAMES.get(user_id, "Usuario")
 
         while user_id in ACTIVE_EMOTES and ACTIVE_EMOTES[user_id] == emote_id and ACTIVE_EMOTES[user_id] is not None:
             try:
-                print(f"DEBUG: Enviando emote {emote_id} a usuario {user_id}")
                 await self.highrise.send_emote(emote_id, user_id)
-                duration = emotes.get(emote_id, {}).get("duration", 5)
-                print(f"DEBUG: Esperando {duration} segundos antes del siguiente emote")
+                duration = emote_info.get("duration", 5)
                 await asyncio.sleep(duration)
             except Exception as e:
-                print(f"DEBUG: Error en send_emote_loop: {e}")
-                # Error handling for different types of errors
-                if "not found" in str(e).lower() or "invalid" in str(e).lower():
-                    print("Error: Animation not found or invalid")
-                elif "permission" in str(e).lower() or "access" in str(e).lower():
-                    print("Error: Permission or access denied")
-                else:
-                    print("Error: General error occurred")
+                print(f"Error en send_emote_loop: {e}")
                 break
 
-        print(f"DEBUG: Bucle terminado para usuario {user_id}")
-        # Limpiamos el diccionario si el usuario ya no está activo
         if user_id in ACTIVE_EMOTES and ACTIVE_EMOTES[user_id] is None:
             del ACTIVE_EMOTES[user_id]
-            print(f"DEBUG: Usuario {user_id} eliminado de ACTIVE_EMOTES al final del bucle")
 
     async def stop_emote_loop(self, user_id: str):
         """Detiene la emoción en el bucle"""
-        print(f"DEBUG: Intentando detener animación para usuario {user_id}")
-        print(f"DEBUG: ACTIVE_EMOTES antes: {ACTIVE_EMOTES}")
-
         if user_id in ACTIVE_EMOTES:
-            print(f"DEBUG: Usuario {user_id} encontrado en ACTIVE_EMOTES")
-            # Cambiamos el emote_id a None para forzar la parada del bucle
             ACTIVE_EMOTES[user_id] = None
-            print(f"DEBUG: ACTIVE_EMOTES después de None: {ACTIVE_EMOTES}")
-
-            # Enviamos múltiples animaciones de "idle" para asegurar que se detenga
             try:
-                # Intentamos con diferentes animaciones de parada
                 stop_animations = ["idle", "idle-loop-happy", "idle-loop-sad", "idle-loop-tired"]
                 for stop_anim in stop_animations:
                     try:
-                        print(f"DEBUG: Intentando enviar animación de parada: {stop_anim}")
                         await self.highrise.send_emote(stop_anim, user_id)
-                        print(f"DEBUG: Animación de parada {stop_anim} enviada exitosamente")
-                        await asyncio.sleep(0.1)  # Pequeña pausa entre animaciones
-                    except Exception as e:
-                        print(f"DEBUG: Error enviando {stop_anim}: {e}")
+                        await asyncio.sleep(0.1)
+                    except Exception:
                         continue
             except Exception as e:
-                print(f"DEBUG: Error general en stop_animations: {e}")
+                print(f"Error general en stop_animations: {e}")
 
-            # Esperamos más tiempo para que el bucle se detenga completamente
-            await asyncio.sleep(1.0)  # Aumentamos el tiempo de espera
-
-            # Luego eliminamos completamente del diccionario
+            await asyncio.sleep(1.0)
             if user_id in ACTIVE_EMOTES:
                 del ACTIVE_EMOTES[user_id]
-                print(f"DEBUG: Usuario {user_id} eliminado de ACTIVE_EMOTES")
-
-            print(f"DEBUG: ACTIVE_EMOTES final: {ACTIVE_EMOTES}")
-        else:
-            print(f"DEBUG: Usuario {user_id} NO encontrado en ACTIVE_EMOTES")
 
     async def handle_command(self, user: User, message: str, is_whisper: bool) -> None:
-        """
-        Procesa el comando y responde.
-        :param is_whisper: True si la respuesta debe ser un susurro, False para chat público.
-        """
+        """Procesa comandos del usuario"""
         global VIP_ZONE
-
         msg = message.strip()
         user_id = user.id
         username = user.username
 
-        # Lista de comandos que SIEMPRE responden de forma pública
         public_commands = [
-            "!game love",
-            "!info",
-            "!role",
-            "!leaderboard",
-            "!bot "
+            "!game love", "!info", "!role", "!leaderboard", "!bot "
         ]
-
-        # Determinar si este comando debe ser público
         force_public = any(msg.startswith(cmd) for cmd in public_commands)
 
         async def send_response(text: str):
-            """Helper to send response via whisper or public chat based on command type"""
-            # Si el comando está en la lista pública, SIEMPRE responder en público
             if force_public:
                 await self.highrise.chat(text)
-            # Todos los demás comandos responden SIEMPRE por whisper
             else:
                 await self.highrise.send_whisper(user.id, text)
 
-        # COMMAND PROCESSING LOGIC STARTS HERE
-        # All commands from on_chat are now handled here
-
-        # Comando temporal para depurar métodos de Highrise
-        if msg == "!methods":
-            if self.is_admin(user_id):
-                methods = [method for method in dir(self.highrise) if not method.startswith('_')]
-                await send_response( f"🔍 Métodos disponibles de Highrise: {', '.join(methods[:10])}")
-                if len(methods) > 10:
-                    await send_response( f"🔍 ... y {len(methods)-10} métodos más")
-                # Buscamos métodos de moderación
-                mod_methods = [m for m in methods if any(word in m.lower() for word in ['kick', 'mute', 'ban', 'moderate', 'freeze'])]
-                if mod_methods:
-                    await send_response( f"🎯 Métodos de moderación: {', '.join(mod_methods)}")
-                else:
-                    await send_response( "❌ Métodos de moderación no encontrados")
-            else:
-                await send_response( "❌ ¡Solo administradores pueden usar este comando!")
-            return
-
-        # Comando !help - catálogo personalizado por rol
+        # Comando !help
         if msg == "!help":
             help_text = self.get_help_for_user(user_id, username)
-            # Dividir por grupos usando ||| como separador
             help_groups = help_text.split('|||')
-
             for group in help_groups:
                 if group.strip():
                     await send_response(group.strip())
-                    await asyncio.sleep(0.3)  # Pequeña pausa entre mensajes
+                    await asyncio.sleep(0.3)
             return
 
-        # Comando !info - información pública del jugador
+        # Comando !info
         if msg == "!info":
             await self.show_user_info(user, public_response=True)
             return
-
-        # Comando !role - mostrar roles de usuario
-        if msg == "!role":
-            role_info = self.get_user_role_info(user)
-            await send_response(f"🎭 {role_info}")
-            return
-
-        # Comando !role list - mostrar lista de todos los roles (sin restricción)
-        if msg == "!role list":
-            roles_message = "🎭 LISTA DE ROLES:\n"
-            roles_message += "👑 Propietario - Control total\n"
-            roles_message += "🛡️ Administrador - Moderación y gestión\n"
-            roles_message += "⚖️ Moderador - Moderación básica\n"
-            roles_message += "⭐ VIP - Acceso a zonas especiales\n"
-            roles_message += "👤 Usuario Normal - Acceso básico"
-            await send_response( roles_message)
-            return
-
-        # Comando !info @username - informazioni su un altro giocatore
         if msg.startswith("!info @"):
             target_username = msg[7:].strip()
             await self.show_user_info_by_username(target_username)
             return
 
-        # Sección !help interaction
-        if msg == "!help interaction":
-            await send_response( "🥊 COMANDOS DE INTERACCIÓN:\n!punch @user — golpear (cualquier distancia)\n!slap @user — bofetada (cualquier distancia)\n!flirt @user — coquetear (máx. 3 bloques)\n!scare @user — asustar (máx. 3 bloques)\n!electro @user — electricidad (máx. 3 bloques)\n!hug @user — abrazar (máx. 3 bloques)\n!ninja @user — ninja (máx. 3 bloques)\n!laugh @user — reír (máx. 3 bloques)\n!boom @user — explosión (máx. 3 bloques)")
+        # Comando !role
+        if msg == "!role":
+            role_info = self.get_user_role_info(user)
+            await send_response(f"🎭 {role_info}")
+            return
+        if msg == "!role list":
+            await send_response("🎭 LISTA DE ROLES:\n👑 Propietario\n🛡️ Administrador\n⚖️ Moderador\n⭐ VIP\n👤 Usuario Normal")
             return
 
-        # Sección !help teleport
-        if msg == "!help teleport":
-            await send_response( "📍 COMANDOS DE TELETRANSPORTE:\n!tplist — lista de puntos\n[nombre_punto] — teletransporte al punto\n!tele zonaVIP — zona VIP")
-            return
+        # Ayuda para secciones
+        if msg == "!help interaction": await send_response("🥊 COMANDOS DE INTERACCIÓN:\n!punch @user — golpear\n!slap @user — bofetada\n!flirt @user — coquetear\n!scare @user — asustar\n!electro @user — electricidad\n!hug @user — abrazar\n!ninja @user — ninja\n!laugh @user — reír\n!boom @user — explosión")
+        if msg == "!help teleport": await send_response("📍 COMANDOS DE TELETRANSPORTE:\n!tplist — lista de puntos\n[nombre_punto] — teletransporte al punto\n!tele zonaVIP — zona VIP")
+        if msg == "!help leaderboard": await send_response("🏆 TABLA DE CLASIFICACIÓN:\n!leaderboard heart — top por corazones\n!leaderboard active — top por actividad")
+        if msg == "!help heart": await send_response("❤️ COMANDO DE CORAZONES:\n!heart @usuario [cantidad] — enviar corazones\n💖 También puedes enviar corazones con reacciones!")
 
-        # Sección !help leaderboard
-        if msg == "!help leaderboard":
-            await send_response( "🏆 TABLA DE CLASIFICACIÓN:\n!leaderboard heart — top por corazones\n!leaderboard active — top por actividad")
-            return
-
-        # Sección !help heart
-        if msg == "!help heart":
-            await send_response( "❤️ COMANDO DE CORAZONES:\n!heart @usuario [cantidad] — enviar corazones\n\n💖 También puedes enviar corazones con reacciones!")
-            return
-
-
-        # Comando !emote list - Mostrar lista completa de emotes (máximo por mensaje)
-        if msg == "!emote list":
-            try:
-                emote_list = []
-                for k, v in emotes.items():
-                    emote_list.append(f"{k}:{v['name']}")
-
-                total_emotes = len(emote_list)
-                await send_response(f"📋 LISTA DE EMOTES ({total_emotes} total)")
-                await asyncio.sleep(0.3)
-
-                # Construir mensajes respetando límite de 200 caracteres
-                # Cada emote en una línea separada
-                current_message = []
-                current_length = 0
-
-                for emote_entry in emote_list:
-                    entry_length = len(emote_entry) + 1  # +1 por salto de línea
-
-                    # Si agregar este emote excede 200 caracteres, enviar mensaje actual
-                    if current_length + entry_length > 200:
-                        if current_message:
-                            await send_response("\n".join(current_message))
-                            await asyncio.sleep(0.3)
-                        current_message = [emote_entry]
-                        current_length = len(emote_entry)
-                    else:
-                        current_message.append(emote_entry)
-                        current_length += entry_length
-
-                # Enviar último mensaje si hay contenido
-                if current_message:
-                    await send_response("\n".join(current_message))
-                    await asyncio.sleep(0.3)
-
-                await send_response(f"✅ Usa el número o nombre del emote para ejecutarlo")
-
-            except Exception as e:
-                await send_response(f"❌ Error mostrando emotes: {str(e)[:50]}")
-                log_event("ERROR", f"Error en !emote list: {e}")
-            return
-
-        # Inicio rápido de animación por número
+        # Ejecución de emotes
         if msg.isdigit():
             emote_number = msg
             emote = emotes.get(emote_number)
@@ -942,70 +805,34 @@ class Bot(BaseBot):
                 except Exception as e:
                     await send_response( f"❌ Error al iniciar animación #{emote_number} - {str(e)[:50]}")
             else:
-                if not emote:
-                    await send_response( f"❌ Número de animación #{emote_number} no existe. Usa números del 1 al 249.")
-                else:
-                    await send_response( f"❌ La animación #{emote_number} no es gratuita.")
+                await send_response( f"❌ Número de animación #{emote_number} no existe o no es gratuito.")
             return
-
-        # Comando !emote <número o nombre> o !emote @username <número o nombre> o !emote all <número o nombre> (VIP)
         if msg.startswith("!emote"):
             parts = msg.split()
-            target_user_ids = [user.id]  # Por defecto, el usuario que ejecuta el comando
-            emote_key = msg[7:].strip()  # Por defecto, todo después de "!emote "
+            target_user_ids = [user.id]
+            emote_key = msg[7:].strip()
             apply_to_all = False
 
-            # Verificamos si es !emote all
             if len(parts) >= 3 and parts[1].lower() == "all":
-                # Solo admin y propietario pueden usar !emote all
                 if not (self.is_admin(user_id) or user_id == OWNER_ID):
                     await send_response( "❌ ¡Solo administradores y propietario pueden usar !emote all!")
                     return
-
                 apply_to_all = True
-                emote_key = " ".join(parts[2:])  # El resto es la animación
+                emote_key = " ".join(parts[2:])
+                users = (await self.highrise.get_room_users()).content
+                target_user_ids = [u.id for u, _ in users if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"])]
 
-                # Obtener todos los usuarios excepto el bot
-                try:
-                    users = (await self.highrise.get_room_users()).content
-                    target_user_ids = []
-                    for u, pos in users:
-                        if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):
-                            target_user_ids.append(u.id)
-                except Exception as e:
-                    await send_response( f"❌ Error obteniendo usuarios: {e}")
-                    return
-
-            # Verificamos si hay un @username en el comando
             elif len(parts) >= 3 and parts[1].startswith("@"):
-                target_username = parts[1][1:]  # Removemos el @
-                emote_key = " ".join(parts[2:])  # El resto es la animación
-
-                # Solo admin y propietario pueden usar animaciones en otros usuarios
                 if not (self.is_admin(user_id) or user_id == OWNER_ID):
                     await send_response( "❌ ¡Solo administradores y propietario pueden usar animaciones en otros usuarios!")
                     return
+                target_username = parts[1][1:]
+                emote_key = " ".join(parts[2:])
+                users = (await self.highrise.get_room_users()).content
+                target_user = next((u for u, _ in users if u.username == target_username), None)
+                if not target_user: await send_response( f"❌ ¡Usuario {target_username} no encontrado!"); return
+                target_user_ids = [target_user.id]
 
-                # Buscamos al usuario objetivo
-                try:
-                    users = (await self.highrise.get_room_users()).content
-                    target_user = None
-                    for u, pos in users:
-                        if u.username == target_username:
-                            target_user = u
-                            break
-
-                    if not target_user:
-                        await send_response( f"❌ ¡Usuario {target_username} no encontrado en la sala!")
-                        return
-
-                    target_user_ids = [target_user.id]
-
-                except Exception as e:
-                    await send_response( f"❌ Error buscando usuario: {e}")
-                    return
-
-            # Buscamos la animación
             emote = emotes.get(emote_key)
             if not emote:
                 for e in emotes.values():
@@ -1015,329 +842,109 @@ class Bot(BaseBot):
 
             if emote:
                 if emote["is_free"]:
-                    try:
-                        # Aplicar emote a todos los usuarios objetivo
-                        for target_id in target_user_ids:
-                            if apply_to_all:
-                                # Para !emote all, ejecutar solo una vez
-                                await self.highrise.send_emote(emote["id"], target_id)
-                            else:
-                                # Para usuarios individuales, mantener el bucle
-                                asyncio.create_task(self.send_emote_loop(target_id, emote["id"]))
-
-                        if apply_to_all:
-                            await send_response( f"🎭 Activaste la animación '{emote['name']}' una vez en todos los {len(target_user_ids)} usuarios")
-                        elif target_user_ids[0] == user.id:
-                            await send_response( f"🎭 Iniciaste la animación: {emote['name']}")
-                        else:
-                            await send_response( f"⭐ Activaste la animación '{emote['name']}' en @{target_username}")
-                    except Exception as e:
-                        await send_response( f"❌ Error al activar animación - {str(e)[:50]}")
+                    for target_id in target_user_ids:
+                        asyncio.create_task(self.send_emote_loop(target_id, emote["id"]))
+                    await send_response( f"🎭 Animación '{emote['name']}' activada")
                 else:
                     await send_response( f"❌ La animación '{emote_key}' no es gratuita.")
             else:
-                await send_response( f"❌ No existe la animación '{emote_key}'. Usa !emote list para ver todas.")
+                await send_response( f"❌ No existe la animación '{emote_key}'. Usa !emote list.")
             return
 
-        # Inicio rápido de animación por nombre (sin !emote) o animación en otros usuarios (VIP)
-        # Проверяем, что сообщение является названием существующей анимации
+        # Ejecución rápida de emotes sin !emote
         emote_found = False
         for e in emotes.values():
             if e["name"].lower() == msg.lower() or e["id"].lower() == msg.lower():
                 emote_found = True
                 break
-
-        # Проверяем, если сообщение "vip" - телепорт в VIP зону
-        if msg.lower() == "vip":
-            if self.is_vip_by_username(user.username) or self.is_admin(user_id) or user_id == OWNER_ID:
-                try:
-                    vip_position = Position(VIP_ZONE["x"], VIP_ZONE["y"], VIP_ZONE["z"])
-                    await self.highrise.teleport(user_id, vip_position)
-                    await send_response( f"⭐ @{user.username} se teletransportó a la zona VIP!")
-                except Exception as e:
-                    await send_response( f"❌ Error de teletransporte: {e}")
-            else:
-                await send_response( "❌ No tienes estatus VIP!")
-            return
-
-        # Проверяем, если сообщение "dj" - телепорт в DJ зону (admin y propietario)
-        if msg.lower() == "dj":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden usar la zona DJ!")
-                return
-
-            try:
-                # Cargamos la configuración para obtener la zona DJ
-                config = load_config()
-                dj_zone = config.get("dj_zone", {})
-
-                if not dj_zone:
-                    await send_response( "❌ ¡Zona DJ no establecida! Usa !setdj para establecerla.")
-                    return
-
-                dj_position = Position(dj_zone["x"], dj_zone["y"], dj_zone["z"])
-                await self.highrise.teleport(user_id, dj_position)
-                await send_response( f"🎵 @{user.username} se teletransportó a la zona DJ!")
-            except Exception as e:
-                await send_response( f"❌ Error de teletransporte: {e}")
-            return
-
-        # Проверяем, если сообщение "directivo" - телепорт в директорию (admin y propietario)
-        if msg.lower() == "directivo":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden usar la zona directiva!")
-                return
-
-            try:
-                # Cargamos la configuración para obtener la zona directiva
-                config = load_config()
-                directivo_zone = config.get("directivo_zone", {})
-
-                if not directivo_zone:
-                    await send_response( "❌ ¡Zona directiva no establecida! Usa !setdirectivo para establecerla.")
-                    return
-
-                directivo_position = Position(directivo_zone["x"], directivo_zone["y"], directivo_zone["z"])
-                await self.highrise.teleport(user_id, directivo_position)
-                await send_response( f"👑 @{user.username} se teletransportó a la zona directiva!")
-            except Exception as e:
-                await send_response( f"❌ Error de teletransporte: {e}")
-            return
-
         if msg and not msg.startswith("!") and not msg.isdigit() and emote_found:
             parts = msg.split()
-            target_user_ids = [user.id]  # Por defecto, el usuario que ejecuta el comando
-            emote_name = msg  # Por defecto, todo el mensaje es la animación
-            target_usernames = []
-            include_self = True  # Por defecto, incluir al usuario que ejecuta el comando
+            target_user_ids = [user.id]
+            emote_name = msg
+            include_self = True
 
-            # Verificamos si hay @usernames o "all" en el mensaje
             if len(parts) >= 2:
-                # Verificamos si el primer elemento es @username (formato: @username animación)
                 if parts[0].startswith("@"):
-                    # Formato: @username animación - solo para el usuario especificado
-                    target_username = parts[0][1:]  # Removemos el @
-                    emote_name = " ".join(parts[1:])  # El resto es la animación
-                    include_self = False  # No incluir al usuario que ejecuta el comando
-
-                    # Solo admin y propietario pueden usar animaciones en otros usuarios
                     if not (self.is_admin(user_id) or user_id == OWNER_ID):
                         await send_response( "❌ ¡Solo administradores y propietario pueden usar animaciones en otros usuarios!")
                         return
-
-                    # Buscamos al usuario objetivo
-                    try:
-                        users = (await self.highrise.get_room_users()).content
-                        target_user = None
-                        for u, pos in users:
-                            if u.username == target_username:
-                                target_user = u
-                                break
-
-                        if target_user:
-                            target_user_ids = [target_user.id]
-                            target_usernames = [target_username]
-                        else:
-                            await send_response( f"❌ ¡Usuario {target_username} no encontrado en la sala!")
-                            return
-
-                    except Exception as e:
-                        await send_response( f"❌ Error buscando usuarios: {e}")
-                        return
+                    target_username = parts[0][1:]
+                    emote_name = " ".join(parts[1:])
+                    include_self = False
+                    users = (await self.highrise.get_room_users()).content
+                    target_user = next((u for u, _ in users if u.username == target_username), None)
+                    if not target_user: await send_response( f"❌ ¡Usuario {target_username} no encontrado!"); return
+                    target_user_ids = [target_user.id]
                 else:
-                    # Formato: animación @username - para ambos usuarios
-                    emote_name = parts[0]  # La primera parte es la animación
-                    target_parts = parts[1:]  # El resto son objetivos
-
-                    # Solo admin y propietario pueden usar animaciones en otros usuarios
                     if not (self.is_admin(user_id) or user_id == OWNER_ID):
                         await send_response( "❌ ¡Solo administradores y propietario pueden usar animaciones en otros usuarios!")
                         return
+                    emote_name = parts[0]
+                    target_parts = parts[1:]
+                    users = (await self.highrise.get_room_users()).content
+                    target_user_ids = []
+                    for part in target_parts:
+                        if part == "all":
+                            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden hacer emotes a todos!"); return
+                            target_user_ids.extend([u.id for u, _ in users if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"])])
+                        elif part.startswith("@"):
+                            target_username = part[1:]
+                            target_user = next((u for u, _ in users if u.username == target_username), None)
+                            if target_user: target_user_ids.append(target_user.id)
+                            else: await send_response( f"❌ ¡Usuario {target_username} no encontrado!"); return
+                    if not target_user_ids: await send_response("❌ ¡No se encontraron usuarios objetivo!"); return
 
-                    # Buscamos a los usuarios objetivo
-                    try:
-                        users = (await self.highrise.get_room_users()).content
-                        target_user_ids = []
-                        target_usernames = []
-
-                        for part in target_parts:
-                            if part == "all":
-                                # Solo admin y propietario pueden hacer emotes a todos
-                                if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                                    await send_response( "❌ ¡Solo administradores y propietario pueden hacer emotes a todos los usuarios!")
-                                    return
-                                # Añadimos todos los usuarios excepto el bot
-                                for u, pos in users:
-                                    if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):  # Excluimos al bot
-                                        target_user_ids.append(u.id)
-                                        target_usernames.append(u.username)
-                            elif part.startswith("@"):
-                                target_username = part[1:]  # Removemos el @
-                                target_user = None
-                                for u, pos in users:
-                                    if u.username == target_username:
-                                        target_user = u
-                                        break
-
-                                if target_user:
-                                    target_user_ids.append(target_user.id)
-                                    target_usernames.append(target_username)
-                                else:
-                                    await send_response( f"❌ ¡Usuario {target_username} no encontrado en la sala!")
-                                    return
-
-                        if not target_user_ids:
-                            await send_response( "❌ ¡No se encontraron usuarios objetivo!")
-                            return
-
-                    except Exception as e:
-                        await send_response( f"❌ Error buscando usuarios: {e}")
-                        return
-
-            # Buscamos la animación
-            emote = None
-            for e in emotes.values():
-                if e["name"].lower() == emote_name.lower() or e["id"].lower() == emote_name.lower():
-                    emote = e
-                    break
-
+            emote = next((e for e in emotes.values() if e["name"].lower() == emote_name.lower() or e["id"].lower() == emote_name.lower()), None)
             if emote:
                 if emote["is_free"]:
-                    try:
-                        # Si include_self es True, añadimos al usuario que ejecuta el comando
-                        if include_self and user.id not in target_user_ids:
-                            target_user_ids.append(user.id)
-
-                        # Ejecutamos la animación en todos los usuarios objetivo
-                        for target_user_id in target_user_ids:
-                            asyncio.create_task(self.send_emote_loop(target_user_id, emote["id"]))
-
-                        # Mostramos mensaje apropiado
-                        if len(target_user_ids) == 1 and target_user_ids[0] == user.id:
-                            await send_response( f"🎭 Iniciaste la animación: {emote['name']}")
-                        elif len(target_user_ids) == 1:
-                            await send_response( f"⭐ Activaste la animación '{emote['name']}' en @{target_usernames[0]}")
-                        elif len(target_user_ids) == 2:
-                            if include_self:
-                                await send_response( f"⭐ Activaste la animación '{emote['name']}' en ti mismo y @{target_usernames[0]}")
-                            else:
-                                await send_response( f"⭐ Activaste la animación '{emote['name']}' en @{target_usernames[0]} y @{target_usernames[1]}")
-                        elif len(target_user_ids) == 3:
-                            if include_self:
-                                await send_response( f"⭐ Activaste la animación '{emote['name']}' en ti mismo, @{target_usernames[0]} y @{target_usernames[1]}")
-                            else:
-                                await send_response( f"⭐ Activaste la animación '{emote['name']}' en @{target_usernames[0]}, @{target_usernames[1]} y @{target_usernames[2]}")
-                        else:
-                            if include_self:
-                                await send_response( f"⭐ Activaste la animación '{emote['name']}' en ti mismo y {len(target_usernames)} usuarios")
-                            else:
-                                await send_response( f"⭐ Activaste la animación '{emote['name']}' en {len(target_user_ids)} usuarios")
-                    except Exception as e:
-                        await send_response( f"❌ Error al activar animación '{emote_name}' - {str(e)[:50]}")
+                    if include_self and user.id not in target_user_ids:
+                        target_user_ids.append(user.id)
+                    for target_user_id in target_user_ids:
+                        asyncio.create_task(self.send_emote_loop(target_user_id, emote["id"]))
+                    await send_response( f"🎭 Animación '{emote_name}' activada")
                 else:
                     await send_response( f"❌ La animación '{emote_name}' no es gratuita.")
             else:
-                await send_response( f"❌ No existe la animación '{emote_name}'. Usa !emote list para ver todas.")
+                await send_response( f"❌ No existe la animación '{emote_name}'. Usa !emote list.")
             return
 
-        # Comando stop - detener animación (propia o de otro usuario para VIP)
+        # Comando stop
         if msg == "stop" or msg == "!stop" or msg == "0":
-            print(f"DEBUG: Comando stop recibido de {user.username} (ID: {user.id})")
-            print(f"DEBUG: Mensaje: '{msg}'")
             await self.stop_emote_loop(user.id)
             await send_response( f"🛑 Detuviste tu animación.")
-            print(f"DEBUG: Mensaje público enviado para {user.username}")
             return
-
-        # Comando !stop @username - detener animación de otros usuarios (VIP)
-        # Comando !stop all - detener animaciones de todos (solo Admin)
         if msg.startswith("!stop "):
-            stop_target = msg[6:].strip()  # Removemos "!stop "
-
-            # Verificar permisos según el comando
+            stop_target = msg[6:].strip()
             if stop_target == "all":
-                # Solo administradores pueden parar todas las animaciones
-                if not self.is_admin(user_id):
-                    await send_response( "❌ ¡Solo administradores pueden detener todas las animaciones!")
-                    return
-            else:
-                # VIPs y administradores pueden detener animación de un usuario específico
-                if not (self.is_vip(user_id) or self.is_admin(user_id)):
-                    await send_response( "❌ ¡Solo VIP y administradores pueden detener animaciones de otros usuarios!")
-                    return
-
-            try:
+                if not self.is_admin(user_id): await send_response("❌ ¡Solo administradores pueden detener todas las animaciones!"); return
+                active_users = list(ACTIVE_EMOTES.keys())
+                for active_user_id in active_users: await self.stop_emote_loop(active_user_id)
+                await send_response( f"🛑 Detuviste todas las animaciones en la sala.")
+            elif stop_target.startswith("@"):
+                if not (self.is_vip(user_id) or self.is_admin(user_id)): await send_response("❌ ¡Solo VIP y administradores pueden detener animaciones de otros!"); return
+                target_username = stop_target[1:]
                 users = (await self.highrise.get_room_users()).content
-                target_user_ids = []
-                target_usernames = []
-
-                if stop_target == "all":
-                    # Detenemos animaciones de todos excepto el bot (solo admin)
-                    for u, pos in users:
-                        if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):  # Excluimos al bot
-                            target_user_ids.append(u.id)
-                            target_usernames.append(u.username)
-                elif stop_target.startswith("@"):
-                    # Detenemos animación de un usuario específico
-                    target_username = stop_target[1:]
-                    target_user = None
-                    for u, pos in users:
-                        if u.username == target_username:
-                            target_user = u
-                            break
-
-                    if target_user:
-                        target_user_ids.append(target_user.id)
-                        target_usernames.append(target_username)
-                    else:
-                        await send_response( f"❌ ¡Usuario {target_username} no encontrado en la sala!")
-                        return
-
-                if not target_user_ids:
-                    await send_response( "❌ ¡No se encontraron usuarios objetivo!")
-                    return
-
-                # Detenemos animaciones
-                for target_user_id in target_user_ids:
-                    await self.stop_emote_loop(target_user_id)
-
-                # Mostramos mensaje apropiado
-                if len(target_user_ids) == 1:
-                    await send_response( f"🛑 Detuviste la animación de @{target_usernames[0]}")
-                elif len(target_user_ids) == 2:
-                    await send_response( f"🛑 Detuviste las animaciones de @{target_usernames[0]} y @{target_usernames[1]}")
-                elif len(target_user_ids) == 3:
-                    await send_response( f"🛑 Detuviste las animaciones de @{target_usernames[0]}, @{target_usernames[1]} y @{target_usernames[2]}")
-                else:
-                    await send_response( f"🛑 Detuviste las animaciones de {len(target_user_ids)} usuarios")
-
-            except Exception as e:
-                await send_response( f"❌ Error deteniendo animaciones: {e}")
+                target_user = next((u for u, _ in users if u.username == target_username), None)
+                if not target_user: await send_response( f"❌ ¡Usuario {target_username} no encontrado!"); return
+                await self.stop_emote_loop(target_user.id)
+                await send_response( f"🛑 Detuviste la animación de @{target_username}")
             return
-
-        # Comando stopall - detener todas las animaciones (solo admin)
         if msg == "!stopall":
             if self.is_admin(user_id):
-                # Detenemos todas las animaciones activas
                 active_users = list(ACTIVE_EMOTES.keys())
-                for active_user_id in active_users:
-                    await self.stop_emote_loop(active_user_id)
+                for active_user_id in active_users: await self.stop_emote_loop(active_user_id)
                 await send_response( f"🛑 Detuviste todas las animaciones en la sala.")
-            else:
-                await send_response( "❌ Solo administradores pueden usar este comando.")
+            else: await send_response("❌ Solo administradores pueden usar este comando.")
             return
 
-        # Comando temporal para ver ID
-        if msg == "!myid":
-            await send_response( f"🆔 Tu ID de usuario es: {user_id}")
-            return
+        # Comando !myid
+        if msg == "!myid": await send_response( f"🆔 Tu ID de usuario es: {user_id}")
 
         # Comando !game love
         if msg.startswith("!game love"):
             parts = msg.split()
             if len(parts) >= 3:
-                user1 = parts[2]
-                user2 = parts[3] if len(parts) > 3 else "desconocido"
+                user1, user2 = parts[2], parts[3] if len(parts) > 3 else "desconocido"
                 love_percent = random.randint(1, 100)
                 love_emoji = "💘" if love_percent > 80 else "💕" if love_percent > 60 else "💖" if love_percent > 40 else "💔"
                 await self.highrise.chat(f"💘 Medidor de amor: {user1} + {user2} = {love_percent}% {love_emoji}")
@@ -1345,2349 +952,1034 @@ class Bot(BaseBot):
 
         # Comando !leaderboard
         if msg.startswith("!leaderboard"):
-            print("DEBUG: leaderboard command received:", msg)
             parts = msg.split()
-            if len(parts) == 1:
-                await send_response( "🏆 !leaderboard heart\n!leaderboard active")
-                return
+            if len(parts) == 1: await send_response("🏆 !leaderboard heart\n!leaderboard active")
             elif len(parts) > 1:
                 lb_type = parts[1].lower()
                 if lb_type == "heart":
-                    # Top por corazones
-                    print(f"DEBUG: USER_HEARTS = {USER_HEARTS}")
-                    print(f"DEBUG: USER_NAMES = {USER_NAMES}")
-
-                    # Фильтруем USER_HEARTS, оставляя только записи с ID (длинные строки)
-                    valid_hearts = {k: v for k, v in USER_HEARTS.items() if len(k) > 10}  # ID обычно длинные
-                    print(f"DEBUG: Валидные записи USER_HEARTS: {valid_hearts}")
-
-                    top = sorted(valid_hearts.items(), key=lambda x: x[1], reverse=True)[:10]
-                    users = (await self.highrise.get_room_users()).content
-                    id_to_name = {u.id: u.username for u, _ in users}
-                    print(f"DEBUG: Пользователи в комнате: {id_to_name}")
-
-                    lines = [f"❤️ Top por corazones:"]
+                    top = sorted(USER_HEARTS.items(), key=lambda x: x[1], reverse=True)[:10]
+                    id_to_name = {u.id: u.username for u, _ in (await self.highrise.get_room_users()).content}
+                    lines = ["❤️ Top por corazones:"]
                     count = 0
                     for i, (uid, count_val) in enumerate(top, 1):
-                        # Сначала пробуем найти имя в текущих пользователях комнаты
-                        uname = id_to_name.get(uid)
-                        if not uname:
-                            # Если не найден в комнате, пробуем в USER_NAMES
-                            uname = USER_NAMES.get(uid)
-                        if not uname:
-                            # Если все еще не найден, используем ID без обрезки
-                            uname = f"User_{uid[:8]}"
-
-                        print(f"DEBUG: Для {uid} найдено имя: {uname}")
+                        uname = id_to_name.get(uid) or USER_NAMES.get(uid) or f"User_{uid[:8]}"
                         lines.append(f"{i}. {uname}: {count_val}")
                         count += 1
-                    if count == 0:
-                        lines.append("Sin datos")
-                    await send_response( "\n".join(lines))
-                    return
+                    if count == 0: lines.append("Sin datos")
+                    await send_response("\n".join(lines))
                 elif lb_type == "active":
-                    # Top por actividad
-                    print(f"DEBUG: USER_ACTIVITY = {USER_ACTIVITY}")
-
-                    # Фильтруем USER_ACTIVITY, оставляя только записи с ID (длинные строки)
-                    valid_activity = {k: v for k, v in USER_ACTIVITY.items() if len(k) > 10}  # ID обычно длинные
-                    print(f"DEBUG: Валидные записи USER_ACTIVITY: {valid_activity}")
-
-                    top = sorted(valid_activity.items(), key=lambda x: x[1]["messages"], reverse=True)[:10]
-                    users = (await self.highrise.get_room_users()).content
-                    id_to_name = {u.id: u.username for u, _ in users}
-                    print(f"DEBUG: Пользователи в комнате для активности: {id_to_name}")
-
-                    lines = [f"💬 Top por actividad:"]
+                    top = sorted(USER_ACTIVITY.items(), key=lambda x: x[1]["messages"], reverse=True)[:10]
+                    id_to_name = {u.id: u.username for u, _ in (await self.highrise.get_room_users()).content}
+                    lines = ["💬 Top por actividad:"]
                     count = 0
                     for i, (uid, data) in enumerate(top, 1):
-                        # Сначала пробуем найти имя в текущих пользователях комнаты
-                        uname = id_to_name.get(uid)
-                        if not uname:
-                            # Если не найден в комнате, пробуем в USER_NAMES
-                            uname = USER_NAMES.get(uid)
-                        if not uname:
-                            # Если все еще не найден, используем ID без обрезки
-                            uname = f"User_{uid[:8]}"
-
-                        print(f"DEBUG: Для активности {uid} найдено имя: {uname}")
+                        uname = id_to_name.get(uid) or USER_NAMES.get(uid) or f"User_{uid[:8]}"
                         lines.append(f"{i}. {uname}: {data['messages']}")
                         count += 1
-                    if count == 0:
-                        lines.append("Sin datos")
-                    await send_response( "\n".join(lines))
-                    return
-            await send_response( "Usa: !leaderboard heart o !leaderboard active")
+                    if count == 0: lines.append("Sin datos")
+                    await send_response("\n".join(lines))
             return
 
         # Comando !trackme
-        if msg == "!trackme":
-            await send_response( f"Activaste seguimiento de actividad!")
-            return
+        if msg == "!trackme": await send_response("Activaste seguimiento de actividad!")
 
-        # Comando !heartall - enviar сердечки всем игрокам в комнате (только для Owner)
+        # Comando !heartall (Owner)
         if msg == "!heartall":
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede enviar corazones a todos!")
-                return
-
-            try:
-                users = (await self.highrise.get_room_users()).content
-                heart_count = 0
-
-                for u, pos in users:
-                    if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):  # Исключаем бота
-                        # Добавляем сердечко в счетчик
-                        self.add_user_hearts(u.id, 1, u.username)
-                        # Отправляем визуальную реакцию сердечка
-                        await self.highrise.react("heart", u.id)
-                        heart_count += 1
-                        await asyncio.sleep(0.1)  # Небольшая задержка между отправками
-
-                await send_response( f"💖 Enviaste ❤️ a todos los {heart_count} jugadores en la sala!")
-            except Exception as e:
-                await send_response( f"Error enviando corazones: {e}")
-            return
+            if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede enviar corazones a todos!"); return
+            users = (await self.highrise.get_room_users()).content
+            heart_count = 0
+            for u, _ in users:
+                if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):
+                    self.add_user_hearts(u.id, 1, u.username)
+                    await self.highrise.react("heart", u.id)
+                    heart_count += 1
+                    await asyncio.sleep(0.1)
+            await send_response(f"💖 Enviaste ❤️ a todos los {heart_count} jugadores en la sala!")
 
         # Comando !heart
         if msg.startswith("!heart"):
-            print(f"DEBUG: Команда !heart получена: {msg}")
             parts = msg.split()
             if len(parts) >= 2:
                 target_username = parts[1].replace("@", "")
                 hearts_count = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 1
+                users = (await self.highrise.get_room_users()).content
+                target_user_obj = next((u for u, _ in users if u.username == target_username), None)
+                if not target_user_obj: await send_response( f"❌ ¡Usuario {target_username} no encontrado!"); return
 
-                print(f"DEBUG: target_username = {target_username}, hearts_count = {hearts_count}")
+                is_admin_or_owner = self.is_admin(user_id) or user_id == OWNER_ID
+                is_vip = self.is_vip_by_username(user.username)
 
-                # Buscamos el usuario objetivo
-                try:
-                    users = (await self.highrise.get_room_users()).content
-                    print(f"DEBUG: Пользователи в комнате: {[(u.username, u.id) for u, pos in users]}")
-
-                    target_user_obj = None
-                    for u, pos in users:
-                        if u.username == target_username:
-                            target_user_obj = u
-                            break
-
-                    if not target_user_obj:
-                        print(f"DEBUG: Пользователь {target_username} не найден")
-                        await send_response( f"❌ ¡Usuario {target_username} no encontrado en la sala!")
-                        return
-
-                    target_user_id = target_user_obj.id
-                    print(f"DEBUG: Найден пользователь {target_username} с ID {target_user_id}")
-
-                    # Проверяем права пользователя
-                    is_admin_or_owner = self.is_admin(user_id) or user_id == OWNER_ID
-                    is_vip = self.is_vip_by_username(user.username)
-
-                    print(f"DEBUG: Пользователь {user.username} - админ/владелец: {is_admin_or_owner}, VIP: {is_vip}")
-
-                    if is_admin_or_owner:
-                        # Администраторы и владелец могут давать до 100 сердечек
-                        if hearts_count > 100:
-                            await send_response( "❌ ¡Máximo 100 corazones por comando!")
-                            return
-
-                        self.add_user_hearts(target_user_id, hearts_count, target_username)
-
-                        # SIEMPRE responder de forma pública en chat público, privada en whisper
-                        heart_message = f"💖 {user.username} envió {hearts_count} ❤️ a {target_username}"
-                        if is_whisper:
-                            await self.highrise.send_whisper(user.id, heart_message)
-                        else:
-                            await self.highrise.chat(heart_message)
-
-                        # Отправляем визуальные реакции сердечек (максимум 30 для производительности)
-                        visual_hearts = min(hearts_count, 30)  # Ограничиваем визуальные сердечки до 30
-                        for _ in range(visual_hearts):
-                            await self.highrise.react("heart", target_user_id)
-                            await asyncio.sleep(0.05)  # Уменьшаем задержку для быстрой отправки
-
-                except Exception as e:
-                    print(f"DEBUG: Ошибка в команде !heart: {e}")
-                    await send_response( f"❌ Error enviando corazón: {e}")
+                if is_admin_or_owner:
+                    if hearts_count > 100: await send_response("❌ ¡Máximo 100 corazones por comando!"); return
+                    self.add_user_hearts(target_user_obj.id, hearts_count, target_username)
+                    heart_message = f"💖 {username} envió {hearts_count} ❤️ a {target_username}"
+                    if is_whisper: await self.highrise.send_whisper(user.id, heart_message)
+                    else: await self.highrise.chat(heart_message)
+                    for _ in range(min(hearts_count, 30)):
+                        await self.highrise.react("heart", target_user_obj.id)
+                        await asyncio.sleep(0.05)
+                else:
+                     await send_response("❌ ¡Solo administradores y VIP pueden enviar más de 1 corazón!")
             else:
-                print(f"DEBUG: Недостаточно параметров в команде !heart")
                 await send_response( "❌ Usa: !heart @username [cantidad]")
             return
 
-        # === NUEVAS REACCIONES - Disponibles para todos los usuarios ===
-
-        # Comando !thumbs @user - pulgar arriba 👍
+        # Reacciones
         if msg.startswith("!thumbs "):
-            parts = msg.split()
-            if len(parts) >= 2:
-                target_username = parts[1].replace("@", "")
-                try:
-                    users = (await self.highrise.get_room_users()).content
-                    target_user = None
-                    for u, _ in users:
-                        if u.username == target_username:
-                            target_user = u
-                            break
-
-                    if not target_user:
-                        await send_response( f"❌ Usuario {target_username} no encontrado!")
-                        return
-
-                    # Enviar reacción thumbs up
-                    await self.highrise.react("thumbs", target_user.id)
-                    await send_response( f"👍 Enviaste pulgar arriba a @{target_username}")
-                    log_event("THUMBS", f"{user.username} -> {target_username}")
-
-                except Exception as e:
-                    await send_response( f"❌ Error: {e}")
-            else:
-                await send_response( "❌ Usa: !thumbs @username")
+            target_username = msg[8:].strip().replace("@", "")
+            users = (await self.highrise.get_room_users()).content
+            target_user = next((u for u, _ in users if u.username == target_username), None)
+            if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
+            await self.highrise.react("thumbs", target_user.id)
+            await send_response( f"👍 Enviaste pulgar arriba a @{target_username}")
             return
-
-        # Comando !clap @user - aplauso 👏
         if msg.startswith("!clap "):
-            parts = msg.split()
-            if len(parts) >= 2:
-                target_username = parts[1].replace("@", "")
-                try:
-                    users = (await self.highrise.get_room_users()).content
-                    target_user = None
-                    for u, _ in users:
-                        if u.username == target_username:
-                            target_user = u
-                            break
-
-                    if not target_user:
-                        await send_response( f"❌ Usuario {target_username} no encontrado!")
-                        return
-
-                    # Enviar reacción clap
-                    await self.highrise.react("clap", target_user.id)
-                    await send_response( f"👏 Enviaste aplauso a @{target_username}")
-                    log_event("CLAP", f"{user.username} -> {target_username}")
-
-                except Exception as e:
-                    await send_response( f"❌ Error: {e}")
-            else:
-                await send_response( "❌ Usa: !clap @username")
+            target_username = msg[6:].strip().replace("@", "")
+            users = (await self.highrise.get_room_users()).content
+            target_user = next((u for u, _ in users if u.username == target_username), None)
+            if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
+            await self.highrise.react("clap", target_user.id)
+            await send_response( f"👏 Enviaste aplauso a @{target_username}")
             return
-
-        # Comando !wave @user - ola 👋
         if msg.startswith("!wave "):
-            parts = msg.split()
-            if len(parts) >= 2:
-                target_username = parts[1].replace("@", "")
-                try:
-                    users = (await self.highrise.get_room_users()).content
-                    target_user = None
-                    for u, _ in users:
-                        if u.username == target_username:
-                            target_user = u
-                            break
-
-                    if not target_user:
-                        await send_response( f"❌ Usuario {target_username} no encontrado!")
-                        return
-
-                    # Enviar reacción wave
-                    await self.highrise.react("wave", target_user.id)
-                    await send_response( f"👋 Enviaste ola a @{target_username}")
-                    log_event("WAVE", f"{user.username} -> {target_username}")
-
-                except Exception as e:
-                    await send_response( f"❌ Error: {e}")
-            else:
-                await send_response( "❌ Usa: !wave @username")
+            target_username = msg[6:].strip().replace("@", "")
+            users = (await self.highrise.get_room_users()).content
+            target_user = next((u for u, _ in users if u.username == target_username), None)
+            if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
+            await self.highrise.react("wave", target_user.id)
+            await send_response( f"👋 Enviaste ola a @{target_username}")
             return
 
-        # Comando !flash [x] [y] [z] - teletransporte solo para subir y bajar entre pisos
+        # Comando !flash
         if msg.startswith("!flash"):
             parts = msg.split()
             if len(parts) >= 4:
                 try:
-                    x = float(parts[1])
-                    y = float(parts[2])
-                    z = float(parts[3])
-
-                    # Obtener posición actual del usuario
+                    x, y, z = float(parts[1]), float(parts[2]), float(parts[3])
                     users = (await self.highrise.get_room_users()).content
-                    current_position = None
-                    for u, pos in users:
-                        if u.id == user.id:
-                            current_position = pos
-                            break
-
+                    current_position = next((pos for u, pos in users if u.id == user.id), None)
                     if current_position:
-                        # Verificar que solo sea cambio de altura (subir/bajar pisos)
-                        y_difference = abs(current_position.y - y)
-                        x_difference = abs(current_position.x - x)
-                        z_difference = abs(current_position.z - z)
-
-                        # Flash solo para cambios de piso (Y) con movimiento mínimo en X y Z
-                        if y_difference < 1.0:
-                            await send_response( "❌ ¡Flash solo para subir/bajar entre pisos! Debe cambiar altura (Y)")
-                            return
-
-                        if x_difference > 3.0 or z_difference > 3.0:
-                            await send_response( "❌ ¡Flash solo para subir/bajar pisos! No te alejes mucho horizontalmente")
-                            return
-
-                        # Verificamos si no está en zona prohibida
+                        if abs(current_position.y - y) < 1.0: await send_response("❌ ¡Flash solo para subir/bajar pisos!"); return
+                        if abs(current_position.x - x) > 3.0 or abs(current_position.z - z) > 3.0: await send_response("❌ ¡Flash solo para subir/bajar pisos!"); return
                         if not self.is_in_forbidden_zone(x, y, z):
                             pos = Position(x, y, z)
                             await self.highrise.teleport(user.id, pos)
                             await send_response( f"⚡ Flasheaste entre pisos ({x}, {y}, {z})")
-                            log_event("FLASHMODE", f"{user.username} usó flash entre pisos a {x}, {y}, {z}")
                         else:
                             await send_response( f"❌ ¡No puedes teletransportarte a una zona prohibida!")
                     else:
                         await send_response( "❌ Error obteniendo tu posición actual")
-
                 except ValueError:
                     await send_response( "❌ Usa: !flash [x] [y] [z] (ejemplo: !flash 5 17 3)")
             else:
                 await send_response( "❌ Usa: !flash [x] [y] [z] (ejemplo: !flash 5 17 3)")
             return
 
-
-
-
-
-        # Comando !inventory - consultar items del bot (solo propietario y admin)
+        # Comando !inventory
         if msg.startswith("!inventory"):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo propietario y administradores pueden usar este comando!")
-                return
-
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo propietario y administradores pueden usar este comando!"); return
             parts = msg.split()
-
-            # !inventory @user - ver inventario de otro usuario
             if len(parts) == 2 and parts[1].startswith("@"):
                 target_username = parts[1].replace("@", "")
-                try:
-                    users = (await self.highrise.get_room_users()).content
-                    target_user = None
-                    for u, _ in users:
-                        if u.username == target_username:
-                            target_user = u
-                            break
-
-                    if not target_user:
-                        await send_response( f"❌ Usuario {target_username} no encontrado!")
-                        return
-
-                    inv_response = await self.highrise.get_user_outfit(target_user.id)
-                    if isinstance(inv_response, Error):
-                        await send_response( f"❌ Error obteniendo outfit de {target_username}")
-                        return
-
-                    outfit = inv_response.outfit
-                    if outfit:
-                        await send_response( f"👔 OUTFIT de {target_username}:")
-                        await asyncio.sleep(0.2)
-                        for i, item in enumerate(outfit, 1):
-                            await send_response( f"{i}. {item.type}: {item.id}")
-                            await asyncio.sleep(0.2)
-                    else:
-                        await send_response( f"👔 {target_username} no tiene outfit equipado")
-                except Exception as e:
-                    await send_response( f"❌ Error: {str(e)[:150]}")
-                return
-
-            # !inventory - ver inventario del bot
-            try:
+                users = (await self.highrise.get_room_users()).content
+                target_user = next((u for u, _ in users if u.username == target_username), None)
+                if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
+                inv_response = await self.highrise.get_user_outfit(target_user.id)
+                if isinstance(inv_response, Error): await send_response( f"❌ Error obteniendo outfit de {target_username}"); return
+                outfit = inv_response.outfit
+                if outfit:
+                    await send_response( f"👔 OUTFIT de {target_username}:")
+                    for i, item in enumerate(outfit, 1): await send_response( f"{i}. {item.type}: {item.id}"); await asyncio.sleep(0.2)
+                else: await send_response( f"👔 {target_username} no tiene outfit equipado")
+            else:
                 inventory_response = await self.highrise.get_inventory()
-                if isinstance(inventory_response, Error):
-                    await send_response( f"❌ Error: {str(inventory_response)[:100]}")
-                    return
-
+                if isinstance(inventory_response, Error): await send_response( f"❌ Error: {str(inventory_response)[:100]}"); return
                 inventory = inventory_response.items
                 if inventory:
                     total_items = len(inventory)
                     await send_response( f"👔 INVENTARIO: {total_items} items")
-                    await asyncio.sleep(0.3)
-
-                    # Mostrar cada ítem con su ID
-                    for i, item in enumerate(inventory, 1):
-                        item_id = item.id
-                        item_type = item.type
-                        await send_response( f"{i}. {item_type}: {item_id}")
-                        await asyncio.sleep(0.2)
-                else:
-                    await send_response( "📦 Inventario vacío")
-
-            except Exception as e:
-                error_msg = str(e)[:150]
-                await send_response( f"❌ Error: {error_msg}")
+                    for i, item in enumerate(inventory, 1): await send_response( f"{i}. {item.type}: {item.id}"); await asyncio.sleep(0.2)
+                else: await send_response("📦 Inventario vacío")
             return
 
-        # Comando !give @user [item_id] - dar item a usuario (solo admin y propietario)
+        # Comando !give
         if msg.startswith("!give "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo propietario y administradores pueden dar items!")
-                return
-
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo propietario y administradores pueden dar items!"); return
             parts = msg.split()
             if len(parts) >= 3:
                 target_username = parts[1].replace("@", "")
                 item_id = " ".join(parts[2:])
-
-                try:
-                    users = (await self.highrise.get_room_users()).content
-                    target_user = None
-                    for u, _ in users:
-                        if u.username == target_username:
-                            target_user = u
-                            break
-
-                    if not target_user:
-                        await send_response( f"❌ Usuario {target_username} no encontrado!")
-                        return
-
-                    from highrise.models import Item, Position
-                    item = Item(type="clothing", id=item_id, amount=1)
-
-                    await self.highrise.set_inventory(target_user.id, [item])
-                    await send_response( f"🎁 Item {item_id} entregado a {target_username}")
-                    log_event("GIVE_ITEM", f"{user.username} dio {item_id} a {target_username}")
-
-                except Exception as e:
-                    await send_response( f"❌ Error dando item: {str(e)[:150]}")
-            else:
-                await send_response( "❌ Usa: !give @user [item_id]")
+                users = (await self.highrise.get_room_users()).content
+                target_user = next((u for u, _ in users if u.username == target_username), None)
+                if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
+                from highrise.models import Item
+                item = Item(type="clothing", id=item_id, amount=1)
+                await self.highrise.set_inventory(target_user.id, [item])
+                await send_response( f"🎁 Item {item_id} entregado a {target_username}")
+            else: await send_response("❌ Usa: !give @user [item_id]")
             return
 
-        # Comando !wallet
+        # Comando !wallet (Owner)
         if msg == "!wallet":
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede ver el balance del bot!")
-                return
+            if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede ver el balance del bot!"); return
             balance = await self.get_bot_wallet_balance()
             await self.highrise.chat(f"💰 Balance del bot: {balance} oro")
             return
 
-        # Comando !restart - reiniciar bot (solo propietario)
+        # Comando !restart (Owner)
         if msg.startswith("!restart"):
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede reiniciar el bot!")
-                return
-            await send_response( "🔄 Reiniciando bot...")
-            await send_response( "⚠️ El bot se detendrá en 3 segundos!")
-            await send_response( "💡 Usa restart_bot.bat para reinicio automático!")
-            try:
-                asyncio.create_task(self.delayed_restart())
-            except Exception as e:
-                print(f"Error creando tarea de reinicio: {e}")
+            if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede reiniciar el bot!"); return
+            await send_response("🔄 Reiniciando bot..."); await send_response("⚠️ El bot se detendrá en 3 segundos!"); await send_response("💡 Usa restart_bot.bat para reinicio automático!")
+            asyncio.create_task(self.delayed_restart())
             return
 
-        # Comando !say [mensaje] - enviar mensaje a la sala (solo propietario y admin)
+        # Comando !say (Admin/Owner)
         if msg.startswith("!say "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo propietario y administradores pueden usar este comando!")
-                return
-
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo propietario y administradores pueden usar este comando!"); return
             message_to_send = msg[5:].strip()
             if message_to_send:
                 await self.highrise.chat(message_to_send)
                 await send_response( f"✅ Mensaje enviado: {message_to_send}")
-                log_event("SAY", f"{user.username} envió mensaje: {message_to_send}")
-            else:
-                await send_response( "❌ Usa: !say [mensaje]")
+            else: await send_response("❌ Usa: !say [mensaje]")
             return
 
-        # Comando !tome — teletransportar bot al propietario
+        # Comando !tome (Owner)
         if msg == "!tome":
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede usar este comando!")
-                return
-            try:
-                users = (await self.highrise.get_room_users()).content
-
-                # Buscar bot y propietario
-                bot_user = None
-                user_pos = None
-
-                for u, pos in users:
-                    # Buscar bot por ID o nombre
-                    if u.id == "681d54aa4cedce763169580f" or "nocturno" in u.username.lower() or u.username == "NOCTURNO_BOT":
-                        bot_user = u
-                    # Buscar posición del propietario
-                    if u.id == user_id:
-                        user_pos = pos
-
-                if bot_user and user_pos:
-                    # Teletransportar bot cerca del propietario (offset de 1 bloque)
-                    from highrise.models import Position as Pos
-                    target_pos = Pos(user_pos.x + 1.0, user_pos.y, user_pos.z)
-                    await self.highrise.teleport(bot_user.id, target_pos)
-                    await send_response( f"🤖 Bot {bot_user.username} teletransportado a @{user.username}")
-                elif not bot_user:
-                    await send_response( "❌ ¡Bot no encontrado en la sala!")
-                else:
-                    await send_response( "❌ No se pudo obtener tu posición!")
-            except Exception as e:
-                await send_response( f"❌ Error: {e}")
+            if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede usar este comando!"); return
+            users = (await self.highrise.get_room_users()).content
+            bot_user, bot_pos, user_pos = None, None, None
+            for u, pos in users:
+                if hasattr(self, 'bot_id') and u.id == self.bot_id: bot_user, bot_pos = u, pos
+                if u.id == user_id: user_pos = pos
+            if bot_user and user_pos:
+                target_pos = Position(user_pos.x + 1.0, user_pos.y, user_pos.z)
+                await self.highrise.teleport(bot_user.id, target_pos)
+                await send_response( f"🤖 Bot teletransportado a @{user.username}")
+            elif not bot_user: await send_response("❌ ¡Bot no encontrado en la sala!")
+            else: await send_response("❌ No se pudo obtener tu posición!")
             return
 
-        # Comando !outfit [número] - cambio de ropa del bot usando outfits guardados
+        # Comando !outfit
         if msg.startswith("!outfit"):
-            if not (self.is_admin(user_id) or self.is_moderator(user_id)):
-                await send_response( "¡No tienes acceso a este comando!")
-                return
-
+            if not (self.is_admin(user_id) or self.is_moderator(user_id)): await send_response("¡No tienes acceso a este comando!"); return
             parts = msg.split()
             if len(parts) >= 2:
                 try:
                     outfit_number = int(parts[1])
-
                     if outfit_number in SAVED_OUTFITS:
-                        # Usar outfit guardado
                         await self.highrise.set_outfit(SAVED_OUTFITS[outfit_number])
                         await send_response( f"👕 Outfit #{outfit_number} aplicado")
-                        log_event("OUTFIT", f"Outfit #{outfit_number} aplicado por {user.username}")
-                    else:
-                        await send_response( f"❌ Outfit #{outfit_number} no existe. Usa !copyoutfit para guardar outfits.")
-
-                except ValueError:
-                    await send_response( "❌ Usa: !outfit [número]")
-                except Exception as e:
-                    await send_response( f"❌ Error de cambio de ropa: {e}")
+                    else: await send_response( f"❌ Outfit #{outfit_number} no existe.")
+                except ValueError: await send_response("❌ Usa: !outfit [número]")
+                except Exception as e: await send_response( f"❌ Error de cambio de ropa: {e}")
             else:
-                # Mostrar lista de outfits guardados
                 if SAVED_OUTFITS:
                     outfits_list = ", ".join([f"#{num}" for num in sorted(SAVED_OUTFITS.keys())])
                     await send_response( f"👔 Outfits guardados: {outfits_list}\n❌ Usa: !outfit [número]")
-                else:
-                    await send_response( "📦 No hay outfits guardados. Usa !copyoutfit para guardar uno.")
+                else: await send_response("📦 No hay outfits guardados.")
             return
 
-        # Comando !flossmode - deshabilitado
-        if msg == "!flossmode":
-            if not (user_id == OWNER_ID or self.is_admin(user_id)):
-                await send_response( "❌ ¡Solo el propietario y administradores pueden cambiar el modo del bot!")
-                return
-            return
-
-        # Comando !automode - activar ciclo automático de 224 emotes
+        # Comando !automode (Admin/Owner)
         if msg == "!automode":
-            if not (user_id == OWNER_ID or self.is_admin(user_id)):
-                await send_response( "❌ ¡Solo el propietario y administradores pueden cambiar el modo del bot!")
-                return
-
+            if not (user_id == OWNER_ID or self.is_admin(user_id)): await send_response("❌ ¡Solo propietario y administradores pueden cambiar el modo del bot!"); return
             try:
-                # Detener tarea actual si existe
-                if self.current_emote_task and not self.current_emote_task.done():
-                    self.current_emote_task.cancel()
-                    await asyncio.sleep(0.5)  # Esperar a que se cancele
-
-                # Iniciar ciclo automático de 224 emotes
+                if self.current_emote_task and not self.current_emote_task.done(): self.current_emote_task.cancel(); await asyncio.sleep(0.5)
                 self.current_emote_task = asyncio.create_task(self.start_auto_emote_cycle())
-                await send_response( "🎭 ¡Modo AUTOMÁTICO activado! El bot ejecutará los 224 emotes en secuencia")
+                await send_response("🎭 ¡Modo AUTOMÁTICO activado!")
                 await self.highrise.chat("🎭 Modo AUTOMÁTICO activado por admin")
                 log_event("BOT", f"Modo automático activado por {user.username}")
-
             except Exception as e:
                 await send_response( f"❌ Error activando modo automático: {e}")
-                log_event("ERROR", f"Error activando modo automático: {e}")
             return
 
-        # Comando !mimic [@usuario] - imitar interacción social (solo propietario y admin)
+        # Comando !mimic (Admin/Owner)
         if msg.startswith("!mimic "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo propietario y administradores pueden usar este comando!")
-                return
-
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo propietario y administradores pueden usar este comando!"); return
             target_username = msg[7:].strip().replace("@", "")
-            try:
-                users = (await self.highrise.get_room_users()).content
-                target_user = None
-                for u, _ in users:
-                    if u.username == target_username:
-                        target_user = u
-                        break
-
-                if not target_user:
-                    await send_response( f"❌ Usuario {target_username} no encontrado")
-                    return
-
-                # Copiar outfit del usuario objetivo
-                target_outfit = await self.highrise.get_user_outfit(target_user.id)
-                await self.highrise.set_outfit(target_outfit.outfit)
-
-                # Copiar posición del usuario objetivo
-                target_position = None
-                for u, pos in users:
-                    if u.id == target_user.id:
-                        target_position = pos
-                        break
-
-                if target_position and isinstance(target_position, Position):
-                    mimic_position = Position(target_position.x + 0.5, target_position.y, target_position.z + 0.5)
-                    await self.highrise.teleport(self.bot_id, mimic_position)
-
-                await send_response( f"🎭 Bot imitando a @{target_username}")
-                await self.highrise.chat(f"🎭 ¡Soy @{target_username}!")
-                log_event("MIMIC", f"{user.username} activó mimic de {target_username}")
-
-            except Exception as e:
-                await send_response( f"❌ Error en mimic: {e}")
+            users = (await self.highrise.get_room_users()).content
+            target_user = next((u for u, _ in users if u.username == target_username), None)
+            if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado"); return
+            target_outfit = await self.highrise.get_user_outfit(target_user.id)
+            await self.highrise.set_outfit(target_outfit.outfit)
+            target_position = next((pos for u, pos in users if u.id == target_user.id), None)
+            if target_position:
+                mimic_position = Position(target_position.x + 0.5, target_position.y, target_position.z + 0.5)
+                await self.highrise.teleport(self.bot_id, mimic_position)
+            await send_response( f"🎭 Bot imitando a @{target_username}"); await self.highrise.chat(f"🎭 ¡Soy @{target_username}!")
             return
 
-        # Comando !copyoutfit - copiar outfit del usuario al bot y guardarlo numerado
+        # Comando !copyoutfit (Admin/Owner)
         if msg == "!copyoutfit":
-            if not (user_id == OWNER_ID or self.is_admin(user_id)):
-                await send_response( "❌ ¡Solo el propietario y administradores pueden usar este comando!")
-                return
-
-            try:
-                # Obtener el outfit del usuario que ejecuta el comando
-                user_outfit = await self.highrise.get_user_outfit(user.id)
-
-                # Aplicar el outfit al bot
-                await self.highrise.set_outfit(user_outfit.outfit)
-
-                # Guardar outfit con número
-                outfit_number = len(SAVED_OUTFITS) + 1
-                SAVED_OUTFITS[outfit_number] = user_outfit.outfit
-
-                await send_response( f"👔 Outfit copiado y guardado como #{outfit_number}")
-                log_event("ADMIN", f"Outfit copiado y guardado #{outfit_number}: {user.username} -> bot")
-
-            except Exception as e:
-                await send_response( f"❌ Error copiando outfit: {e}")
-                log_event("ERROR", f"Error copiando outfit de {user.username}: {e}")
+            if not (user_id == OWNER_ID or self.is_admin(user_id)): await send_response("❌ ¡Solo propietario y administradores pueden usar este comando!"); return
+            user_outfit = await self.highrise.get_user_outfit(user.id)
+            await self.highrise.set_outfit(user_outfit.outfit)
+            outfit_number = len(SAVED_OUTFITS) + 1
+            SAVED_OUTFITS[outfit_number] = user_outfit.outfit
+            self.save_data()
+            await send_response( f"👔 Outfit copiado y guardado como #{outfit_number}")
             return
 
-        # Comando !room - cambio de sala del bot
-        if msg.startswith("!room"):
-            if not (self.is_admin(user_id) or self.is_moderator(user_id)):
-                await send_response( "¡No tienes acceso a este comando!")
-                return
-
-            parts = msg.split()
-            if len(parts) >= 2:
-                room_name = parts[1]
-                try:
-                    # Aquí irá la lógica de cambio de sala del bot
-                    await send_response( f"🏠 Transferiste el bot a la sala: {room_name}")
-                    log_event("ROOM", f"Cambio de sala: {user.username} -> {room_name}")
-                except Exception as e:
-                    await send_response( f"❌ Error de cambio de sala: {e}")
-            else:
-                await send_response( "❌ Usa: !room [nombre_sala]")
-            return
-
-        # Comando !setdirectivo - сохранить точку директории (только для Owner)
+        # Comando !setdirectivo (Owner)
         if msg == "!setdirectivo":
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede establecer la zona directiva!")
-                return
-
-            try:
-                # Obtenemos la posición del usuario
-                users = (await self.highrise.get_room_users()).content
-                user_obj = None
-                user_position = None
-                for u, pos in users:
-                    if u.id == user_id:
-                        user_obj = u
-                        user_position = pos
-                        break
-
-                if user_obj and user_position:
-                    # Actualizamos la zona directiva en la configuración
-                    new_directivo_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
-
-                    # Guardamos en config.json
-                    config = load_config()
-                    config["directivo_zone"] = new_directivo_zone
-                    with open("config.json", "w", encoding="utf-8") as f:
-                        json.dump(config, f, indent=2, ensure_ascii=False)
-
-                    await send_response( f"👑 Zona directiva establecida en: X={new_directivo_zone['x']}, Y={new_directivo_zone['y']}, Z={new_directivo_zone['z']}")
-                else:
-                    await send_response( "¡Error obteniendo posición del usuario!")
-            except Exception as e:
-                await send_response( f"Error estableciendo zona directiva: {e}")
+            if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede establecer la zona directiva!"); return
+            users = (await self.highrise.get_room_users()).content
+            user_position = next((pos for u, pos in users if u.id == user_id), None)
+            if user_position:
+                new_directivo_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                config = load_config()
+                config["directivo_zone"] = new_directivo_zone
+                with open("config.json", "w", encoding="utf-8") as f: json.dump(config, f, indent=2, ensure_ascii=False)
+                await send_response( f"👑 Zona directiva establecida en: X={new_directivo_zone['x']}, Y={new_directivo_zone['y']}, Z={new_directivo_zone['z']}")
+            else: await send_response("¡Error obteniendo posición del usuario!")
             return
 
-        # Comando !dj - acceso al panel DJ
+        # Comando !dj (Admin/Moderator)
         if msg == "!dj":
-            if not (self.is_admin(user_id) or self.is_moderator(user_id)):
-                await send_response( "¡No tienes acceso a este comando!")
-                return
-
-            try:
-                # Aquí irá la lógica de acceso al panel DJ
-                await send_response( f"🎵 Obtuviste acceso al panel DJ!")
-                log_event("DJ", f"Acceso a DJ: {user.username}")
-            except Exception as e:
-                await send_response( f"❌ Error de acceso a DJ: {e}")
+            if not (self.is_admin(user_id) or self.is_moderator(user_id)): await send_response("¡No tienes acceso a este comando!"); return
+            await send_response("🎵 Acceso al panel DJ concedido!")
             return
 
-        # Comando !music - control de música
+        # Comando !music
         if msg.startswith("!music"):
-            if not (self.is_admin(user_id) or self.is_moderator(user_id)):
-                await send_response( "¡No tienes acceso a este comando!")
-                return
-
+            if not (self.is_admin(user_id) or self.is_moderator(user_id)): await send_response("¡No tienes acceso a este comando!"); return
             parts = msg.split()
             if len(parts) >= 2:
                 action = parts[1].lower()
-                if action == "play":
-                    await send_response( f"🎵 Reprodujiste música!")
-                elif action == "stop":
-                    await send_response( f"🔇 Detuviste la música!")
-                elif action == "pause":
-                    await send_response( f"⏸️ Pausaste la música!")
-                else:
-                    await send_response( "❌ Usa: !music [play/stop/pause]")
-            else:
-                await send_response( "❌ Usa: !music [play/stop/pause]")
+                if action == "play": await send_response(f"🎵 Reprodujiste música!")
+                elif action == "stop": await send_response(f"🔇 Detuviste la música!")
+                elif action == "pause": await send_response(f"⏸️ Pausaste la música!")
+                else: await send_response("❌ Usa: !music [play/stop/pause]")
+            else: await send_response("❌ Usa: !music [play/stop/pause]")
             return
 
         # Comando !tip
         if msg.startswith("!tip"):
-            global BOT_WALLET
-
-            if not (self.is_admin(user_id) or self.is_moderator(user_id)):
-                await send_response( "¡No tienes acceso a este comando!")
-                return
-
+            if not (self.is_admin(user_id) or self.is_moderator(user_id)): await send_response("¡No tienes acceso a este comando!"); return
             parts = msg.split()
             if len(parts) >= 3:
                 tip_type = parts[1]
                 try:
                     amount = int(parts[2])
-                except ValueError:
-                    await send_response( "❌ ¡Cantidad de oro inválida!")
-                    return
+                except ValueError: await send_response("❌ ¡Cantidad de oro inválida!"); return
 
                 if tip_type == "all" and 1 <= amount <= 5:
-                    # Dar oro a todos en la sala
                     try:
                         users = (await self.highrise.get_room_users()).content
-
-                        # Encontrar ID del bot (verificar varias opciones de nombres)
-                        bot_user = None
-                        for u, pos in users:
-                            # Verificar nombre específico NOCTURNO_BOT primero
-                            if u.username == "NOCTURNO_BOT" or u.username.upper() == "NOCTURNO_BOT":
-                                bot_user = u
-                                print(f"Bot NOCTURNO_BOT encontrado: {u.username} con ID: {u.id}")
-                                break
-                            # Verificar diferentes variantes de nombres del bot
-                            elif u.username.lower() in ["highrisebot", "gluxbot", "bot"] or any(name in u.username.lower() for name in ["nocturno", "bot", "glux", "highrise"]):
-                                bot_user = u
-                                print(f"Bot encontrado: {u.username} con ID: {u.id}")
-                                break
-
-                        # Si el bot no se encuentra, usar el primer usuario como bot (temporalmente)
-                        if bot_user is None:
-                            print("Bot no encontrado, usando primer usuario")
-                            bot_user = users[0][0] if users else None
-
-                        # Información de depuración
-                        print(f"Total de usuarios en sala: {len(users)}")
-                        for u, pos in users:
-                            print(f"Usuario: {u.username} (ID: {u.id})")
-
-                        # Excluir bot de la lista de destinatarios
-                        available_users = [u for u, pos in users if bot_user and u.id != bot_user.id]
+                        bot_user = next((u for u, _ in users if u.username == "NOCTURNO_BOT" or u.username.upper() == "NOCTURNO_BOT" or u.username.lower() in ["highrisebot", "gluxbot", "bot"] or any(name in u.username.lower() for name in ["nocturno", "bot", "glux", "highrise"])), None)
+                        available_users = [u for u, _ in users if bot_user and u.id != bot_user.id]
                         user_count = len(available_users)
                         total_cost = user_count * amount
-
-                        print(f"Usuarios disponibles (sin bot): {user_count}")
-                        print(f"Bot: {bot_user.username if bot_user else 'No encontrado'}")
-
-                        if user_count == 0:
-                            await send_response( "❌ ¡No hay usuarios para dar oro!")
-                            return
-
-                        # Verificar balance real del bot
                         real_balance = await self.get_bot_wallet_balance()
-                        if total_cost > real_balance:
-                            await send_response( f"❌ ¡Oro insuficiente! Necesario: {total_cost}, disponible: {real_balance}")
-                            return
+                        if total_cost > real_balance: await send_response( f"❌ ¡Oro insuficiente! Necesario: {total_cost}, disponible: {real_balance}"); return
 
-                        # Dar oro a todos los usuarios (excepto bot)
                         for u in available_users:
-                            try:
-                                # Convertir cantidad a barras de oro
-                                tip_bars = self.convert_to_gold_bars(amount)
-                                if tip_bars:
-                                    await self.highrise.tip_user(u.id, tip_bars)
-                                else:
-                                    print(f"No se pudo convertir {amount} a barras de oro")
-                            except Exception as e:
-                                print(f"Error enviando oro a {u.username}: {e}")
-
+                            tip_bars = self.convert_to_gold_bars(amount)
+                            if tip_bars: await self.highrise.tip_user(u.id, tip_bars)
                         await self.highrise.chat(f"💰 ¡Bot dio {amount} oro a todos los {user_count} jugadores en la sala!")
-
-                    except Exception as e:
-                        await send_response( f"❌ Error dando oro: {e}")
+                    except Exception as e: await send_response( f"❌ Error dando oro: {e}")
 
                 elif tip_type == "only" and amount > 0:
-                    # Dar oro a usuarios aleatorios
                     try:
                         users = (await self.highrise.get_room_users()).content
-                        # Encontrar ID del bot (verificar varias opciones de nombres)
-                        bot_user = None
-                        for u, pos in users:
-                            # Verificar nombre específico NOCTURNO_BOT primero
-                            if u.username == "NOCTURNO_BOT" or u.username.upper() == "NOCTURNO_BOT":
-                                bot_user = u
-                                print(f"Bot NOCTURNO_BOT encontrado: {u.username} con ID: {u.id}")
-                                break
-                            # Verificar diferentes variantes de nombres del bot
-                            elif u.username.lower() in ["highrisebot", "gluxbot", "bot"] or any(name in u.username.lower() for name in ["nocturno", "bot", "glux", "highrise"]):
-                                bot_user = u
-                                print(f"Bot encontrado: {u.username} con ID: {u.id}")
-                                break
-
-                        # Si el bot no se encuentra, usar el primer usuario como bot (temporalmente)
-                        if bot_user is None:
-                            print("Bot no encontrado, usando primer usuario")
-                            bot_user = users[0][0] if users else None
-
-                        # Información de depuración
-                        print(f"Total de usuarios en sala: {len(users)}")
-                        for u, pos in users:
-                            print(f"Usuario: {u.username} (ID: {u.id})")
-
-                        # Excluir bot de la lista
-                        available_users = [u for u, pos in users if bot_user and u.id != bot_user.id]
-
-                        print(f"Usuarios disponibles (sin bot): {len(available_users)}")
-                        print(f"Bot: {bot_user.username if bot_user else 'No encontrado'}")
-
-                        if len(available_users) == 0:
-                            await send_response( "❌ ¡No hay usuarios para dar oro!")
-                            return
-
-                        # Seleccionar usuarios aleatorios
+                        bot_user = next((u for u, _ in users if u.username == "NOCTURNO_BOT" or u.username.upper() == "NOCTURNO_BOT" or u.username.lower() in ["highrisebot", "gluxbot", "bot"] or any(name in u.username.lower() for name in ["nocturno", "bot", "glux", "highrise"])), None)
+                        available_users = [u for u, _ in users if bot_user and u.id != bot_user.id]
                         num_users = min(amount, len(available_users))
                         selected_users = random.sample(available_users, num_users)
-                        total_cost = num_users * 5  # 5 oro a cada uno
-
-                        # Verificar balance real del bot
+                        total_cost = num_users * 5
                         real_balance = await self.get_bot_wallet_balance()
-                        if total_cost > real_balance:
-                            await send_response( f"❌ ¡Oro insuficiente! Necesario: {total_cost}, disponible: {real_balance}")
-                            return
-
-                        # Dar oro a usuarios seleccionados
+                        if total_cost > real_balance: await send_response( f"❌ ¡Oro insuficiente! Necesario: {total_cost}, disponible: {real_balance}"); return
                         for u in selected_users:
-                            try:
-                                # Convertir 5 oro a barras de oro
-                                tip_bars = self.convert_to_gold_bars(5)
-                                if tip_bars:
-                                    await self.highrise.tip_user(u.id, tip_bars)
-                                else:
-                                    print(f"No se pudo convertir 5 a barras de oro")
-                            except Exception as e:
-                                print(f"Error enviando oro a {u.username}: {e}")
-
+                            tip_bars = self.convert_to_gold_bars(5)
+                            if tip_bars: await self.highrise.tip_user(u.id, tip_bars)
                         user_names = ", ".join([u.username for u in selected_users])
                         await self.highrise.chat(f"💰 Bot dio 5 oro a {num_users} usuarios aleatorios: {user_names}")
-
-                    except Exception as e:
-                        await send_response( f"❌ Error al dar oro: {e}")
-                else:
-                    await send_response( "❌ ¡Formato de comando inválido! Usa: !tip all [1-5] o !tip only [X]")
-            else:
-                await send_response( "❌ ¡Formato de comando inválido! Usa: !tip all [1-5] o !tip only [X]")
+                    except Exception as e: await send_response( f"❌ Error al dar oro: {e}")
+                else: await send_response("❌ ¡Formato de comando inválido! Usa: !tip all [1-5] o !tip only [X]")
+            else: await send_response("❌ ¡Formato de comando inválido! Usa: !tip all [1-5] o !tip only [X]")
             return
 
         # Comandos de moderación
         if msg.startswith("!kick") or msg.startswith("!ban"):
-            if not (self.is_admin(user_id) or self.is_moderator(user_id)):
-                await send_response( "¡No tienes acceso a este comando!")
-                return
-
+            if not (self.is_admin(user_id) or self.is_moderator(user_id)): await send_response("¡No tienes acceso a este comando!"); return
             parts = msg.split()
             if len(parts) >= 2:
                 target_username = parts[1].replace("@", "")
                 command = parts[0]
-                try:
-                    users = (await self.highrise.get_room_users()).content
-                    target_user = None
-                    for u, pos in users:
-                        if u.username == target_username:
-                            target_user = u
-                            break
-                    if not target_user:
-                        await send_response( f"❌ Usuario {target_username} no encontrado en la sala!")
-                        return
-                    # Moderation through API
-                    if command == "!kick":
-                        log_event("MODERATION", f"Intento kick: {user.username} -> {target_username}")
-                        try:
-                            await self.highrise.moderate_room(target_user.id, "kick")
-                            await send_response( f"👢 Expulsaste a {target_username} de la sala")
-                            log_event("SUCCESS", f"Kick exitoso: {target_username}")
-                        except Exception as e:
-                            log_event("ERROR", f"Error kick: {e}")
-                            await send_response( f"❌ Error kick: {e}")
-                    elif command == "!ban":
-                        # Real ban through API (1 day = 86400 seconds)
-                        log_event("MODERATION", f"Intento ban: {user.username} -> {target_username}")
-                        try:
-                            await self.highrise.moderate_room(target_user.id, "ban", 86400)
-                            await send_response( f"🚫 Baneaste a {target_username} por 1 día")
-                            log_event("SUCCESS", f"Ban exitoso: {target_username}")
-                        except Exception as e:
-                            log_event("ERROR", f"Error ban: {e}")
-                            await send_response( f"❌ Error ban: {e}")
-
-                except Exception as e:
-                    await send_response( f"❌ Error de moderación: {e}")
+                users = (await self.highrise.get_room_users()).content
+                target_user = next((u for u, _ in users if u.username == target_username), None)
+                if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado en la sala!"); return
+                if command == "!kick":
+                    await self.highrise.moderate_room(target_user.id, "kick")
+                    await send_response( f"👢 Expulsaste a {target_username} de la sala")
+                elif command == "!ban":
+                    await self.highrise.moderate_room(target_user.id, "ban", 86400)
+                    await send_response( f"🚫 Baneaste a {target_username} por 1 día")
             return
 
-        # Comando !vip - mostrar comandos para VIP usuarios
+        # Comando !vip
         if msg == "!vip":
-            if not self.is_vip_by_username(user.username):
-                await send_response( "❌ ¡Solo VIP pueden ver esta sección!")
-                return
-            await send_response( "⭐ COMANDOS VIP:\n!flash [x] [y] [z] - teleport to coordinates\nvip - teleport to VIP zone\n!tele @user - teleport to user\n!emote @user [animation] - animation on user\n[animation] @user - mutual animation\n@user [animation] - animation on user\n!stop @user all - stop user animations")
+            if not self.is_vip_by_username(user.username): await send_response("❌ ¡Solo VIP pueden ver esta sección!"); return
+            await send_response("⭐ COMANDOS VIP:\n!flash [x] [y] [z] - teleport\nvip - zona VIP\n!tele @user - teleport to user\n!emote @user [animation]\n[animation] @user\n@user [animation]\n!stop @user all - stop user animations")
             return
 
-
-        # Comando !givevip - dar estatus VIP (mantenido para compatibilidad)
+        # Comando !givevip (Admin/Owner)
         if msg.startswith("!givevip"):
-            # Owner y Admin tienen acceso completo según requerimientos del usuario
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden dar VIP!")
-                return
-
-            parts = msg.split()
-            if len(parts) >= 2:
-                target_user = parts[1].replace("@", "")
-                if target_user not in VIP_USERS:
-                    VIP_USERS.add(target_user)
-                    self.save_data()
-                    await send_response( f"🎉 Otorgaste estatus VIP a {target_user}!")
-                    log_event("VIP", f"{user.username} otorgó VIP a {target_user}")
-                else:
-                    await send_response( f"¡Usuario {target_user} ya tiene estatus VIP!")
-            else:
-                await send_response( "❌ Usa: !givevip @username")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden dar VIP!"); return
+            target_user = msg[8:].strip().replace("@", "")
+            if target_user not in VIP_USERS:
+                VIP_USERS.add(target_user)
+                self.save_data()
+                await send_response( f"🎉 Otorgaste estatus VIP a {target_user}!")
+                target_user_id = next((u.id for u, _ in (await self.highrise.get_room_users()).content if u.username == target_user), None)
+                if target_user_id: await self.highrise.send_whisper(target_user_id, f"🎉 ¡Felicitaciones! Ahora eres VIP gracias a @{user.username}")
+            else: await send_response( f"¡Usuario {target_user} ya tiene estatus VIP!")
             return
 
-        # Comando !unvip - quitar estatus VIP (solo Admin y Owner)
+        # Comando !unvip (Admin/Owner)
         if msg.startswith("!unvip"):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden quitar VIP!")
-                return
-
-            parts = msg.split()
-            if len(parts) >= 2:
-                target_user = parts[1].replace("@", "")
-                if target_user in VIP_USERS:
-                    VIP_USERS.remove(target_user)
-                    self.save_data()
-                    await send_response( f"❌ Removiste estatus VIP de {target_user}!")
-                    log_event("VIP", f"{user.username} removió VIP de {target_user}")
-                else:
-                    await send_response( f"¡Usuario {target_user} no tiene estatus VIP!")
-            else:
-                await send_response( "❌ Usa: !unvip @username")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden quitar VIP!"); return
+            target_user = msg[6:].strip().replace("@", "")
+            if target_user in VIP_USERS:
+                VIP_USERS.remove(target_user)
+                self.save_data()
+                await send_response( f"❌ Removiste estatus VIP de {target_user}!")
+            else: await send_response( f"¡Usuario {target_user} no tiene estatus VIP!")
             return
 
-        # Comando !freeze - congelar usuario (solo Admin y Owner)
+        # Comando !freeze (Admin/Owner)
         if msg.startswith("!freeze"):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden usar freeze!")
-                return
-
-            parts = msg.split()
-            if len(parts) >= 2:
-                target_username = parts[1].replace("@", "")
-                try:
-                    # Buscar el usuario en la sala
-                    users_response = await self.highrise.get_room_users()
-                    if isinstance(users_response, Error):
-                        await send_response( f"❌ Error obteniendo usuarios: {users_response}")
-                        return
-                    users = users_response.content
-
-                    target_user = None
-                    for u, pos in users:
-                        if u.username == target_username:
-                            target_user = u
-                            break
-
-                    if not target_user:
-                        await send_response( f"❌ Usuario {target_username} no encontrado en la sala!")
-                        return
-
-                    # Congelar usando la API de moderación
-                    await self.highrise.moderate_room(target_user.id, "mute", 300)  # 5 minutos
-                    await send_response( f"🧊 Congelaste a {target_username} por 5 minutos")
-                    log_event("FREEZE", f"{user.username} congeló a {target_username}")
-
-                except Exception as e:
-                    await send_response( f"❌ Error en freeze: {e}")
-                    log_event("ERROR", f"Error freeze: {e}")
-            else:
-                await send_response( "❌ Usa: !freeze @username")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden usar freeze!"); return
+            target_username = msg[7:].strip().replace("@", "")
+            users = (await self.highrise.get_room_users()).content
+            target_user = next((u for u, _ in users if u.username == target_username), None)
+            if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado en la sala!"); return
+            await self.highrise.moderate_room(target_user.id, "mute", 300)
+            await send_response( f"🧊 Congelaste a {target_username} por 5 minutos")
             return
 
-        # Comando !mute - silenciar usuario temporalmente (solo Admin y Owner)
+        # Comando !mute
         if msg.startswith("!mute"):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden usar mute!")
-                return
-
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden usar mute!"); return
             parts = msg.split()
             if len(parts) >= 2:
                 target_username = parts[1].replace("@", "")
-                duration = 60  # 60 segundos por defecto
-                if len(parts) >= 3 and parts[2].isdigit():
-                    duration = int(parts[2])  # segundos directamente
-
-                try:
-                    # Buscar el usuario en la sala
-                    users_response = await self.highrise.get_room_users()
-                    if isinstance(users_response, Error):
-                        await send_response( f"❌ Error obteniendo usuarios: {users_response}")
-                        return
-                    users = users_response.content
-
-                    target_user = None
-                    for u, pos in users:
-                        if u.username == target_username:
-                            target_user = u
-                            break
-
-                    if not target_user:
-                        await send_response( f"❌ Usuario {target_username} no encontrado en la sala!")
-                        return
-
-                    # Silenciar usando la API de moderación
-                    await self.highrise.moderate_room(target_user.id, "mute", duration)
-                    await send_response( f"🔇 Silenciaste a {target_username} por {duration} segundos")
-                    log_event("MUTE", f"{user.username} silenció a {target_username} por {duration}seg")
-
-                except Exception as e:
-                    await send_response( f"❌ Error en mute: {e}")
-                    log_event("ERROR", f"Error mute: {e}")
-            else:
-                await send_response( "❌ Usa: !mute @username [segundos]")
+                duration = int(parts[2]) if len(parts) >= 3 and parts[2].isdigit() else 60
+                users = (await self.highrise.get_room_users()).content
+                target_user = next((u for u, _ in users if u.username == target_username), None)
+                if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
+                await self.highrise.moderate_room(target_user.id, "mute", duration)
+                await send_response( f"🔇 Silenciaste a {target_username} por {duration} segundos")
+            else: await send_response("❌ Usa: !mute @username [segundos]")
             return
 
-        # Comando !unmute - quitar silencio (solo Admin y Owner)
+        # Comando !unmute
         if msg.startswith("!unmute"):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden usar unmute!")
-                return
-
-            parts = msg.split()
-            if len(parts) >= 2:
-                target_username = parts[1].replace("@", "")
-                try:
-                    users_response = await self.highrise.get_room_users()
-                    if isinstance(users_response, Error):
-                        await send_response( f"❌ Error obteniendo usuarios: {users_response}")
-                        return
-                    users = users_response.content
-
-                    target_user = None
-                    for u, pos in users:
-                        if u.username == target_username:
-                            target_user = u
-                            break
-
-                    if not target_user:
-                        await send_response( f"❌ Usuario {target_username} no encontrado!")
-                        return
-
-                    # Desmutear (mute con duración 0)
-                    await self.highrise.moderate_room(target_user.id, "mute", 0)
-                    await send_response( f"🔊 Quitaste el silencio a {target_username}")
-                    log_event("UNMUTE", f"{user.username} desmuteó a {target_username}")
-
-                except Exception as e:
-                    await send_response( f"❌ Error en unmute: {e}")
-            else:
-                await send_response( "❌ Usa: !unmute @username")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden usar unmute!"); return
+            target_username = msg[7:].strip().replace("@", "")
+            users = (await self.highrise.get_room_users()).content
+            target_user = next((u for u, _ in users if u.username == target_username), None)
+            if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
+            await self.highrise.moderate_room(target_user.id, "mute", 0)
+            await send_response( f"🔊 Quitaste el silencio a {target_username}")
             return
 
-        # Comando !unban - desbanear usuario (solo Admin y Owner)
+        # Comando !unban
         if msg.startswith("!unban"):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden desbanear!")
-                return
-
-            parts = msg.split()
-            if len(parts) >= 2:
-                target_username = parts[1].replace("@", "")
-                try:
-                    # Nota: La API de Highrise no tiene un método directo de unban
-                    # Se removería del diccionario BANNED_USERS si existiera
-                    target_id = None
-                    for uid, uname in USER_NAMES.items():
-                        if uname == target_username:
-                            target_id = uid
-                            break
-
-                    if target_id and target_id in BANNED_USERS:
-                        del BANNED_USERS[target_id]
-                        await send_response( f"✅ Desbaneaste a {target_username}")
-                        log_event("UNBAN", f"{user.username} desbaneó a {target_username}")
-                    else:
-                        await send_response( f"❌ {target_username} no está baneado")
-
-                except Exception as e:
-                    await send_response( f"❌ Error en unban: {e}")
-            else:
-                await send_response( "❌ Usa: !unban @username")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden desbanear!"); return
+            target_username = msg[6:].strip().replace("@", "")
+            target_id = next((uid for uid, uname in USER_NAMES.items() if uname == target_username), None)
+            if target_id and target_id in BANNED_USERS:
+                del BANNED_USERS[target_id]
+                await send_response( f"✅ Desbaneaste a {target_username}")
+            else: await send_response( f"❌ {target_username} no está baneado")
             return
 
-        # Comando !banlist - ver lista de usuarios baneados (solo Admin y Owner)
+        # Comando !banlist
         if msg == "!banlist":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden ver banlist!")
-                return
-
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden ver banlist!"); return
             if BANNED_USERS:
                 ban_list = "🚫 USUARIOS BANEADOS:\n"
                 for i, (uid, ban_data) in enumerate(BANNED_USERS.items(), 1):
                     username = USER_NAMES.get(uid, f"User_{uid[:8]}")
-                    if isinstance(ban_data, dict) and "time" in ban_data:
-                        ban_time = ban_data["time"]
-                        ban_list += f"{i}. {username} (hasta {ban_time})\n"
-                    else:
-                        ban_list += f"{i}. {username}\n"
+                    ban_time = ban_data.get("time", "indefinido")
+                    ban_list += f"{i}. {username} (hasta {ban_time})\n"
                 await send_response( ban_list)
-            else:
-                await send_response( "✅ No hay usuarios baneados")
+            else: await send_response("✅ No hay usuarios baneados")
             return
 
-        # Comando !mutelist - ver lista de usuarios silenciados (solo Admin y Owner)
+        # Comando !mutelist
         if msg == "!mutelist":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden ver mutelist!")
-                return
-
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden ver mutelist!"); return
             if MUTED_USERS:
                 mute_list = "🔇 USUARIOS SILENCIADOS:\n"
                 for i, (uid, mute_time) in enumerate(MUTED_USERS.items(), 1):
                     username = USER_NAMES.get(uid, f"User_{uid[:8]}")
                     mute_list += f"{i}. {username} (hasta {mute_time})\n"
                 await send_response( mute_list)
-            else:
-                await send_response( "✅ No hay usuarios silenciados")
+            else: await send_response("✅ No hay usuarios silenciados")
             return
 
-        # === SISTEMA DE PRIVILEGIOS DE SALA - Solo Admin y Owner ===
-
-        # Comando !setmod @user - dar privilegios de moderador
+        # Comando !setmod
         if msg.startswith("!setmod "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden dar privilegios de moderador!")
-                return
-
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden dar privilegios!"); return
             target_username = msg[8:].strip().replace("@", "")
-            try:
-                users = (await self.highrise.get_room_users()).content
-                target_user = None
-                for u, _ in users:
-                    if u.username == target_username:
-                        target_user = u
-                        break
-
-                if not target_user:
-                    await send_response( f"❌ Usuario {target_username} no encontrado!")
-                    return
-
-                await self.highrise.moderate_room(target_user.id, "moderator", 3600)
-                await send_response( f"👮 @{target_username} ahora tiene privilegios de moderador")
-                log_event("SETMOD", f"{user.username} dio privilegios de moderador a {target_username}")
-
-            except Exception as e:
-                await send_response( f"❌ Error: {e}")
+            target_user = next((u for u, _ in (await self.highrise.get_room_users()).content if u.username == target_username), None)
+            if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
+            await self.highrise.moderate_room(target_user.id, "moderator", 3600)
+            await send_response( f"👮 @{target_username} ahora tiene privilegios de moderador")
             return
 
-        # Comando !removemod @user - quitar privilegios de moderador
+        # Comando !removemod (no funcional en API)
         if msg.startswith("!removemod "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden quitar privilegios!")
-                return
-
-            target_username = msg[11:].strip().replace("@", "")
-            await send_response( f"⚠️ Nota: La API de Highrise no permite quitar privilegios directamente")
-            await send_response( f"💡 Los privilegios de @{target_username} expirarán automáticamente")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden quitar privilegios!"); return
+            await send_response("⚠️ Nota: La API de Highrise no permite quitar privilegios directamente")
             return
 
-        # Comando !privilege @user - ver privilegios de usuario
+        # Comando !privilege
         if msg.startswith("!privilege "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden ver privilegios!")
-                return
-
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden ver privilegios!"); return
             target_username = msg[11:].strip().replace("@", "")
-            is_mod = self.is_moderator(target_username) if target_username in USER_NAMES.values() else False
-            is_adm = self.is_admin(target_username) if target_username in USER_NAMES.values() else False
-
+            target_user_id = next((uid for uid, uname in USER_NAMES.items() if uname == target_username), None)
+            if not target_user_id: await send_response(f"❌ Usuario {target_username} no encontrado!"); return
             status = "👤 Usuario normal"
-            if is_adm:
-                status = "⚔️ Administrador"
-            elif is_mod:
-                status = "👮 Moderador"
-
+            if self.is_admin(target_user_id): status = "⚔️ Administrador"
+            elif self.is_moderator(target_user_id): status = "👮 Moderador"
             await send_response( f"🔍 Privilegios de @{target_username}: {status}")
             return
 
-        # === SISTEMA DE CANALES - Solo Admin y Owner ===
-
-        # Comando !channel create [nombre] - crear canal privado
+        # Comando !channel create
         if msg.startswith("!channel create "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden crear canales!")
-                return
-
-            channel_name = msg[16:].strip()
-            await send_response( f"⚠️ Nota: Highrise no soporta canales personalizados via API")
-            await send_response( f"💡 Considera usar grupos de usuarios o zonas específicas")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden crear canales!"); return
+            await send_response("⚠️ Nota: Highrise no soporta canales personalizados via API")
             return
 
-        # Comando !channel invite @user [canal] - invitar usuario a canal
+        # Comando !channel invite
         if msg.startswith("!channel invite "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden invitar a canales!")
-                return
-
-            await send_response( f"⚠️ Función de canales no disponible en API de Highrise")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden invitar a canales!"); return
+            await send_response("⚠️ Función de canales no disponible en API de Highrise")
             return
 
-        # Comando !channel kick @user [canal] - expulsar de canal
+        # Comando !channel kick
         if msg.startswith("!channel kick "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden expulsar de canales!")
-                return
-
-            await send_response( f"⚠️ Función de canales no disponible en API de Highrise")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden expulsar de canales!"); return
+            await send_response("⚠️ Función de canales no disponible en API de Highrise")
             return
 
-        # Comando !channel delete [canal] - eliminar canal
+        # Comando !channel delete
         if msg.startswith("!channel delete "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden eliminar canales!")
-                return
-
-            await send_response( f"⚠️ Función de canales no disponible en API de Highrise")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden eliminar canales!"); return
+            await send_response("⚠️ Función de canales no disponible en API de Highrise")
             return
 
-        # === SISTEMA DE VOICE/AUDIO - Admin y Owner ===
-
-        # Comando !voice enable - habilitar voz en sala
+        # Comando !voice enable
         if msg == "!voice enable":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden gestionar voz!")
-                return
-
-            await send_response( f"⚠️ Nota: Control de voz no disponible via API")
-            await send_response( f"💡 Configura audio desde la configuración de sala en Highrise")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden gestionar voz!"); return
+            await send_response("⚠️ Nota: Control de voz no disponible via API")
             return
 
-        # Comando !voice disable - deshabilitar voz en sala
+        # Comando !voice disable
         if msg == "!voice disable":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden gestionar voz!")
-                return
-
-            await send_response( f"⚠️ Nota: Control de voz no disponible via API")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden gestionar voz!"); return
+            await send_response("⚠️ Nota: Control de voz no disponible via API")
             return
 
-        # Comando !voice mute @user - silenciar micrófono de usuario
+        # Comando !voice mute @user
         if msg.startswith("!voice mute "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden silenciar micrófonos!")
-                return
-
-            await send_response( f"⚠️ Nota: Control de voz no disponible via API")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden silenciar micrófonos!"); return
+            await send_response("⚠️ Nota: Control de voz no disponible via API")
             return
 
-        # Comando !voice unmute @user - dessilenciar micrófono
+        # Comando !voice unmute @user
         if msg.startswith("!voice unmute "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden gestionar micrófonos!")
-                return
-
-            await send_response( f"⚠️ Nota: Control de voz no disponible via API")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden gestionar micrófonos!"); return
+            await send_response("⚠️ Nota: Control de voz no disponible via API")
             return
 
-        # === SISTEMA DE ROOM SETTINGS - Solo Admin y Owner ===
-
-        # Comando !roomset private - hacer sala privada
+        # Comando !roomset private
         if msg == "!roomset private":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden cambiar configuración de sala!")
-                return
-
-            await send_response( f"⚠️ Nota: Cambios de privacidad de sala no disponibles via API")
-            await send_response( f"💡 Cambia la configuración desde la app de Highrise")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden cambiar configuración de sala!"); return
+            await send_response("⚠️ Nota: Cambios de privacidad de sala no disponibles via API")
             return
 
-        # Comando !roomset public - hacer sala pública
+        # Comando !roomset public
         if msg == "!roomset public":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden cambiar configuración de sala!")
-                return
-
-            await send_response( f"⚠️ Nota: Cambios de privacidad de sala no disponibles via API")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden cambiar configuración de sala!"); return
+            await send_response("⚠️ Nota: Cambios de privacidad de sala no disponibles via API")
             return
 
-        # Comando !roomset capacity [número] - cambiar capacidad máxima
+        # Comando !roomset capacity
         if msg.startswith("!roomset capacity "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden cambiar capacidad!")
-                return
-
-            await send_response( f"⚠️ Nota: Cambios de capacidad no disponibles via API")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden cambiar capacidad!"); return
+            await send_response("⚠️ Nota: Cambios de capacidad no disponibles via API")
             return
 
-        # Comando !roomset name [nombre] - cambiar nombre de sala
+        # Comando !roomset name
         if msg.startswith("!roomset name "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden cambiar nombre de sala!")
-                return
-
-            await send_response( f"⚠️ Nota: Cambios de nombre no disponibles via API")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden cambiar nombre de sala!"); return
+            await send_response("⚠️ Nota: Cambios de nombre no disponibles via API")
             return
 
-        # Comando !roomset description - cambiar descripción
+        # Comando !roomset description
         if msg.startswith("!roomset description "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden cambiar descripción!")
-                return
-
-            await send_response( f"⚠️ Nota: Cambios de descripción no disponibles via API")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden cambiar descripción!"); return
+            await send_response("⚠️ Nota: Cambios de descripción no disponibles via API")
             return
 
-        # Comando !tplist - lista de puntos de teletransporte
+        # Comando !tplist
         if msg == "!tplist":
             if TELEPORT_POINTS:
                 points_list = ", ".join(TELEPORT_POINTS.keys())
                 await send_response( f"📍 Puntos de teletransporte disponibles: {points_list}")
-            else:
-                await send_response( "📍 No hay puntos de teletransporte creados")
+            else: await send_response("📍 No hay puntos de teletransporte creados")
             return
-
-        # Comando !tele list - lista de ubicaciones de teletransporte (sin restricción)
         if msg == "!tele list":
             if TELEPORT_POINTS:
                 tele_message = "🗺️ UBICACIONES DE TELETRANSPORTE:\n"
                 for i, (name, coords) in enumerate(TELEPORT_POINTS.items(), 1):
                     tele_message += f"{i}. {name} (X:{coords['x']:.1f}, Y:{coords['y']:.1f}, Z:{coords['z']:.1f})\n"
                 await send_response( tele_message)
-            else:
-                await send_response( "📍 No hay ubicaciones de teletransporte creadas")
+            else: await send_response("📍 No hay ubicaciones de teletransporte creadas")
             return
 
-        # Comando !delpoint [nombre] — eliminar punto de teletransporte (solo propietario)
+        # Comando !delpoint (Owner)
         if msg.startswith("!delpoint"):
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede eliminar puntos!")
-                return
+            if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede eliminar puntos!"); return
             parts = msg.split()
-            if len(parts) != 2:
-                await send_response( "❌ Usa: !delpoint [nombre]")
-                return
+            if len(parts) != 2: await send_response("❌ Usa: !delpoint [nombre]"); return
             point_name = parts[1]
             if point_name in TELEPORT_POINTS:
                 del TELEPORT_POINTS[point_name]
                 self.save_data()
                 await send_response( f"✅ Punto '{point_name}' eliminado!")
-            else:
-                await send_response( f"❌ Punto '{point_name}' no encontrado!")
+            else: await send_response( f"❌ Punto '{point_name}' no encontrado!")
             return
 
-        # Comando !checkvip - verificar estatus VIP
+        # Comando !checkvip
         if msg.startswith("!checkvip"):
             parts = msg.split()
             if len(parts) >= 2:
                 target_user = parts[1].replace("@", "")
-                if target_user in VIP_USERS:
-                    await send_response( f"✅ {target_user} tiene estatus VIP!")
-                else:
-                    await send_response( f"❌ {target_user} no tiene estatus VIP! (VIP_USERS: {list(VIP_USERS)[:3]}...)")
+                if target_user in VIP_USERS: await send_response( f"✅ {target_user} tiene estatus VIP!")
+                else: await send_response( f"❌ {target_user} no tiene estatus VIP!")
             else:
-                # Verificación del propio estatus
                 is_vip_status = self.is_vip_by_username(user.username)
                 await send_response( f"🔍 Tu verificación VIP: {'✅ VIP' if is_vip_status else '❌ No VIP'}")
                 await send_response( f"📋 VIP actuales: {', '.join(list(VIP_USERS)[:3])}...")
             return
 
-        # Comando !setvipzone - establecer zona VIP (mantener para compatibilidad)
-        if msg.startswith("!setvipzone"):
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede establecer la zona VIP!")
-                return
-
-            try:
-                # Obtenemos la posición del usuario
-                users = (await self.highrise.get_room_users()).content
-                user_obj = None
-                user_position = None
-                for u, pos in users:
-                    if u.id == user_id:
-                        user_obj = u
-                        user_position = pos
-                        break
-
-                if user_obj and user_position:
-                    # Actualizamos la zona VIP en la configuración
-                    new_vip_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
-
-                    # Guardamos en config.json
-                    config = load_config()
-                    config["vip_zone"] = new_vip_zone
-                    with open("config.json", "w", encoding="utf-8") as f:
-                        json.dump(config, f, indent=2, ensure_ascii=False)
-
-                    # Actualizamos la variable global
-                    VIP_ZONE.update(new_vip_zone)
-
-                    await send_response( f"🎯 Zona VIP establecida en: X={new_vip_zone['x']}, Y={new_vip_zone['y']}, Z={new_vip_zone['z']}")
-                else:
-                    await send_response( "¡Error obteniendo posición del usuario!")
-            except Exception as e:
-                await send_response( f"Error estableciendo zona VIP: {e}")
+        # Comando !setvipzone (Owner)
+        if msg.startswith("!setvipzone") or msg == "!sv":
+            if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede establecer la zona VIP!"); return
+            users = (await self.highrise.get_room_users()).content
+            user_position = next((pos for u, pos in users if u.id == user_id), None)
+            if user_position:
+                new_vip_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                config = load_config()
+                config["vip_zone"] = new_vip_zone
+                with open("config.json", "w", encoding="utf-8") as f: json.dump(config, f, indent=2, ensure_ascii=False)
+                VIP_ZONE.update(new_vip_zone)
+                await send_response( f"🎯 Zona VIP establecida en: X={new_vip_zone['x']}, Y={new_vip_zone['y']}, Z={new_vip_zone['z']}")
+            else: await send_response("¡Error obteniendo posición del usuario!")
             return
 
-        # Comando !sv - verificar estatus VIP (versión corta)
-        if msg == "!sv":
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede establecer la zona VIP!")
-                return
-
-            try:
-                # Obtenemos la posición del usuario
-                users = (await self.highrise.get_room_users()).content
-                user_obj = None
-                user_position = None
-                for u, pos in users:
-                    if u.id == user_id:
-                        user_obj = u
-                        user_position = pos
-                        break
-
-                if user_obj and user_position:
-                    # Actualizamos la zona VIP en la configuración
-                    new_vip_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
-
-                    # Guardamos en config.json
-                    config = load_config()
-                    config["vip_zone"] = new_vip_zone
-                    with open("config.json", "w", encoding="utf-8") as f:
-                        json.dump(config, f, indent=2, ensure_ascii=False)
-
-                    # Actualizamos la variable global
-                    VIP_ZONE.update(new_vip_zone)
-
-                    await send_response( f"🎯 Zona VIP establecida en: X={new_vip_zone['x']}, Y={new_vip_zone['y']}, Z={new_vip_zone['z']}")
-                else:
-                    await send_response( "¡Error obteniendo posición del usuario!")
-            except Exception as e:
-                await send_response( f"Error estableciendo zona VIP: {e}")
-            return
-
-        # Comando !setdj - сохранить точку DJ зоны (только для Owner)
+        # Comando !setdj (Owner)
         if msg == "!setdj":
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede establecer la zona DJ!")
-                return
-
-            try:
-                # Obtenemos la posición del usuario
-                users = (await self.highrise.get_room_users()).content
-                user_obj = None
-                user_position = None
-                for u, pos in users:
-                    if u.id == user_id:
-                        user_obj = u
-                        user_position = pos
-                        break
-
-                if user_obj and user_position:
-                    # Actualizamos la zona DJ en la configuración
-                    new_dj_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
-
-                    # Guardamos en config.json
-                    config = load_config()
-                    config["dj_zone"] = new_dj_zone
-                    with open("config.json", "w", encoding="utf-8") as f:
-                        json.dump(config, f, indent=2, ensure_ascii=False)
-
-                    await send_response( f"🎵 Zona DJ establecida en: X={new_dj_zone['x']}, Y={new_dj_zone['y']}, Z={new_dj_zone['z']}")
-                else:
-                    await send_response( "¡Error obteniendo posición del usuario!")
-            except Exception as e:
-                await send_response( f"Error estableciendo zona DJ: {e}")
+            if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede establecer la zona DJ!"); return
+            users = (await self.highrise.get_room_users()).content
+            user_position = next((pos for u, pos in users if u.id == user_id), None)
+            if user_position:
+                new_dj_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                config = load_config()
+                config["dj_zone"] = new_dj_zone
+                with open("config.json", "w", encoding="utf-8") as f: json.dump(config, f, indent=2, ensure_ascii=False)
+                await send_response( f"🎵 Zona DJ establecida en: X={new_dj_zone['x']}, Y={new_dj_zone['y']}, Z={new_dj_zone['z']}")
+            else: await send_response("¡Error obteniendo posición del usuario!")
             return
 
-
-
-        # Comando !heartall - enviar сердечки всем игрокам в комнате (только для Owner)
-        if msg == "!heartall":
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede enviar corazones a todos!")
-                return
-
-            try:
-                users = (await self.highrise.get_room_users()).content
-                heart_count = 0
-
-                for u, pos in users:
-                    if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):  # Исключаем бота
-                        # Добавляем сердечко в счетчик
-                        self.add_user_hearts(u.id, 1, u.username)
-                        # Отправляем визуальную реакцию сердечка
-                        await self.highrise.react("heart", u.id)
-                        heart_count += 1
-                        await asyncio.sleep(0.1)  # Небольшая задержка между отправками
-
-                await send_response( f"💖 Enviaste ❤️ a todos los {heart_count} jugadores en la sala!")
-            except Exception as e:
-                await send_response( f"Error enviando corazones: {e}")
-            return
-
-        # Comando !heartall - enviar сердечки всем игрокам в комнате (только для Owner)
-        if msg == "!heartall":
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede enviar corazones a todos!")
-                return
-
-            try:
-                users = (await self.highrise.get_room_users()).content
-                heart_count = 0
-
-                for u, pos in users:
-                    if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):  # Исключаем бота
-                        # Добавляем сердечко в счетчик
-                        self.add_user_hearts(u.id, 1, u.username)
-                        # Отправляем визуальную реакцию сердечка
-                        await self.highrise.react("heart", u.id)
-                        heart_count += 1
-                        await asyncio.sleep(0.1)  # Небольшая задержка между отправками
-
-                await send_response( f"💖 Enviaste ❤️ a todos los {heart_count} jugadores en la sala!")
-            except Exception as e:
-                await send_response( f"Error enviando corazones: {e}")
-            return
-
-        # Comando !bot @user — teletransportar bot al usuario, hacer emote, y retornar
+        # Comando !bot (Admin/Owner)
         if msg.startswith("!bot "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response("❌ ¡Solo administradores y propietario pueden usar este comando!")
-                return
-
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden usar este comando!"); return
             target_username = msg[5:].strip().replace("@", "")
+            users = (await self.highrise.get_room_users()).content
+            bot_user, bot_pos, target_user, target_pos = None, None, None, None
+            for u, pos in users:
+                if hasattr(self, 'bot_id') and u.id == self.bot_id: bot_user, bot_pos = u, pos
+                if u.username == target_username: target_user, target_pos = u, pos
+            if not bot_user: await send_response("❌ Bot no encontrado!"); return
+            if not target_user: await send_response(f"❌ ¡Usuario {target_username} no encontrado!"); return
+            if not bot_pos or not target_pos: await send_response("❌ Error: No se pudieron obtener las posiciones"); return
+            original_x, original_y, original_z = bot_pos.x, bot_pos.y, bot_pos.z
+            new_position = Position(target_pos.x + 1.0, target_pos.y, target_pos.z)
+            await self.highrise.teleport(bot_user.id, new_position)
+            await send_response(f"🤖 Bot teletransportado a @{target_username}!")
             try:
-                room_response = await self.highrise.get_room_users()
-                if isinstance(room_response, Error):
-                    await send_response(f"❌ Error obteniendo usuarios: {room_response}")
-                    return
-                
-                users = room_response.content
-                bot_user = None
-                bot_pos = None
-                target_user = None
-                target_pos = None
-
-                # Buscar bot y usuario objetivo
-                for u, pos in users:
-                    # Verificar si es el bot usando self.bot_id
-                    if hasattr(self, 'bot_id') and u.id == self.bot_id:
-                        bot_user = u
-                        bot_pos = pos
-                    # Buscar usuario objetivo
-                    if u.username == target_username:
-                        target_user = u
-                        target_pos = pos
-
-                if not bot_user:
-                    await send_response("❌ Bot no encontrado en la sala!")
-                    return
-                if not target_user:
-                    await send_response(f"❌ ¡Usuario {target_username} no encontrado!")
-                    return
-                if not bot_pos or not target_pos:
-                    await send_response("❌ Error: No se pudieron obtener las posiciones")
-                    return
-
-                # Guardar posición original del bot
-                original_x, original_y, original_z = bot_pos.x, bot_pos.y, bot_pos.z
-
-                # Teletransportar bot al lado del usuario
-                new_x = target_pos.x + 1.0
-                new_y = target_pos.y
-                new_z = target_pos.z
-                
-                target_position = Position(new_x, new_y, new_z)
-                await self.highrise.teleport(bot_user.id, target_position)
-                await send_response(f"🤖 Bot teletransportado a @{target_username}!")
-
-                # Bot hace punch y usuario reacciona con death
-                try:
-                    await self.highrise.send_emote("emoji-punch", bot_user.id)
-                    await asyncio.sleep(0.5)
-                    await self.highrise.send_emote("emote-death", target_user.id)
-                    await send_response(f"🥊 Bot golpeó a @{target_username}!")
-                except Exception as emote_error:
-                    log_event("WARNING", f"No se pudo hacer emote: {emote_error}")
-
-                # Esperar 3 segundos y retornar a posición original
-                await asyncio.sleep(3)
-                
-                original_position = Position(original_x, original_y, original_z)
-                await self.highrise.teleport(bot_user.id, original_position)
-                await send_response("✅ Bot retornó a su posición original")
-                log_event("BOT_MOVE", f"{user.username} teletransportó bot a {target_username} y retornó")
-
-            except Exception as e:
-                await send_response(f"❌ Error: {e}")
-                log_event("ERROR", f"Error en comando !bot: {e}")
+                await self.highrise.send_emote("emoji-punch", bot_user.id)
+                await asyncio.sleep(0.5)
+                await self.highrise.send_emote("emote-death", target_user.id)
+                await send_response(f"🥊 Bot golpeó a @{target_username}!")
+            except Exception as emote_error: log_event("WARNING", f"No se pudo hacer emote: {emote_error}")
+            await asyncio.sleep(3)
+            original_position = Position(original_x, original_y, original_z)
+            await self.highrise.teleport(bot_user.id, original_position)
+            await send_response("✅ Bot retornó a su posición original")
             return
 
-        # Comando !bring @username - переместить игрока к Admin/Owner
+        # Comando !bring (Admin/Owner)
         if msg.startswith("!bring "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden mover jugadores!")
-                return
-
-            try:
-                target_username = msg[7:].strip().replace("@", "")
-
-                # Obtenemos la posición del usuario que ejecuta el comando
-                users = (await self.highrise.get_room_users()).content
-                command_user_obj = None
-                command_user_position = None
-                target_user_obj = None
-
-                for u, pos in users:
-                    if u.id == user_id:
-                        command_user_obj = u
-                        command_user_position = pos
-                    elif u.username == target_username:
-                        target_user_obj = u
-
-                if not command_user_position:
-                    await send_response( "❌ ¡Error obteniendo tu posición!")
-                    return
-
-                if not target_user_obj:
-                    await send_response( f"❌ ¡Jugador {target_username} no encontrado en la sala!")
-                    return
-
-                # Teleportamos al jugador cerca del usuario que ejecuta el comando (desplazamiento de 1 bloque)
-
-                new_position = Position(command_user_position.x + 1, command_user_position.y, command_user_position.z)
-                await self.highrise.teleport(target_user_obj.id, new_position)
-                await send_response( f"🎯 @{user.username} movió a {target_username} hacia sí mismo!")
-            except Exception as e:
-                await send_response( f"Error moviendo jugador: {e}")
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden mover jugadores!"); return
+            target_username = msg[7:].strip().replace("@", "")
+            users = (await self.highrise.get_room_users()).content
+            command_user_position = next((pos for u, pos in users if u.id == user_id), None)
+            target_user_obj = next((u for u, _ in users if u.username == target_username), None)
+            if not command_user_position: await send_response("❌ ¡Error obteniendo tu posición!"); return
+            if not target_user_obj: await send_response( f"❌ ¡Jugador {target_username} no encontrado en la sala!"); return
+            new_position = Position(command_user_position.x + 1, command_user_position.y, command_user_position.z)
+            await self.highrise.teleport(target_user_obj.id, new_position)
+            await send_response( f"🎯 @{user.username} movió a {target_username} hacia sí mismo!")
             return
 
-        # Comando !stats - mostrar estadísticas completas de la sala
+        # Comando !stats
         if msg == "!stats":
-            try:
-                users = (await self.highrise.get_room_users()).content
-                total_users = len(users)
-                
-                # Contar roles
-                admin_count = sum(1 for u, _ in users if self.is_admin(u.id))
-                mod_count = sum(1 for u, _ in users if self.is_moderator(u.id) and not self.is_admin(u.id))
-                vip_count = sum(1 for u, _ in users if self.is_vip_by_username(u.username))
-                
-                # Estadísticas de actividad
-                total_messages = sum(data.get("messages", 0) for data in USER_ACTIVITY.values())
-                total_hearts = sum(USER_HEARTS.values())
-                
-                stats_msg = f"📊 ESTADÍSTICAS DE LA SALA:\n"
-                stats_msg += f"👥 Usuarios: {total_users}\n"
-                stats_msg += f"🛡️ Admins: {admin_count}\n"
-                stats_msg += f"⚖️ Mods: {mod_count}\n"
-                stats_msg += f"⭐ VIPs: {vip_count}\n"
-                stats_msg += f"💬 Mensajes: {total_messages}\n"
-                stats_msg += f"💖 Corazones: {total_hearts}"
-                
-                await self.highrise.chat(stats_msg)
-                log_event("STATS", f"{user.username} consultó estadísticas")
-            except Exception as e:
-                await send_response(f"❌ Error: {str(e)[:100]}")
+            users = (await self.highrise.get_room_users()).content
+            total_users = len(users)
+            admin_count = sum(1 for u, _ in users if self.is_admin(u.id))
+            mod_count = sum(1 for u, _ in users if self.is_moderator(u.id) and not self.is_admin(u.id))
+            vip_count = sum(1 for u, _ in users if self.is_vip_by_username(u.username))
+            total_messages = sum(data.get("messages", 0) for data in USER_ACTIVITY.values())
+            total_hearts = sum(USER_HEARTS.values())
+            stats_msg = f"📊 ESTADÍSTICAS DE LA SALA:\n👥 Usuarios: {total_users}\n🛡️ Admins: {admin_count}\n⚖️ Mods: {mod_count}\n⭐ VIPs: {vip_count}\n💬 Mensajes: {total_messages}\n💖 Corazones: {total_hearts}"
+            await self.highrise.chat(stats_msg)
             return
 
-        # Comando !online - lista de usuarios conectados con roles
+        # Comando !online
         if msg == "!online":
-            try:
-                users = (await self.highrise.get_room_users()).content
-                
-                admins = []
-                mods = []
-                vips = []
-                regular = []
-                
-                for u, _ in users:
-                    if self.is_admin(u.id):
-                        admins.append(u.username)
-                    elif self.is_moderator(u.id):
-                        mods.append(u.username)
-                    elif self.is_vip_by_username(u.username):
-                        vips.append(u.username)
-                    else:
-                        regular.append(u.username)
-                
-                online_msg = f"👥 USUARIOS ONLINE ({len(users)}):\n"
-                if admins:
-                    online_msg += f"🛡️ Admins: {', '.join(admins)}\n"
-                if mods:
-                    online_msg += f"⚖️ Mods: {', '.join(mods)}\n"
-                if vips:
-                    online_msg += f"⭐ VIPs: {', '.join(vips[:5])}"
-                    if len(vips) > 5:
-                        online_msg += f" (+{len(vips)-5} más)"
-                    online_msg += "\n"
-                online_msg += f"👤 Usuarios: {len(regular)}"
-                
-                await self.highrise.chat(online_msg)
-                log_event("ONLINE", f"{user.username} consultó usuarios online")
-            except Exception as e:
-                await send_response(f"❌ Error: {str(e)[:100]}")
+            users = (await self.highrise.get_room_users()).content
+            admins, mods, vips, regular = [], [], [], []
+            for u, _ in users:
+                if self.is_admin(u.id): admins.append(u.username)
+                elif self.is_moderator(u.id): mods.append(u.username)
+                elif self.is_vip_by_username(u.username): vips.append(u.username)
+                else: regular.append(u.username)
+            online_msg = f"👥 USUARIOS ONLINE ({len(users)}):\n"
+            if admins: online_msg += f"🛡️ Admins: {', '.join(admins)}\n"
+            if mods: online_msg += f"⚖️ Mods: {', '.join(mods)}\n"
+            if vips:
+                online_msg += f"⭐ VIPs: {', '.join(vips[:5])}"
+                if len(vips) > 5: online_msg += f" (+{len(vips)-5} más)"
+                online_msg += "\n"
+            online_msg += f"👤 Usuarios: {len(regular)}"
+            await self.highrise.chat(online_msg)
             return
 
-        # Comando !achievements - mostrar logros del usuario
+        # Comando !achievements
         if msg == "!achievements":
-            try:
-                user_hearts = self.get_user_hearts(user_id)
-                user_messages = USER_ACTIVITY.get(user_id, {}).get("messages", 0)
-                user_time = self.get_user_total_time(user_id)
-                
-                achievements = []
-                
-                # Logros por corazones
-                if user_hearts >= 1000:
-                    achievements.append("💎 Maestro del Amor")
-                elif user_hearts >= 500:
-                    achievements.append("💖 Coleccionista de Corazones")
-                elif user_hearts >= 100:
-                    achievements.append("❤️ Amante")
-                
-                # Logros por mensajes
-                if user_messages >= 1000:
-                    achievements.append("📢 Locutor Profesional")
-                elif user_messages >= 500:
-                    achievements.append("💬 Conversador Activo")
-                elif user_messages >= 100:
-                    achievements.append("✍️ Participante")
-                
-                # Logros por tiempo
-                if user_time >= 36000:  # 10 horas
-                    achievements.append("⏰ Veterano de la Sala")
-                elif user_time >= 18000:  # 5 horas
-                    achievements.append("🕐 Residente Frecuente")
-                
-                # Logros especiales
-                if self.is_vip_by_username(user.username):
-                    achievements.append("⭐ Miembro VIP")
-                if self.is_admin(user_id):
-                    achievements.append("🛡️ Administrador")
-                
-                if achievements:
-                    ach_msg = f"🏆 LOGROS DE @{user.username}:\n"
-                    ach_msg += "\n".join(f"• {ach}" for ach in achievements)
-                else:
-                    ach_msg = f"🎯 @{user.username} aún no ha desbloqueado logros\n💡 Sé activo para conseguirlos!"
-                
-                await send_response(ach_msg)
-            except Exception as e:
-                await send_response(f"❌ Error: {str(e)[:100]}")
+            user_hearts = self.get_user_hearts(user_id)
+            user_messages = USER_ACTIVITY.get(user_id, {}).get("messages", 0)
+            user_time = self.get_user_total_time(user_id)
+            achievements = []
+            if user_hearts >= 1000: achievements.append("💎 Maestro del Amor")
+            elif user_hearts >= 500: achievements.append("💖 Coleccionista de Corazones")
+            elif user_hearts >= 100: achievements.append("❤️ Amante")
+            if user_messages >= 1000: achievements.append("📢 Locutor Profesional")
+            elif user_messages >= 500: achievements.append("💬 Conversador Activo")
+            elif user_messages >= 100: achievements.append("✍️ Participante")
+            if user_time >= 36000: achievements.append("⏰ Veterano de la Sala")
+            elif user_time >= 18000: achievements.append("🕐 Residente Frecuente")
+            if self.is_vip_by_username(user.username): achievements.append("⭐ Miembro VIP")
+            if self.is_admin(user_id): achievements.append("🛡️ Administrador")
+            ach_msg = f"🏆 LOGROS DE @{user.username}:\n" + "\n".join(f"• {ach}" for ach in achievements) if achievements else f"🎯 @{user.username} aún no ha desbloqueado logros\n💡 Sé activo para conseguirlos!"
+            await send_response(ach_msg)
             return
 
-        # Comando !rank - mostrar rango del usuario
+        # Comando !rank
         if msg == "!rank":
-            try:
-                user_hearts = self.get_user_hearts(user_id)
-                user_messages = USER_ACTIVITY.get(user_id, {}).get("messages", 0)
-                
-                # Calcular rango basado en actividad
-                total_score = user_hearts + (user_messages * 2)
-                
-                if total_score >= 5000:
-                    rank = "💎 Diamante"
-                elif total_score >= 2000:
-                    rank = "🥇 Oro"
-                elif total_score >= 1000:
-                    rank = "🥈 Plata"
-                elif total_score >= 500:
-                    rank = "🥉 Bronce"
-                else:
-                    rank = "🌱 Novato"
-                
-                rank_msg = f"🎖️ RANGO DE @{user.username}:\n"
-                rank_msg += f"{rank}\n"
-                rank_msg += f"Puntuación: {total_score}\n"
-                rank_msg += f"💖 Corazones: {user_hearts}\n"
-                rank_msg += f"💬 Mensajes: {user_messages}"
-                
-                await send_response(rank_msg)
-            except Exception as e:
-                await send_response(f"❌ Error: {str(e)[:100]}")
+            user_hearts = self.get_user_hearts(user_id)
+            user_messages = USER_ACTIVITY.get(user_id, {}).get("messages", 0)
+            total_score = user_hearts + (user_messages * 2)
+            if total_score >= 5000: rank = "💎 Diamante"
+            elif total_score >= 2000: rank = "🥇 Oro"
+            elif total_score >= 1000: rank = "🥈 Plata"
+            elif total_score >= 500: rank = "🥉 Bronce"
+            else: rank = "🌱 Novato"
+            rank_msg = f"🎖️ RANGO DE @{user.username}:\n{rank}\nPuntuación: {total_score}\n💖 Corazones: {user_hearts}\n💬 Mensajes: {user_messages}"
+            await send_response(rank_msg)
             return
 
-        # Comando !daily - recompensa diaria (todos los usuarios)
+        # Comando !daily
         if msg == "!daily":
-            try:
-                current_time = datetime.now()
-                last_daily_key = f"{user_id}_last_daily"
-                
-                # Verificar si ya reclamó hoy
-                if last_daily_key in USER_INFO.get(user_id, {}):
-                    last_claim_str = USER_INFO[user_id][last_daily_key]
-                    last_claim = datetime.fromisoformat(last_claim_str)
-                    
-                    if (current_time - last_claim).days < 1:
-                        hours_left = 24 - (current_time - last_claim).seconds // 3600
-                        await send_response(f"⏰ Ya reclamaste tu recompensa diaria\n🕐 Vuelve en {hours_left}h")
-                        return
-                
-                # Dar recompensa
-                daily_hearts = 10
-                self.add_user_hearts(user_id, daily_hearts, user.username)
-                
-                # Actualizar última reclamación
-                if user_id not in USER_INFO:
-                    USER_INFO[user_id] = {}
-                USER_INFO[user_id][last_daily_key] = current_time.isoformat()
-                save_user_info()
-                
-                await send_response(f"🎁 ¡Recompensa diaria reclamada!\n💖 +{daily_hearts} corazones")
-                log_event("DAILY", f"{user.username} reclamó recompensa diaria")
-            except Exception as e:
-                await send_response(f"❌ Error: {str(e)[:100]}")
+            current_time = datetime.now()
+            last_daily_key = f"{user_id}_last_daily"
+            if last_daily_key in USER_INFO.get(user_id, {}):
+                last_claim_str = USER_INFO[user_id][last_daily_key]
+                last_claim = datetime.fromisoformat(last_claim_str.replace('Z', '+00:00'))
+                if (current_time - last_claim).days < 1:
+                    hours_left = 24 - (current_time - last_claim).seconds // 3600
+                    await send_response(f"⏰ Ya reclamaste tu recompensa diaria\n🕐 Vuelve en {hours_left}h")
+                    return
+            daily_hearts = 10
+            self.add_user_hearts(user_id, daily_hearts, user.username)
+            if user_id not in USER_INFO: USER_INFO[user_id] = {}
+            USER_INFO[user_id][last_daily_key] = current_time.isoformat()
+            save_user_info()
+            await send_response(f"🎁 ¡Recompensa diaria reclamada!\n💖 +{daily_hearts} corazones")
             return
 
-        # Comando !TPus - crear punto de teletransporte
+        # Comando !TPus (Owner)
         if msg.startswith("!TPus"):
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede crear puntos de teletransporte!")
-                return
-
+            if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede crear puntos de teletransporte!"); return
             parts = msg.split()
             if len(parts) >= 2:
                 point_name = parts[1]
-
-                try:
-                    # Obtenemos la posición del usuario
-                    users = (await self.highrise.get_room_users()).content
-                    user_obj = None
-                    user_position = None
-                    for u, pos in users:
-                        if u.id == user_id:
-                            user_obj = u
-                            user_position = pos
-                            break
-
-                    if user_obj and user_position:
-                        # Guardamos el punto de teletransporte
-                        TELEPORT_POINTS[point_name] = {
-                            "x": user_position.x,
-                            "y": user_position.y,
-                            "z": user_position.z
-                        }
-
-                        # Guardamos en el archivo
-                        self.save_data()
-
-                        await send_response( f"📍 Punto de teletransporte '{point_name}' creado en posición: X={user_position.x}, Y={user_position.y}, Z={user_position.z}")
-                    else:
-                        await send_response( "¡Error obteniendo posición del usuario!")
-                except Exception as e:
-                    await send_response( f"Error creando punto de teletransporte: {e}")
-            else:
-                await send_response( "❌ Usa: !TPus [nombre]")
+                users = (await self.highrise.get_room_users()).content
+                user_position = next((pos for u, pos in users if u.id == user_id), None)
+                if user_position:
+                    TELEPORT_POINTS[point_name] = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                    self.save_data()
+                    await send_response( f"📍 Punto de teletransporte '{point_name}' creado en posición: X={user_position.x}, Y={user_position.y}, Z={user_position.z}")
+                else: await send_response("¡Error obteniendo posición del usuario!")
+            else: await send_response("❌ Usa: !TPus [nombre]")
             return
 
-        # Comandos de interacción entre usuarios
+        # Comandos de interacción
         if msg.startswith("!punch") or msg.startswith("!slap") or msg.startswith("!flirt") or msg.startswith("!scare") or msg.startswith("!electro") or msg.startswith("!hug") or msg.startswith("!ninja") or msg.startswith("!laugh") or msg.startswith("!boom"):
             parts = msg.split()
             if len(parts) >= 2:
                 target_username = parts[1].replace("@", "")
                 command = parts[0]
+                users = (await self.highrise.get_room_users()).content
+                sender_pos, target_user, target_pos = None, None, None
+                for u, pos in users:
+                    if u.id == user.id: sender_pos = pos
+                    if u.username == target_username: target_user, target_pos = u, pos
+                if not target_user: await send_response( f"❌ ¡Usuario {target_username} no encontrado!"); return
+                if not sender_pos or not target_pos: await send_response( f"❌ No se pudo obtener la posición de los usuarios!"); return
+                distance = self.calculate_distance(sender_pos, target_pos)
 
-                                            # Encontramos al usuario objetivo
-                try:
-                    users = (await self.highrise.get_room_users()).content
-                    target_user = None
-                    sender_pos = None
-                    target_pos = None
+                if command not in ["!punch", "!slap"] and distance > 3.0: await send_response( f"❌ ¡{target_username} está muy lejos!"); return
 
-                    # Buscamos ambos usuarios y sus posiciones
-                    for u, pos in users:
-                        if u.id == user.id:
-                            sender_pos = pos
-                        if u.username == target_username:
-                            target_user = u
-                            target_pos = pos
+                sender_emote_id, receiver_emote_id, action_message = "", "", ""
+                if command == "!punch": sender_emote_id, receiver_emote_id, action_message = "emoji-punch", "emote-death", f"🥊 @{user.username} golpeó a @{target_username} y lo dejó noqueado!"
+                elif command == "!slap": sender_emote_id, receiver_emote_id, action_message = "emote-slap", "emoji-dizzy", f"👋 @{user.username} dio una bofetada a @{target_username} y lo dejó en shock!"
+                elif command == "!flirt": sender_emote_id, receiver_emote_id, action_message = "emote-kissing", "emote-hearteyes", f"💕 @{user.username} coquetea con @{target_username} y se derrite de amor!"
+                elif command == "!scare": sender_emote_id, receiver_emote_id, action_message = "emote-panic", "emoji-scared", f"😱 @{user.username} asustó a @{target_username} y huyó en pánico!"
+                elif command == "!electro": sender_emote_id, receiver_emote_id, action_message = "emote-fail1", "emote-fail2", f"⚡ @{user.username} electrocutó a @{target_username} y se quemó!"
+                elif command == "!hug": sender_emote_id, receiver_emote_id, action_message = "emote-hug", "emote-hugyourself", f"🤗 @{user.username} abrazó a @{target_username} y lloró de emoción!"
+                elif command == "!ninja": sender_emote_id, receiver_emote_id, action_message = "emote-ninjarun", "emote-fail1", f"🥷 @{user.username} atacó como ninja a @{target_username} y se retuerce de dolor!"
+                elif command == "!laugh": sender_emote_id, receiver_emote_id, action_message = "emote-laughing", "emote-laughing2", f"😂 @{user.username} hizo reír a @{target_username} sin parar!"
+                elif command == "!boom": sender_emote_id, receiver_emote_id, action_message = "emote-disappear", "emote-fail1", f"💥 @{user.username} explotó a @{target_username} y literalmente explotó!"
 
-                    if not target_user:
-                        await send_response( f"❌ ¡Usuario {target_username} no encontrado en la sala!")
-                        return
-
-                    if not sender_pos or not target_pos:
-                        await send_response( f"❌ No se pudo obtener la posición de los usuarios!")
-                        return
-
-                    # Verificamos la distancia entre los usuarios
-                    distance = self.calculate_distance(sender_pos, target_pos)
-
-                    # !punch y !slap funcionan desde cualquier distancia
-                    # Las demás comandos requieren estar a máximo 3 bloques
-                    if command not in ["!punch", "!slap"] and distance > 3.0:
-                        await send_response( f"❌ ¡{target_username} está muy lejos! Debes estar a máximo 3 bloques de distancia.")
-                        return
-
-                    # Determinamos la emoción y mensaje según el comando
-                    sender_emote_id = ""
-                    receiver_emote_id = ""
-                    action_message = ""
-
-                    if command == "!punch":
-                        sender_emote_id = "emoji-punch"
-                        receiver_emote_id = "emote-death"
-                        action_message = f"🥊 @{user.username} golpeó a @{target_username} y lo dejó noqueado!"
-                    elif command == "!slap":
-                        sender_emote_id = "emote-slap"
-                        receiver_emote_id = "emoji-dizzy"
-                        action_message = f"👋 @{user.username} dio una bofetada a @{target_username} y lo dejó en shock!"
-                    elif command == "!flirt":
-                        sender_emote_id = "emote-kissing"
-                        receiver_emote_id = "emote-hearteyes"
-                        action_message = f"💕 @{user.username} coquetea con @{target_username} y se derrite de amor!"
-                    elif command == "!scare":
-                        sender_emote_id = "emote-panic"
-                        receiver_emote_id = "emoji-scared"
-                        action_message = f"😱 @{user.username} asustó a @{target_username} y huyó en pánico!"
-                    elif command == "!electro":
-                        sender_emote_id = "emote-fail1"
-                        receiver_emote_id = "emote-fail2"
-                        action_message = f"⚡ @{user.username} electrocutó a @{target_username} y se quemó!"
-                    elif command == "!hug":
-                        sender_emote_id = "emote-hug"
-                        receiver_emote_id = "emote-hugyourself"
-                        action_message = f"🤗 @{user.username} abrazó a @{target_username} y lloró de emoción!"
-                    elif command == "!ninja":
-                        sender_emote_id = "emote-ninjarun"
-                        receiver_emote_id = "emote-fail1"
-                        action_message = f"🥷 @{user.username} atacó como ninja a @{target_username} y se retuerce de dolor!"
-                    elif command == "!laugh":
-                        sender_emote_id = "emote-laughing"
-                        receiver_emote_id = "emote-laughing2"
-                        action_message = f"😂 @{user.username} hizo reír a @{target_username} sin parar!"
-                    elif command == "!boom":
-                        sender_emote_id = "emote-disappear"
-                        receiver_emote_id = "emote-fail1"
-                        action_message = f"💥 @{user.username} explotó a @{target_username} y literalmente explotó!"
-
-                    # Enviamos las emociones a ambos usuarios
-                    if sender_emote_id and receiver_emote_id:
-                        # Animación para el remitente (una sola vez)
-                        await self.highrise.send_emote(sender_emote_id, user.id)
-                        # Animación para el objetivo (una sola vez)
-                        await self.highrise.send_emote(receiver_emote_id, target_user.id)
-
-                        # SIEMPRE responder de forma pública en chat público, privada en whisper
-                        if is_whisper:
-                            await self.highrise.send_whisper(user.id, action_message)
-                        else:
-                            await self.highrise.chat(action_message)
-
-                except Exception as e:
-                    await send_response( f"❌ Error ejecutando comando: {e}")
-            else:
-                await send_response( "❌ Usa: !comando @usuario")
+                if sender_emote_id and receiver_emote_id:
+                    await self.highrise.send_emote(sender_emote_id, user.id)
+                    await self.highrise.send_emote(receiver_emote_id, target_user.id)
+                    if is_whisper: await self.highrise.send_whisper(user.id, action_message)
+                    else: await self.highrise.chat(action_message)
+            else: await send_response("❌ Usa: !comando @usuario")
             return
 
-        # Verificamos si el mensaje es el nombre de un punto de teletransporte
+        # Teletransporte a puntos
         if msg in TELEPORT_POINTS:
             point = TELEPORT_POINTS[msg]
             try:
-
                 teleport_position = Position(point["x"], point["y"], point["z"])
                 await self.highrise.teleport(user_id, teleport_position)
                 await send_response( f"🚀 @{user.username} se teletransportó al punto '{msg}'!")
-            except Exception as e:
-                await send_response( f"❌ Error de teletransporte: {e}")
+            except Exception as e: await send_response( f"❌ Error de teletransporte: {e}")
             return
 
-        # Comando !tele @user - teleport to user (VIP only)
+        # Comando !tele @user (VIP)
         if msg.startswith("!tele @"):
-            if not self.is_vip_by_username(user.username):
-                await send_response( "❌ ¡Solo VIP pueden usar este comando!")
-                return
-
-            target_username = msg[7:].strip()  # Remove "!tele @"
+            if not self.is_vip_by_username(user.username): await send_response("❌ ¡Solo VIP pueden usar este comando!"); return
+            target_username = msg[7:].strip()
             try:
                 users = (await self.highrise.get_room_users()).content
                 target_user = None
                 target_position = None
-
                 for u, pos in users:
                     if u.username == target_username:
                         target_user = u
                         target_position = pos
                         break
-
                 if target_user and target_position:
-                    # Teleport near the target user (offset by 1 block)
                     new_position = Position(target_position.x + 1, target_position.y, target_position.z)
                     await self.highrise.teleport(user_id, new_position)
                     await send_response( f"🎯 Te has teletransportado a @{target_username}!")
-                else:
-                    await send_response( f"❌ ¡Usuario {target_username} no encontrado!")
-            except Exception as e:
-                await send_response( f"Error: {e}")
+                else: await send_response( f"❌ ¡Usuario {target_username} no encontrado!")
+            except Exception as e: await send_response( f"Error: {e}")
             return
 
-        # Comando !addzone [nombre] - Crear nueva zona de teletransportación (solo admin/owner)
+        # Comando !addzone (Admin/Owner)
         if msg.startswith("!addzone "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden crear zonas!")
-                return
-
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden crear zonas!"); return
             zone_name = msg[9:].strip()
-            if not zone_name:
-                await send_response( "❌ Usa: !addzone [nombre]")
-                return
-
-            try:
-                # Obtener posición actual del usuario
-                users = (await self.highrise.get_room_users()).content
-                user_position = None
-                for u, pos in users:
-                    if u.id == user_id:
-                        user_position = pos
-                        break
-
-                if user_position:
-                    # Guardar nuevo punto de teletransportación
-                    TELEPORT_POINTS[zone_name] = {
-                        "x": user_position.x,
-                        "y": user_position.y,
-                        "z": user_position.z
-                    }
-                    self.save_data()
-                    await send_response( f"🗺️ Zona '{zone_name}' creada en posición ({user_position.x}, {user_position.y}, {user_position.z})")
-                else:
-                    await send_response( "❌ Error obteniendo posición")
-
-            except Exception as e:
-                await send_response( f"❌ Error creando zona: {e}")
+            if not zone_name: await send_response("❌ Usa: !addzone [nombre]"); return
+            users = (await self.highrise.get_room_users()).content
+            user_position = next((pos for u, pos in users if u.id == user_id), None)
+            if user_position:
+                TELEPORT_POINTS[zone_name] = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                self.save_data()
+                await send_response( f"🗺️ Zona '{zone_name}' creada en posición ({user_position.x}, {user_position.y}, {user_position.z})")
+            else: await send_response("❌ Error obteniendo posición")
             return
 
-        # Comando !vip @user - Dar estatus VIP (solo admin/owner)
+        # Comando !vip @user (Admin/Owner)
         if msg.startswith("!vip "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden dar VIP!")
-                return
-
+            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden dar VIP!"); return
             target_username = msg[5:].strip().replace("@", "")
-            try:
-                # Buscar usuario
-                users = (await self.highrise.get_room_users()).content
-                target_found = False
-                target_user_id = None
-                for u, pos in users:
-                    if u.username == target_username:
-                        target_found = True
-                        target_user_id = u.id
-                        break
-
-                if target_found:
-                    VIP_USERS.add(target_username)  # Añadir por username
-                    self.save_data()
-                    await send_response( f"⭐ @{target_username} ahora es VIP!")
-                    if target_user_id:
-                        await self.highrise.send_whisper(target_user_id, f"🎉 ¡Felicitaciones! Ahora eres VIP gracias a @{user.username}")
-                else:
-                    await send_response( f"❌ Usuario {target_username} no encontrado en la sala")
-
-            except Exception as e:
-                await send_response( f"❌ Error dando VIP: {e}")
+            users = (await self.highrise.get_room_users()).content
+            target_found = False
+            target_user_id = None
+            for u, pos in users:
+                if u.username == target_username:
+                    target_found = True
+                    target_user_id = u.id
+                    break
+            if target_found:
+                VIP_USERS.add(target_username)
+                self.save_data()
+                await send_response( f"⭐ @{target_username} ahora es VIP!")
+                if target_user_id: await self.highrise.send_whisper(target_user_id, f"🎉 ¡Felicitaciones! Ahora eres VIP gracias a @{user.username}")
+            else: await send_response( f"❌ Usuario {target_username} no encontrado en la sala")
             return
 
     async def on_chat(self, user: User, message: str) -> None:
-        """Manejador de mensajes de chat - SIEMPRE PÚBLICO"""
-        global VIP_ZONE
-
+        """Manejador de mensajes públicos"""
         msg = message.strip()
         user_id = user.id
         username = user.username
 
-        # Añadimos el username al diccionario USER_NAMES para que funcione is_vip()
         USER_NAMES[user_id] = username
 
-        # DETECCIÓN MEJORADA DE MENCIONES AL BOT
-        # Verificar si el mensaje menciona al bot por su nombre de usuario
-        bot_username = "NOCTURNO_BOT"  # Nombre exacto del bot en Highrise
+        bot_username = "NOCTURNO_BOT"
         is_bot_mention = False
-
-        # Detectar @NOCTURNO_BOT o variaciones
         if f"@{bot_username}" in msg or "@nocturno" in msg.lower() or "@bot" in msg.lower():
             is_bot_mention = True
-            # Remover la mención del mensaje para procesar el comando
             msg = msg.replace(f"@{bot_username}", "").replace("@nocturno", "").replace("@bot", "").strip()
 
-        # Registro de todos los mensajes como PÚBLICOS
-        log_event("CHAT", f"[PUBLIC] {user.username}: {message}" + (f" [BOT_MENTION]" if is_bot_mention else ""))
+        log_event("CHAT", f"[PUBLIC] {username}: {message}" + (" [BOT_MENTION]" if is_bot_mention else ""))
 
-        # Si el bot fue mencionado, responder automáticamente
         if is_bot_mention:
-            await self.highrise.send_whisper(user.id, f"👋 ¡Hola @{username}! Me mencionaste.")
-            await self.highrise.send_whisper(user.id, "💡 Usa !help para ver todos los comandos disponibles")
-            # Si después de la mención no hay comando, terminar aquí
-            if not msg or msg.isspace():
-                log_event("BOT", f"Mención detectada de {username} sin comando")
-                return
-            else:
-                log_event("BOT", f"Mención detectada de {username} con comando: {msg}")
+            await self.highrise.send_whisper(user_id, f"👋 ¡Hola @{username}! Me mencionaste.")
+            await self.highrise.send_whisper(user_id, "💡 Usa !help para ver todos los comandos")
+            if not msg or msg.isspace(): return
 
-        # Verificación de ban y mute
-        if self.is_banned(user_id):
-            log_event("BANNED", f"Mensaje bloqueado de {user.username}")
-            await self.highrise.send_whisper(user.id, f"@{user.username} está baneado hasta {BANNED_USERS[user_id]['time'].strftime('%d.%m.%Y %H:%M')}")
+        if self.is_banned(user_id) or self.is_muted(user_id):
             return
 
-        if self.is_muted(user_id):
-            log_event("MUTED", f"Mensaje silenciado de {user.username}")
-            await self.highrise.send_whisper(user.id, f"@{user.username} está silenciado hasta {MUTED_USERS[user_id].strftime('%H:%M:%S')}")
-            return
-
-        # Actualización de actividad
         self.update_activity(user_id)
-
-
-        # Los mensajes del chat público siempre responden de forma PÚBLICA (is_whisper=False)
         await self.handle_command(user, msg, is_whisper=False)
 
     async def on_whisper(self, user: User, message: str) -> None:
-        """Handler for whisper messages - routes to handle_command"""
+        """Manejador de susurros"""
         msg = message.strip()
         user_id = user.id
         username = user.username
 
-        # Añadimos el username al diccionario USER_NAMES
         USER_NAMES[user_id] = username
 
-        # Verificación de ban y mute
-        if self.is_banned(user_id):
-            log_event("BANNED", f"Whisper bloqueado de {user.username}")
-            await self.highrise.send_whisper(user.id, f"@{user.username} está baneado hasta {BANNED_USERS[user_id]['time'].strftime('%d.%m.%Y %H:%M')}")
+        if self.is_banned(user_id) or self.is_muted(user_id):
             return
 
-        if self.is_muted(user_id):
-            log_event("MUTED", f"Whisper silenciado de {user.username}")
-            await self.highrise.send_whisper(user.id, f"@{user.username} está silenciado hasta {MUTED_USERS[user_id].strftime('%H:%M:%S')}")
-            return
-
-        # Actualización de actividad
         self.update_activity(user_id)
-
-        # Log whisper
-        log_event("WHISPER", f"{user.username}: {message}")
-
-        # Call handle_command with is_whisper=True
+        log_event("WHISPER", f"{username}: {message}")
         await self.handle_command(user, msg, is_whisper=True)
 
-
     async def on_user_join(self, user: User, position: Position) -> None:
-        """Manejador de entrada de usuario"""
+        """Usuario entra a la sala"""
         user_id = user.id
         username = user.username
 
-        # Añadimos el username al diccionario USER_NAMES para que funcione is_vip()
         USER_NAMES[user_id] = username
-
-        # Aggiorniamo le informazioni sul giocatore
         self.update_user_info(user_id, username)
 
-        # Registriamo il tempo di ingresso usando time.time() como nella documentazione
         USER_JOIN_TIMES[user_id] = time.time()
         USER_INFO[user_id]["time_joined"] = time.time()
 
-        # Bienvenida privada según solicitud del usuario
         await self.highrise.send_whisper(user_id, "💫🌚Bienvenido a la sala ✓NOCTURNO✓ ponte cómodo y disfruta al máximo🌚💫")
 
     async def on_user_leave(self, user: User) -> None:
-        """Manejador de salida de usuario"""
+        """Usuario sale de la sala"""
         user_id = user.id
-        username = user.username
 
-        # Calcoliamo il tempo nella stanza e lo aggiungiamo al tempo totale
         if user_id in USER_JOIN_TIMES:
             join_time = USER_JOIN_TIMES[user_id]
             current_time = time.time()
-            time_in_room = round(current_time - join_time)  # Используем round() como en la documentación
-
+            time_in_room = round(current_time - join_time)
             if user_id in USER_INFO:
                 USER_INFO[user_id]["total_time_in_room"] += time_in_room
-
-            # Rimuoviamo dai giocatori attivi
             del USER_JOIN_TIMES[user_id]
 
-        # Despedida silenciosa (privada) según solicitud del usuario
-        # No enviamos mensaje público de despedida
-
-        # Detener emociones al salir
         await self.stop_emote_loop(user_id)
-
-        # Salviamo le informazioni sul giocatore
         save_user_info()
 
     async def on_tip(self, sender: User, receiver: User, tip: CurrencyItem | Item) -> None:
         """Manejador de propinas"""
-        print(f"{sender.username} tipped {receiver.username} an amount of {tip.amount}")
-
-                    # Obtenemos el ID del bot
-        try:
-            room_users_response = await self.highrise.get_room_users()
-            if isinstance(room_users_response, Error):
-                print(f"Error obteniendo usuarios de la sala: {room_users_response}")
-                return
-            users = room_users_response.content
-            bot_user = None
-            for u, pos in users:
-                # Buscar NOCTURNO_BOT primero, luego otros nombres
-                if u.username == "NOCTURNO_BOT" or u.username.upper() == "NOCTURNO_BOT":
-                    bot_user = u
-                    break
-                elif u.username.lower() in ["highrisebot", "gluxbot", "bot"] or any(name in u.username.lower() for name in ["nocturno", "bot", "glux", "highrise"]):
-                    bot_user = u
-                    break
-
-            # Si el receptor es el bot
-            if bot_user and receiver.id == bot_user.id:
-                if tip.amount == 100:
-                    # VIP por donación
-                    VIP_USERS.add(sender.username)  # Usamos username en lugar de id
-                    self.save_data()
-                    await self.highrise.send_whisper(sender.id, f"🎉 Obtuviste estatus VIP por donación de 100 oro!")
-                    await self.highrise.send_whisper(sender.id, f"🌟 ¡Bienvenido al club VIP!")
-                else:
-                    BOT_WALLET += tip.amount
-                    await self.highrise.send_whisper(sender.id, f"💰 Donaste {tip.amount} oro al bot!")
-        except Exception as e:
-            print(f"Error en on_tip: {e}")
+        if str(tip.type) == "currency" and tip.amount == 100 and receiver.id == self.bot_id:
+            VIP_USERS.add(sender.username)
+            self.save_data()
+            await self.highrise.send_whisper(sender.id, f"🎉 ¡Felicitaciones! Ahora eres VIP por donar 100 oro.")
+            await self.highrise.send_whisper(sender.id, f"🌟 ¡Bienvenido al club VIP!")
+        elif receiver.id == self.bot_id:
+            BOT_WALLET += tip.amount
+            await self.highrise.send_whisper(sender.id, f"💰 Donaste {tip.amount} oro al bot!")
 
     async def on_emote(self, user: User, emote_id: str, receiver: User | None) -> None:
-        """Manejador de emociones"""
-        # Se puede agregar lógica para emociones conjuntas
+        """Manejador de emotes"""
         pass
 
-    async def on_reaction(self, user: User, reaction: Reaction, receiver: User) -> None:
-        """Manejador de reacciones"""
-        print(f"{user.username} sent the reaction {reaction} to {receiver.username}")
-        print(f"DEBUG: reaction = {reaction}")
-        print(f"DEBUG: reaction type = {type(reaction)}")
-        print(f"DEBUG: reaction attributes = {dir(reaction)}")
-
-        # Agregamos corazones por reacciones - usamos str() para comparar
-        if str(reaction) == "heart":
-            self.add_user_hearts(receiver.id, 1, receiver.username)
-            print(f"💖 {user.username} envió un corazón a {receiver.username}")
-            log_event("HEART", f"{user.username} -> {receiver.username}")
-            # Отправляем визуальную реакцию сердечка в ответ
-            await self.highrise.react("heart", user.id)
-        else:
-            print(f"DEBUG: Реакция {str(reaction)} не является сердечком")
-
     async def on_user_move(self, user: User, destination: Position) -> None:
-        """Manejador de movimiento de usuario - FLASHMODE AUTOMÁTICO SOLO PARA CAMBIOS DE PISO"""
+        """Manejador de movimiento de usuario para flashmode automático"""
         try:
             user_id = user.id
             username = user.username
             current_time = time.time()
 
-            # Inicializar cooldown si no existe
-            if not hasattr(self, 'flashmode_cooldown'):
-                self.flashmode_cooldown = {}
+            if not hasattr(self, 'flashmode_cooldown'): self.flashmode_cooldown = {}
 
-            # Si es el primer movimiento del usuario, solo guardamos la posición
             last_pos = self.user_positions.get(user_id)
             if not last_pos:
                 self.user_positions[user_id] = destination
                 return
 
-            # Extract coordinates
             last_xyz = (last_pos.x, last_pos.y, last_pos.z)
             dest_xyz = (destination.x, destination.y, destination.z)
 
-            # Calcular diferencias en cada eje
-            x_difference = abs(dest_xyz[0] - last_xyz[0])
-            y_difference = abs(dest_xyz[1] - last_xyz[1])
-            z_difference = abs(dest_xyz[2] - last_xyz[2])
-
-            # CONDICIONES PARA FLASHMODE AUTOMÁTICO:
-            # 1. Cambio significativo en altura (Y >= 1.0) - cambio de piso
-            # 2. Movimiento horizontal mínimo (X y Z < 2.0) - no moverse mucho en el mismo piso
             floor_change_threshold = 1.0
             horizontal_movement_max = 2.0
 
-            is_floor_change = y_difference >= floor_change_threshold
-            is_minimal_horizontal = (x_difference < horizontal_movement_max and z_difference < horizontal_movement_max)
+            is_floor_change = abs(dest_xyz[1] - last_xyz[1]) >= floor_change_threshold
+            is_minimal_horizontal = (abs(dest_xyz[0] - last_xyz[0]) < horizontal_movement_max and abs(dest_xyz[2] - last_xyz[2]) < horizontal_movement_max)
 
-            # FLASHMODE AUTOMÁTICO - Solo si hay cambio de piso Y movimiento horizontal mínimo
             if is_floor_change and is_minimal_horizontal:
-                # Verificar cooldown (evitar loops)
-                cooldown_time = 3.0  # 3 segundos de cooldown
-                if user_id in self.flashmode_cooldown:
-                    time_since_last = current_time - self.flashmode_cooldown[user_id]
-                    if time_since_last < cooldown_time:
-                        # En cooldown, actualizar posición sin flashmode
-                        self.user_positions[user_id] = destination
-                        return
+                cooldown_time = 3.0
+                if user_id in self.flashmode_cooldown and current_time - self.flashmode_cooldown[user_id] < cooldown_time:
+                    self.user_positions[user_id] = destination
+                    return
 
-                # Verificar que el destino no esté en zona prohibida
                 if not self.is_in_forbidden_zone(dest_xyz[0], dest_xyz[1], dest_xyz[2]):
-                    try:
-                        # FLASHMODE: Teletransporte automático entre pisos
-                        await self.highrise.teleport(user_id, destination)
-
-                        # Actualizar cooldown
-                        self.flashmode_cooldown[user_id] = current_time
-
-                        # Log del flashmode
-                        log_event("FLASHMODE", f"Auto-flashmode {username}: piso {last_xyz[1]:.1f} → {dest_xyz[1]:.1f}")
-                        print(f"🔄 FLASHMODE AUTO: {username} cambió de piso {last_xyz[1]:.1f} → {dest_xyz[1]:.1f}")
-
-                    except Exception as e:
-                        print(f"❌ Error en flashmode automático para {username}: {e}")
+                    await self.highrise.teleport(user_id, destination)
+                    self.flashmode_cooldown[user_id] = current_time
+                    log_event("FLASHMODE", f"Auto-flashmode {username}: {last_xyz[1]:.1f} → {dest_xyz[1]:.1f}")
+                    print(f"🔄 FLASHMODE AUTO: {username} cambió de piso {last_xyz[1]:.1f} → {dest_xyz[1]:.1f}")
                 else:
                     print(f"❌ Flashmode bloqueado: {username} intentó ir a zona prohibida")
 
-            # Actualizar posición del usuario
             self.user_positions[user_id] = destination
 
         except Exception as e:
             print(f"Error en on_user_move: {e}")
-            print(f"User: {user.username}")
-            print(f"Position: {destination}")
 
-
+    # ========================================================================
+    # TAREAS EN SEGUNDO PLANO
+    # ========================================================================
 
     async def start_announcements(self):
-        """Inicio de anuncios automáticos"""
-        # Приветственное сообщение (разделено на две части)
+        """Sistema de anuncios automáticos"""
         welcome_message_1 = "🌌 BIENVENIDO A NOCTURNO ⛈️💙\nUna sala donde lo oculto brilla más que la luz...\n💬 Vive la noche, haz nuevos amigos y deja tu huella👣."
         welcome_message_2 = "✨ Sumérgete en la oscuridad... y descubre lo más brillante de ti💯\n‼️(Cualquier incomodidad o sugerencia comuniqué con @Alber_JG_69 o @Xx__Daikel__xX)‼️"
-
-        # Отправляем приветственные сообщения
         await self.highrise.chat(welcome_message_1)
-        await asyncio.sleep(1)  # Небольшая задержка между сообщениями
+        await asyncio.sleep(1)
         await self.highrise.chat(welcome_message_2)
 
-        # Обычные объявления
         announcements = [
             "🎮 Usa !help para ver la lista de todos los comandos",
             "💖 Envía corazones a amigos con !heart @username",
@@ -3700,562 +1992,277 @@ class Bot(BaseBot):
         while True:
             try:
                 current_time = time.time()
-                if current_time - self.last_announcement >= 300:  # 5 минут
-                    # Отправляем одно сообщение из списка
+                if current_time - self.last_announcement >= 300:
                     await self.highrise.chat(announcements[announcement_index])
                     announcement_index = (announcement_index + 1) % len(announcements)
 
-                    # Каждое четвертое сообщение - о VIP
                     vip_counter += 1
                     if vip_counter == 4:
                         await self.highrise.chat("💎 ¡Conviértete en VIP por 100 oro y obtén capacidades exclusivas!")
                         vip_counter = 0
-
                     self.last_announcement = current_time
             except Exception as e:
                 print(f"Error en anuncios: {e}")
-
-            await asyncio.sleep(60)  # Проверка каждую минуту
+            await asyncio.sleep(60)
 
     async def check_console_messages(self):
-        """Verificación de mensajes desde la consola"""
+        """Verifica mensajes desde consola"""
         while True:
             try:
-                # Verificamos el archivo con mensajes
                 if os.path.exists("console_message.txt"):
                     with open("console_message.txt", "r", encoding="utf-8") as f:
                         message = f.read().strip()
-
                     if message:
-                        # Enviamos el mensaje al chat
                         await self.highrise.chat(message)
                         print(f"💬 Mensaje de consola enviado: {message}")
-
-                        # Limpiamos el archivo
                         os.remove("console_message.txt")
-
             except Exception as e:
                 print(f"Error verificando mensajes de consola: {e}")
+            await asyncio.sleep(1)
 
-            await asyncio.sleep(1)  # Verificación cada segundo
-    
     async def periodic_inventory_save(self):
-        """Guarda el inventario del bot cada 5 minutos"""
+        """Guarda inventario periódicamente"""
         while True:
-            try:
-                await asyncio.sleep(300)  # 5 minutos
-                await save_bot_inventory(self)
-            except Exception as e:
-                print(f"Error en guardado periódico de inventario: {e}")
+            await asyncio.sleep(300)
+            await save_bot_inventory(self)
+
+    async def start_auto_emote_cycle(self):
+        """Ciclo automático de emotes"""
+        try:
+            log_event("BOT", "Iniciando ciclo automático de 224 emotes")
+            while True:
+                for number, emote_data in emotes.items():
+                    emote_id = emote_data["id"]
+                    emote_name = emote_data["name"]
+                    emote_duration = emote_data.get("duration", 5.0)
+                    try:
+                        await self.highrise.send_emote(emote_id, self.bot_id)
+                        log_event("BOT", f"Emote #{number}: {emote_name} ({emote_duration}s)")
+                        await asyncio.sleep(emote_duration)
+                    except Exception as e:
+                        log_event("ERROR", f"Error emote #{number}: {e}")
+                        await asyncio.sleep(1.0)
+                        continue
+                await asyncio.sleep(2.0)
+        except Exception as e:
+            log_event("ERROR", f"Error en ciclo automático: {e}")
+
+    async def setup_initial_bot_appearance(self):
+        """Configura apariencia inicial del bot"""
+        try:
+            await asyncio.sleep(2)
+            if "bot_initial_outfit" in config:
+                outfit_id = config["bot_initial_outfit"]
+                await self.change_bot_outfit(outfit_id)
+                print(f"🎽 Outfit inicial configurado: {outfit_id}")
+            log_event("BOT", f"Bot inicializado en modo idle (ID: {self.bot_id})")
+        except Exception as e:
+            log_event("ERROR", f"Error en setup: {e}")
+
+    async def change_bot_outfit(self, outfit_id: str):
+        """Cambia outfit del bot"""
+        try:
+            if outfit_id == "custom_nocturno":
+                from highrise.models import Item
+                custom_outfit = [
+                    Item(type="clothing", id="shirt-n_guy_rise_par_rewards_2023_mafia_suit", amount=1),
+                    Item(type="clothing", id="pants-n_room1_2019formalslacksblack", amount=1),
+                    Item(type="clothing", id="glasses-n_registrationavatars2023billieglasses", amount=1),
+                    Item(type="clothing", id="shoes-n_marchscavengerhunt2021knifeboots", amount=1),
+                    Item(type="clothing", id="mouth-n_dailyquests2024racermouth", amount=1),
+                    Item(type="clothing", id="hair_front-n_winterformaludceventrewards02_2023_nikana_maschair", amount=1),
+                    Item(type="clothing", id="hat-n_fallen_angels_silks_nevs_2024_angel_halo", amount=1),
+                    Item(type="clothing", id="skin-s_gray", amount=1)
+                ]
+                await self.highrise.set_outfit(custom_outfit)
+                log_event("BOT", "Outfit NOCTURNO aplicado")
+            else:
+                current_outfit_response = await self.highrise.get_my_outfit()
+                if not isinstance(current_outfit_response, Error):
+                    await self.highrise.set_outfit(current_outfit_response.outfit)
+            print(f"✅ Outfit del bot configurado para ID: {outfit_id}")
+        except Exception as e:
+            log_event("ERROR", f"Error cambiando outfit: {e}")
 
     async def delayed_restart(self):
         """Parada retrasada del bot"""
-        try:
-            await asyncio.sleep(3)  # Esperamos 3 segundos
-            # Comentamos esta línea ya que user no está definido en este contexto
-            # await self.highrise.send_whisper(user.id, "🛑 ¡Bot detenido!")
-            print("🛑 ¡Bot detenido!")
-
-            # Guardamos datos antes de detener
-            self.save_data()
-
-            # Terminamos el trabajo del bot
-            import os
-            os._exit(0)
-        except Exception as e:
-            print(f"Error al detener: {e}")
-            import os
-            os._exit(0)
+        await asyncio.sleep(3)
+        print("🛑 ¡Bot detenido!")
+        self.save_data()
+        sys.exit(0)
 
     def convert_to_gold_bars(self, amount: int) -> str:
         """Convierte la cantidad de oro en barras de oro para tips"""
         bars_dictionary = {
-            10000: "gold_bar_10k",
-            5000: "gold_bar_5000",
-            1000: "gold_bar_1k",
-            500: "gold_bar_500",
-            100: "gold_bar_100",
-            50: "gold_bar_50",
-            10: "gold_bar_10",
-            5: "gold_bar_5",
-            1: "gold_bar_1"
+            10000: "gold_bar_10k", 5000: "gold_bar_5000", 1000: "gold_bar_1k",
+            500: "gold_bar_500", 100: "gold_bar_100", 50: "gold_bar_50",
+            10: "gold_bar_10", 5: "gold_bar_5", 1: "gold_bar_1"
         }
-
         tip = []
         remaining_amount = amount
-
-        # Ordenamos las barras por descenso para conversión correcta
         for bar_value in sorted(bars_dictionary.keys(), reverse=True):
             if remaining_amount >= bar_value:
                 bar_count = remaining_amount // bar_value
-                remaining_amount = remaining_amount % bar_value
-                for i in range(bar_count):
-                    tip.append(bars_dictionary[bar_value])
-
+                remaining_amount %= bar_value
+                tip.extend([bars_dictionary[bar_value]] * bar_count)
         return ",".join(tip) if tip else ""
 
     async def get_bot_wallet_balance(self):
         """Obtiene el balance real de la billetera del bot"""
         try:
-            # Obtenemos el balance real a través de la API
             wallet_response = await self.highrise.get_wallet()
             if isinstance(wallet_response, Error):
                 print(f"Error obteniendo wallet: {wallet_response}")
                 return BOT_WALLET
             wallet = wallet_response.content
-            if wallet and len(wallet) > 0:
-                return wallet[0].amount
-            else:
-                return BOT_WALLET
+            return wallet[0].amount if wallet else BOT_WALLET
         except Exception as e:
             print(f"Error obteniendo balance de billetera: {e}")
             return BOT_WALLET
 
-    async def console_chat_input(self):
-        """Entrada de consola para enviar mensajes a través del bot"""
-        print("💬 ¡Chat de consola iniciado!")
-        print("📝 Ingresa un mensaje y presiona Enter para enviar")
-        print("❌ Ingresa 'quit' para salir")
-        print("-" * 50)
-
-        while True:
-            try:
-                message = input("> ")
-                if message.lower() == 'quit':
-                    break
-                elif message.strip():
-                    await self.highrise.chat(message)
-                    print(f"✅ Enviado: {message}")
-            except KeyboardInterrupt:
-                break
-            except Exception as e:
-                print(f"❌ Error de envío: {e}")
-
     async def show_user_info(self, user: User, public_response: bool = False):
-        """Mostra informazioni sul giocatore corrente con rol e crew"""
+        """Muestra información del jugador"""
         user_id = user.id
         username = user.username
-
-        # Aggiorniamo le informazioni sul giocatore
         self.update_user_info(user_id, username)
-
-        # Otteniamo i dati del giocatore
         user_data = USER_INFO.get(user_id, {})
         total_time = self.get_user_total_time(user_id)
         messages = USER_ACTIVITY.get(user_id, {}).get("messages", 0)
         hearts = self.get_user_hearts(user_id)
-
-        # Calcoliamo il tempo corrente nella stanza
-        current_time_in_room = 0
-        if user_id in USER_JOIN_TIMES:
-            join_time = USER_JOIN_TIMES[user_id]
-            current_time_in_room = round(time.time() - join_time)
-
-        # Formattiamo il tempo
+        current_time_in_room = round(time.time() - USER_JOIN_TIMES.get(user_id, time.time()))
         total_time_str = self.format_time(total_time + current_time_in_room)
 
-        # Determiniamo il rol del giocatore
-        if user_id == OWNER_ID:
-            rol = "👑 Propietario"
-        elif self.is_admin(user_id):
-            rol = "🛡️ Administrador"
-        elif self.is_moderator(user_id):
-            rol = "⚖️ Moderador"
-        elif self.is_vip(user_id):
-            rol = "⭐ VIP"
-        else:
-            rol = "👤 Usuario Normal"
+        if user_id == OWNER_ID: rol = "👑 Propietario"
+        elif self.is_admin(user_id): rol = "🛡️ Administrador"
+        elif self.is_moderator(user_id): rol = "⚖️ Moderador"
+        elif self.is_vip(user_id): rol = "⭐ VIP"
+        else: rol = "👤 Usuario Normal"
 
-        # Otteniamo informazioni dal Web API
-        followers = "N/A"
-        following = "N/A"
-        friends = "N/A"
-        account_created = "Sconosciuto"
-        crew_info = "Sin crew"
-
+        followers, following, friends, account_created, crew_info = "N/A", "N/A", "N/A", "Sconosciuto", "Sin crew"
         try:
-            # Intentar usar WebAPI solo si está disponible
-            user_info = None
-            if hasattr(self, 'webapi') and self.webapi:
-                user_info = await self.webapi.get_user(user_id)
-
-            # Otteniamo la data di creazione dell'account
-            if user_info and hasattr(user_info.user, 'joined_at'):
+            user_info = await self.webapi.get_user(user_id) if hasattr(self, 'webapi') and self.webapi else None
+            if user_info:
                 account_created = user_info.user.joined_at.strftime("%d.%m.%Y %H:%M")
-                # Сохраняем в локальные данные
                 USER_INFO[user_id]["account_created"] = user_info.user.joined_at.isoformat()
+                followers, following, friends = str(user_info.user.num_followers), str(user_info.user.num_following), str(user_info.user.num_friends)
+                if hasattr(user_info.user, 'crew') and user_info.user.crew:
+                    crew_name = user_info.user.crew.name if hasattr(user_info.user.crew, 'name') else "Unknown"
+                    crew_tag = user_info.user.crew.tag if hasattr(user_info.user.crew, 'tag') else ""
+                    crew_info = f"{crew_name} [{crew_tag}]" if crew_tag else crew_name
             elif user_data.get("account_created"):
-                # Используем сохраненные данные
                 try:
                     created_dt = datetime.fromisoformat(user_data["account_created"].replace('Z', '+00:00'))
                     account_created = created_dt.strftime("%d.%m.%Y %H:%M")
-                except:
-                    pass
+                except: pass
+        except Exception as e: print(f"Errore Web API: {e}")
 
-            # Otteniamo informazioni sociali
-            if user_info and hasattr(user_info.user, 'num_followers'):
-                followers = str(user_info.user.num_followers)
-                following = str(user_info.user.num_following)
-                friends = str(user_info.user.num_friends)
-
-            # Otteniamo informazioni sulla crew
-            if user_info and hasattr(user_info.user, 'crew') and user_info.user.crew:
-                crew_name = user_info.user.crew.name if hasattr(user_info.user.crew, 'name') else "Unknown"
-                crew_tag = user_info.user.crew.tag if hasattr(user_info.user.crew, 'tag') else ""
-                crew_info = f"{crew_name} [{crew_tag}]" if crew_tag else crew_name
-                print(f"DEBUG: Crew encontrada para {username}: {crew_info}")
-
-        except Exception as e:
-            print(f"Errore nel ottenere dati dal Web API: {e}")
-            # Используем сохраненные данные как fallback
-            if user_data.get("account_created"):
-                try:
-                    created_dt = datetime.fromisoformat(user_data["account_created"].replace('Z', '+00:00'))
-                    account_created = created_dt.strftime("%d.%m.%Y %H:%M")
-                except:
-                    pass
-
-        # Calcoliamo il tempo totale in Highrise (dalla registrazione)
         highrise_time = "Sconosciuto"
         try:
             if account_created != "Sconosciuto":
-                # Convertiamo la data di registrazione in timestamp
                 created_dt = datetime.strptime(account_created, "%d.%m.%Y %H:%M")
-                current_dt = datetime.now()
-                time_diff = current_dt - created_dt
-                days = time_diff.days
-                hours = time_diff.seconds // 3600
-                minutes = (time_diff.seconds % 3600) // 60
+                time_diff = datetime.now() - created_dt
+                days, hours, minutes = time_diff.days, time_diff.seconds // 3600, (time_diff.seconds % 3600) // 60
                 highrise_time = f"{days}d, {hours}h, {minutes}m"
-        except Exception as e:
-            print(f"Errore nel calcolare tempo Highrise: {e}")
+        except Exception as e: print(f"Errore calcolo tempo Highrise: {e}")
 
-        # Creiamo il messaggio con le informazioni in colonna
-        info_message = f"📊 {username}'s Info:\n"
-        info_message += f"🎭 Rol: {rol}\n"
-        info_message += f"👥 Crew: {crew_info}\n"
-        info_message += f"📅 Registrado: {account_created}\n"
-        info_message += f"⏰ Tiempo en HR: {highrise_time}\n"
-        info_message += f"💖 Corazones: {hearts}\n"
-        info_message += f"💬 Mensajes: {messages}\n"
-        info_message += f"👥 Followers: {followers} | Following: {following} | Friends: {friends}"
+        info_message = f"📊 {username}'s Info:\n🎭 Rol: {rol}\n👥 Crew: {crew_info}\n📅 Registrado: {account_created}\n⏰ Tiempo en HR: {highrise_time}\n💖 Corazones: {hearts}\n💬 Mensajes: {messages}\n👥 Followers: {followers} | Following: {following} | Friends: {friends}"
+        if public_response: await self.highrise.chat(info_message)
+        else: await self.highrise.send_whisper(user_id, info_message)
 
-        # Enviar como mensaje público o privado según el parámetro
-        if public_response:
-            await self.highrise.chat(info_message)
-        else:
-            await self.highrise.send_whisper(user_id, info_message)
+    async def show_user_info_by_username(self, username: str):
+        """Muestra información de usuario por nombre de usuario"""
+        target_user_id = None
+        users = (await self.highrise.get_room_users()).content
+        for u, _ in users:
+            if u.username == username:
+                target_user_id = u.id
+                self.update_user_info(target_user_id, username)
+                break
+        if not target_user_id:
+            await self.highrise.chat(f"❌ ¡Usuario {username} no encontrado!")
+            return
+        await self.show_user_info(User(id=target_user_id, username=username), public_response=True)
 
     async def show_user_role(self, user: User):
-        """Mostra il ruolo del giocatore corrente"""
+        """Muestra el rol del jugador actual"""
         user_id = user.id
         username = user.username
+        if self.is_admin(user_id): role = "Admin"
+        elif self.is_moderator(user_id): role = "Manager"
+        elif self.is_vip(user_id): role = "Host"
+        else: role = "Vip"
+        await self.highrise.send_whisper(user_id, f"{username} Roles:[{role}]")
 
-        # Determiniamo il ruolo del giocatore
-        if self.is_admin(user_id):
-            role = "Admin"
-        elif self.is_moderator(user_id):
-            role = "Manager"
-        elif self.is_vip(user_id):
-            role = "Host"
-        else:
-            role = "Vip"
-
-        # Creiamo il messaggio del ruolo
-        role_message = f"{username} Roles:[{role}]"
-
-        await self.highrise.send_whisper(user_id, role_message)
-
-    async def show_user_role_by_username(self, username: str, requester_id: str):
-        """Mostra il ruolo di un giocatore tramite username"""
-        # Cerchiamo il giocatore per username
+    async def show_user_role_by_username(self, username: str):
+        """Muestra el rol de un jugador por nombre de usuario"""
         target_user_id = None
-
-        # Prima cerchiamo nei dati salvati
-        for user_id, user_data in USER_INFO.items():
-            if user_data.get("username") == username:
-                target_user_id = user_id
+        users = (await self.highrise.get_room_users()).content
+        for u, _ in users:
+            if u.username == username:
+                target_user_id = u.id
+                self.update_user_info(target_user_id, username)
                 break
-
-        # Se non trovato, cerchiamo tra i giocatori attualmente online
-        if not target_user_id:
-            try:
-                room_users_response = await self.highrise.get_room_users()
-                if isinstance(room_users_response, Error):
-                    print(f"Error obteniendo usuarios: {room_users_response}")
-                    return
-                users = room_users_response.content
-                for user, _ in users:
-                    if user.username == username:
-                        target_user_id = user.id
-                        # Creiamo una voce temporanea per questo giocatore
-                        self.update_user_info(target_user_id, username)
-                        break
-            except Exception as e:
-                print(f"Errore nel cercare giocatori online: {e}")
-
-        if not target_user_id:
-            await self.highrise.chat(f"❌ Giocatore @{username} non trovato nel database")
-            return
-
-        # Determiniamo il ruolo del giocatore
-        if self.is_admin(target_user_id):
-            role = "Admin"
-        elif self.is_moderator(target_user_id):
-            role = "Manager"
-        elif self.is_vip(target_user_id):
-            role = "Host"
-        else:
-            role = "Vip"
-
-        # Creiamo il messaggio del ruolo
-        role_message = f"🔑 {username} Roles:\n"
-        role_message += f"Nivel: {role}"
-
-        await self.highrise.send_whisper(requester_id, role_message)
-
-    async def show_all_levels(self, user_id: str):
-        """Mostra tutti i livelli disponibili"""
-        levels_message = "🔑 Nivel: Vip\n"
-        levels_message += "Costo: 100g[Host]\n"
-        levels_message += "🔑 Nivel: Host[Manager]\n"
-        levels_message += "🔑 Nivel: Manager[Admin]\n"
-        levels_message += "🔑 Nivel: Admin"
-        await self.highrise.send_whisper(user_id, levels_message)
-
-
-
-    def print_highrise_methods(self):
-        print(dir(self.highrise))
+        if not target_user_id: await self.highrise.chat(f"❌ Giocatore @{username} non trovato"); return
+        if self.is_admin(target_user_id): role = "Admin"
+        elif self.is_moderator(target_user_id): role = "Manager"
+        elif self.is_vip(target_user_id): role = "Host"
+        else: role = "Vip"
+        await self.highrise.send_whisper(target_user_id, f"🔑 {username} Roles:\nNivel: {role}")
 
     async def get_bot_user(self):
         """Obtiene el objeto User del bot usando bot_id almacenado"""
         try:
-            if not hasattr(self, 'bot_id'):
-                log_event("ERROR", "Bot ID not available - bot may not be properly initialized")
-                return None
-
-            room_users_response = await self.highrise.get_room_users()
-            if isinstance(room_users_response, Error):
-                log_event("ERROR", f"Error obteniendo usuarios: {room_users_response}")
-                return None
-            users = room_users_response.content
+            if not hasattr(self, 'bot_id'): log_event("ERROR", "Bot ID no disponible"); return None
+            users = (await self.highrise.get_room_users()).content
             bot_user = next((u for u, _ in users if u.id == self.bot_id), None)
-
-            if bot_user:
-                log_event("BOT", f"Bot user found: {bot_user.username} (ID: {bot_user.id})")
-            else:
-                log_event("WARNING", f"Bot user not found in room with ID: {self.bot_id}")
-
+            if bot_user: log_event("BOT", f"Bot encontrado: {bot_user.username}")
+            else: log_event("WARNING", f"Bot no encontrado en sala con ID: {self.bot_id}")
             return bot_user
-        except Exception as e:
-            log_event("ERROR", f"Error obteniendo bot user: {e}")
-            return None
+        except Exception as e: log_event("ERROR", f"Error obteniendo bot user: {e}"); return None
 
-    async def change_bot_outfit(self, outfit_id: str):
-        """Cambia el outfit del bot usando el ID especificado"""
-        try:
-            log_event("BOT", f"Attempting to change bot outfit to: {outfit_id}")
+    async def console_chat_input(self):
+        """Entrada de consola para enviar mensajes"""
+        print("💬 Chat de consola iniciado! Ingresa 'quit' para salir.")
+        while True:
+            try:
+                message = input("> ")
+                if message.lower() == 'quit': break
+                elif message.strip(): await self.highrise.chat(message); print(f"✅ Enviado: {message}")
+            except KeyboardInterrupt: break
+            except Exception as e: print(f"❌ Error de envío: {e}")
 
-            # Outfit personalizado específico solicitado por el usuario
-            if outfit_id == "custom_nocturno":
-                from highrise.models import Item
-                custom_outfit = [
-                    # Camisa - Mafia Suit
-                    Item(type="clothing", id="shirt-n_guy_rise_par_rewards_2023_mafia_suit", amount=1),
-                    # Pantalones - Formal Slacks Black
-                    Item(type="clothing", id="pants-n_room1_2019formalslacksblack", amount=1),
-                    # Lentes - Billie Glasses
-                    Item(type="clothing", id="glasses-n_registrationavatars2023billieglasses", amount=1),
-                    # Zapatos - Knife Boots
-                    Item(type="clothing", id="shoes-n_marchscavengerhunt2021knifeboots", amount=1),
-                    # Boca - Racer Mouth
-                    Item(type="clothing", id="mouth-n_dailyquests2024racermouth", amount=1),
-                    # Cabello frontal - Nikana Master Hair
-                    Item(type="clothing", id="hair_front-n_winterformaludceventrewards02_2023_nikana_maschair", amount=1),
-                    # Sombrero - Angel Halo
-                    Item(type="clothing", id="hat-n_fallen_angels_silks_nevs_2024_angel_halo", amount=1),
-                    # Piel gris
-                    Item(type="clothing", id="skin-s_gray", amount=1)
-                ]
-
-                await self.highrise.set_outfit(custom_outfit)
-                log_event("BOT", f"✅ Custom NOCTURNO outfit applied successfully")
-                print(f"✅ Outfit personalizado NOCTURNO configurado")
-                return
-
-            # Get bot's current outfit for other outfit IDs
-            current_outfit_response = await self.highrise.get_my_outfit()
-            if isinstance(current_outfit_response, Error):
-                log_event("ERROR", f"Error obteniendo outfit actual: {current_outfit_response}")
-                return
-            current_outfit = current_outfit_response.outfit
-
-            # Apply current outfit for backward compatibility
-            await self.highrise.set_outfit(current_outfit)
-
-            # Verify the outfit was applied by getting it again
-            verification_outfit = await self.highrise.get_my_outfit()
-
-            if verification_outfit:
-                log_event("BOT", f"✅ Bot outfit successfully applied for ID: {outfit_id}")
-                print(f"✅ Outfit del bot configurado para ID: {outfit_id}")
-            else:
-                log_event("WARNING", f"Could not verify outfit application for ID: {outfit_id}")
-
-        except Exception as e:
-            log_event("ERROR", f"Error cambiando outfit del bot: {e}")
-            print(f"❌ Error cambiando outfit del bot: {e}")
-            raise e
-
-
-    async def fake_floss_acelerado(self, user_id, bucle_infinito=False):
-        """
-        Simulación del 'Floss Falso' con aceleración progresiva.
-        Si bucle_infinito=True, continúa ejecutándose indefinidamente.
-        """
-        try:
-            movimiento_floss = [
-                "idle-fighter",      # fighter - Brazo rígido
-                "emote-superpunch",  # superpunch - Brazo adelante
-                "emote-kicking",     # superkick - Brazo atrás
-                "idle-loop-tapdance" # taploop - Ritmo de cadera/reset
-            ]
-
-            # Fases de aceleración [Tiempo, Número de Veces que Repite la secuencia]
-            fases_aceleracion = [
-                (0.5, 2),  # Lento
-                (0.3, 2),  # Medio
-                (0.18, 5)  # Máximo (Velocidad final)
-            ]
-
-            log_event("BOT", f"Iniciando floss falso acelerado para usuario {user_id} - Bucle infinito: {bucle_infinito}")
-
-            # Ejecutamos la secuencia de aceleración inicial
-            for tiempo_sleep, num_repeticiones in fases_aceleracion:
-                for _ in range(num_repeticiones):
-                    for emote_name in movimiento_floss:
-                        await self.highrise.send_emote(emote_name, user_id)
-                        await asyncio.sleep(tiempo_sleep)
-
-            # Si es bucle infinito, continuar con la velocidad máxima
-            if bucle_infinito:
-                log_event("BOT", f"Iniciando bucle infinito de floss falso para usuario {user_id}")
-                print("🕺 FLOSS FALSO - Iniciando bucle infinito a velocidad máxima")
-
-                while True:
-                    for emote_name in movimiento_floss:
-                        await self.highrise.send_emote(emote_name, user_id)
-                        await asyncio.sleep(0.18)  # Velocidad máxima constante
-            else:
-                # El bot termina la aceleración y se pone en pose final
-                await self.highrise.send_emote("emote-celebrationstep", user_id)
-                log_event("BOT", f"Floss falso completado para usuario {user_id}")
-
-        except Exception as e:
-            log_event("ERROR", f"Error en floss falso: {e}")
-            print(f"⚠️ Error ejecutando floss falso: {e}")
-
-    async def start_auto_emote_cycle(self):
-        """Inicia ciclo automático de 224 emotes en bucle infinito con pausas apropiadas"""
-        try:
-            log_event("BOT", "Iniciando ciclo automático de 224 emotes con pausas")
-
-            while True:  # Bucle infinito
-                for number, emote_data in emotes.items():
-                    emote_id = emote_data["id"]
-                    emote_name = emote_data["name"]
-                    emote_duration = emote_data.get("duration", 5.0)  # Duración del emote
-
-                    try:
-                        # Reproducir emote en el bot
-                        await self.highrise.send_emote(emote_id, self.bot_id)
-                        log_event("BOT", f"Emote #{number}: {emote_name} ({emote_id}) - {emote_duration}s")
-                        print(f"🎭 Bot emote #{number}: {emote_name} ({emote_duration}s)")
-
-                        # Esperar la duración del emote antes de continuar
-                        await asyncio.sleep(emote_duration)
-
-                    except Exception as e:
-                        log_event("ERROR", f"Error reproduciendo emote #{number}: {e}")
-                        # Pausa corta antes de continuar con el siguiente
-                        await asyncio.sleep(1.0)
-                        continue
-
-                # Pausa breve entre ciclos completos
-                await asyncio.sleep(2.0)
-
-        except Exception as e:
-            log_event("ERROR", f"Error en ciclo automático de emotes: {e}")
-
-    async def setup_initial_bot_appearance(self):
-        """Configura la apariencia inicial del bot (outfit y emote)"""
-        try:
-            log_event("BOT", "Starting initial bot appearance setup")
-            # Esperar un momento para que el bot se conecte completamente
-            await asyncio.sleep(2)
-
-            # Configurar outfit inicial si está especificado en config
-            if "bot_initial_outfit" in config:
-                outfit_id = config["bot_initial_outfit"]
-                try:
-                    await self.change_bot_outfit(outfit_id)
-                    log_event("BOT", f"Initial bot outfit configured: {outfit_id}")
-                    print(f"🎽 Outfit inicial del bot configurado: {outfit_id}")
-                except Exception as e:
-                    log_event("ERROR", f"Error configurando outfit inicial: {e}")
-                    print(f"⚠️  Error configurando outfit inicial: {e}")
-            else:
-                log_event("BOT", "No initial outfit specified in config")
-
-            # Modo floss deshabilitado por defecto (se puede activar con comando !floss)
-            log_event("BOT", f"Bot inicializado en modo idle (bot ID: {self.bot_id})")
-            print(f"✅ Bot inicializado en modo idle - usa !floss para activar modo floss")
-
-            log_event("BOT", "Initial bot appearance setup completed")
-
-        except Exception as e:
-            log_event("ERROR", f"Error en setup_initial_bot_appearance: {e}")
-            print(f"❌ Error en setup_initial_bot_appearance: {e}")
-
-# Обработка сигналов для сохранения данных при завершении
-import signal
-import sys
+# ============================================================================
+# MANEJADOR DE SEÑALES
+# ============================================================================
 
 def signal_handler(sig, frame):
-    """Gestore dei segnali per salvare i dati all'uscita"""
-    print("\n🛑 Segnale di uscita ricevuto. Salvataggio dati...")
-
-    # Salviamo il tempo per tutti i giocatori attivi
+    """Guarda datos al salir"""
+    print("\n🛑 Señal de salida recibida. Guardando datos...")
     current_time = time.time()
     for user_id, join_time in USER_JOIN_TIMES.items():
         if user_id in USER_INFO:
             time_in_room = round(current_time - join_time)
             USER_INFO[user_id]["total_time_in_room"] += time_in_room
-
-    # Salviamo tutti i dati
     try:
         save_leaderboard_data()
         save_user_info()
-        print("✅ Dati salvati con successo")
-    except Exception as e:
-        print(f"❌ Errore nel salvare i dati: {e}")
-
-    print("👋 Arrivederci!")
+        print("✅ Datos guardados con éxito")
+    except Exception as e: print(f"❌ Error guardando datos: {e}")
+    print("👋 ¡Adiós!")
     sys.exit(0)
 
-# Регистрируем обработчики сигналов
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-# Código principal para ejecutar el bot
+# ============================================================================
+# PUNTO DE ENTRADA
+# ============================================================================
+
 if __name__ == "__main__":
     try:
-        # Validar configuración necesaria
         if not config.get("api_token"):
             print("❌ Error: No se encontró api_token en config.json")
             sys.exit(1)
-
         if not config.get("room_id"):
             print("❌ Error: No se encontró room_id en config.json")
             sys.exit(1)
@@ -4268,16 +2275,13 @@ if __name__ == "__main__":
         print(f"🎭 Emotes disponibles: {len(emotes)}")
         print("=" * 50)
 
-        # Crear instancia del bot
         bot = Bot()
-
-        # Nota: Para ejecutar el bot usa: python -m highrise main:Bot room_id api_token
         print("🔧 Para ejecutar el bot usa: python -m highrise main:Bot", room_id, api_token)
 
     except KeyboardInterrupt:
         print("\n🛑 Bot detenido por el usuario")
         sys.exit(0)
     except Exception as e:
-        print(f"❌ Error crítico ejecutando el bot: {e}")
+        print(f"❌ Error crítico: {e}")
         log_event("ERROR", f"Error crítico en main: {e}")
         sys.exit(1)
