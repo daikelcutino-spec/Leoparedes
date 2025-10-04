@@ -3274,7 +3274,7 @@ class Bot(BaseBot):
                 await send_response( f"Error: {e}")
             return
 
-        # Comando !bot @user - Bot camina hacia usuario, hace punch, y regresa caminando
+        # Comando !bot @user - Bot se teletransporta, hace punch, y regresa
         if msg.startswith("!bot "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden usar este comando!")
@@ -3305,19 +3305,10 @@ class Bot(BaseBot):
                     await send_response( "❌ ¡No se pudo encontrar el bot!")
                     return
 
-                # 1. Bot camina gradualmente hacia el usuario
-                await send_response( f"🚶 Bot caminando hacia @{target_username}...")
+                # 1. Bot se teletransporta instantáneamente cerca del usuario
                 move_position = Position(target_position.x + 0.5, target_position.y, target_position.z + 0.5)
-                
-                steps = 8
-                for i in range(1, steps + 1):
-                    new_x = bot_position.x + (move_position.x - bot_position.x) * (i / steps)
-                    new_y = bot_position.y + (move_position.y - bot_position.y) * (i / steps)
-                    new_z = bot_position.z + (move_position.z - bot_position.z) * (i / steps)
-                    await self.highrise.teleport(bot_user.id, Position(new_x, new_y, new_z))
-                    await asyncio.sleep(0.2)
-
-                await asyncio.sleep(0.5)
+                await self.highrise.teleport(bot_user.id, move_position)
+                await asyncio.sleep(0.3)
 
                 # 2. Bot hace punch, usuario hace revival
                 await self.highrise.send_emote("emoji-punch", bot_user.id)
@@ -3326,18 +3317,11 @@ class Bot(BaseBot):
 
                 # 3. Mensaje global
                 await self.highrise.chat("‼️CALLATE‼️")
-                await asyncio.sleep(1.5)
+                await asyncio.sleep(1.0)
 
-                # 4. Bot regresa caminando a su posición original
-                await send_response( f"🚶 Bot regresando...")
+                # 4. Bot regresa teletransportándose a su posición original
                 if bot_position:
-                    current_pos = move_position
-                    for i in range(1, steps + 1):
-                        new_x = current_pos.x + (bot_position.x - current_pos.x) * (i / steps)
-                        new_y = current_pos.y + (bot_position.y - current_pos.y) * (i / steps)
-                        new_z = current_pos.z + (bot_position.z - current_pos.z) * (i / steps)
-                        await self.highrise.teleport(bot_user.id, Position(new_x, new_y, new_z))
-                        await asyncio.sleep(0.2)
+                    await self.highrise.teleport(bot_user.id, bot_position)
 
                 await send_response( f"🤖 Comando !bot ejecutado en @{target_username}")
 
