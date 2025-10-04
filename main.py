@@ -606,6 +606,12 @@ class Bot(BaseBot):
         else:
             return f"{seconds}s"
 
+    def get_user_total_time(self, user_id: str) -> int:
+        """Obtiene el tiempo total del usuario en la sala"""
+        if user_id in USER_INFO:
+            return USER_INFO[user_id].get("total_time_in_room", 0)
+        return 0
+
     def get_help_for_user(self, user_id: str, username: str) -> str:
         """Retorna comandos disponibles según el rol del usuario"""
         is_owner = (user_id == OWNER_ID)
@@ -671,7 +677,6 @@ class Bot(BaseBot):
                     "!bot @user - Atacar con bot\n"
                     "!tome - Bot a ti\n"
                     "!automode - Modo automático\n"
-                    "!flossmode - Modo floss\n"
                     "!say [mensaje] - Bot habla\n"
                     "!mimic @user - Imitar usuario\n"
                     "!copyoutfit - Copiar tu outfit|||"
@@ -935,6 +940,26 @@ class Bot(BaseBot):
         if msg == "!help teleport": await send_response("📍 COMANDOS DE TELETRANSPORTE:\n!tplist — lista de puntos\n[nombre_punto] — teletransporte al punto\n!tele zonaVIP — zona VIP")
         if msg == "!help leaderboard": await send_response("🏆 TABLA DE CLASIFICACIÓN:\n!leaderboard heart — top por corazones\n!leaderboard active — top por actividad")
         if msg == "!help heart": await send_response("❤️ COMANDO DE CORAZONES:\n!heart @usuario [cantidad] — enviar corazones\n💖 También puedes enviar corazones con reacciones!")
+
+        # Comando !emote list
+        if msg == "!emote list":
+            total_emotes = len(emotes)
+            free_emotes = sum(1 for e in emotes.values() if e["is_free"])
+            emote_list = f"🎭 LISTA DE EMOTES ({total_emotes} total, {free_emotes} gratuitos):\n\n"
+            
+            # Mostrar en grupos de 10
+            emote_items = list(emotes.items())
+            for i in range(0, len(emote_items), 10):
+                batch = emote_items[i:i+10]
+                batch_text = ""
+                for num, data in batch:
+                    status = "✅" if data["is_free"] else "🔒"
+                    batch_text += f"{status} #{num} - {data['name']}\n"
+                await send_response(emote_list + batch_text if i == 0 else batch_text)
+                await asyncio.sleep(0.3)
+            
+            await send_response("💡 Usa: [número] o [nombre] para hacer un emote")
+            return
 
         # Ejecución de emotes
         if msg.isdigit():
