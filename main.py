@@ -3284,7 +3284,8 @@ class Bot(BaseBot):
                     return
 
                 # Guardar posición original del bot para retorno
-                original_pos = Position(bot_pos.x, bot_pos.y, bot_pos.z)
+                from highrise.models import Position as Pos
+                original_pos = Pos(bot_pos.x, bot_pos.y, bot_pos.z)
 
                 # Mover bot hacia el usuario con movimiento gradual
                 await send_response( f"🤖 Bot moviéndose hacia @{target_username}...")
@@ -3294,7 +3295,7 @@ class Bot(BaseBot):
                     new_x = bot_pos.x + (target_pos.x - bot_pos.x) * (i / steps)
                     new_y = bot_pos.y + (target_pos.y - bot_pos.y) * (i / steps)
                     new_z = bot_pos.z + (target_pos.z - bot_pos.z) * (i / steps)
-                    await self.highrise.teleport(self.bot_id, Position(new_x, new_y, new_z))
+                    await self.highrise.teleport(self.bot_id, Pos(new_x, new_y, new_z))
                     await asyncio.sleep(0.3)
 
                 # Bot hace un emote al llegar
@@ -3322,7 +3323,7 @@ class Bot(BaseBot):
                         new_x = current_bot_pos.x + (original_pos.x - current_bot_pos.x) * (i / steps)
                         new_y = current_bot_pos.y + (original_pos.y - current_bot_pos.y) * (i / steps)
                         new_z = current_bot_pos.z + (original_pos.z - current_bot_pos.z) * (i / steps)
-                        await self.highrise.teleport(self.bot_id, Position(new_x, new_y, new_z))
+                        await self.highrise.teleport(self.bot_id, Pos(new_x, new_y, new_z))
                         await asyncio.sleep(0.3)
 
                 await send_response( "✅ Bot retornó a su posición")
