@@ -4748,3 +4748,27 @@
 [2025-10-04 15:51:23] [BOT] Emote #10: touch (dance-touch) - 13.15s
 [2025-10-04 15:51:36] [BOT] Emote #11: kawaii (dance-kawai) - 10.85s
 [2025-10-04 15:51:47] [BOT] Emote #12: repose (sit-relaxed) - 31.21s
+[2025-10-04 15:52:17] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-04 15:52:17] [BOT] Starting initial bot appearance setup
+[2025-10-04 15:52:19] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-04 15:52:19] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-04 15:52:19] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-04 15:52:19] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-04 15:52:19] [BOT] Initial bot appearance setup completed
+[2025-10-04 15:52:21] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-04 15:52:22] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-04 15:52:22] [BOT] Iniciando ciclo automático de 224 emotes con pausas
+[2025-10-04 15:52:22] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-04 15:52:32] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
+[2025-10-04 15:52:59] [BOT] Emote #3: launch (emote-launch) - 10.88s
+[2025-10-04 15:53:10] [BOT] Emote #4: cutesalute (emote-cutesalute) - 3.79s
+[2025-10-04 15:53:14] [BOT] Emote #5: atattention (emote-salute) - 4.79s
+[2025-10-04 15:53:19] [BOT] Emote #6: tiktok (dance-tiktok11) - 11.37s
+[2025-10-04 15:53:31] [BOT] Emote #7: smooch (emote-kissing) - 6.69s
+[2025-10-04 15:53:37] [BOT] Emote #8: pushit (dance-employee) - 8.55s
+[2025-10-04 15:53:43] [CHAT] [PUBLIC] Xx__Daikel__xX: !bot @Xx__Daikel__xX
+[2025-10-04 15:53:43] [ERROR] Error en comando !bot: cannot access local variable 'Position' where it is not associated with a value
+[2025-10-04 15:53:46] [BOT] Emote #9: foryou (emote-gift) - 6.09s
+[2025-10-04 15:53:52] [BOT] Emote #10: touch (dance-touch) - 13.15s
+[2025-10-04 15:54:05] [BOT] Emote #11: kawaii (dance-kawai) - 10.85s
+[2025-10-04 15:54:16] [BOT] Emote #12: repose (sit-relaxed) - 31.21s
