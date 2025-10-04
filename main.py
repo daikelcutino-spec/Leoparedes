@@ -3315,19 +3315,25 @@ class Bot(BaseBot):
                     await send_response( f"❌ ¡Usuario {target_username} no encontrado!")
                     return
 
-                # Verificar que las posiciones sean Position objects
-                if not isinstance(bot_pos, Position) or not isinstance(target_pos, Position):
-                    await send_response( "❌ Error: Posiciones inválidas")
+                # Guardar coordenadas originales del bot directamente
+                if isinstance(bot_pos, Position):
+                    original_x = bot_pos.x
+                    original_y = bot_pos.y
+                    original_z = bot_pos.z
+                else:
+                    await send_response( "❌ Error: Posición del bot inválida")
                     return
 
-                # Guardar posición original del bot
-                original_x, original_y, original_z = bot_pos.x, bot_pos.y, bot_pos.z
-
-                # Teletransportar bot DIRECTAMENTE al lado del usuario (offset de 1 bloque)
-                new_x = target_pos.x + 1.0
-                new_y = target_pos.y
-                new_z = target_pos.z
+                # Calcular nueva posición cerca del usuario
+                if isinstance(target_pos, Position):
+                    new_x = target_pos.x + 1.0
+                    new_y = target_pos.y
+                    new_z = target_pos.z
+                else:
+                    await send_response( "❌ Error: Posición del usuario inválida")
+                    return
                 
+                # Teletransportar bot al usuario
                 target_position = Position(new_x, new_y, new_z)
                 await self.highrise.teleport(self.bot_id, target_position)
                 await send_response( f"🤖 Bot teletransportado a @{target_username}!")
@@ -3348,7 +3354,7 @@ class Bot(BaseBot):
                 # Esperar 3 segundos y retornar a posición original
                 await asyncio.sleep(3)
                 
-                # Retornar DIRECTAMENTE a posición original
+                # Retornar a posición original usando coordenadas guardadas
                 original_position = Position(original_x, original_y, original_z)
                 await self.highrise.teleport(self.bot_id, original_position)
                 await send_response( "✅ Bot retornó a su posición original")
