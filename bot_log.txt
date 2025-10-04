@@ -4284,3 +4284,30 @@
 [2025-10-04 14:03:34] [BOT] Emote #24: revelations (emote-headblowup) - 13.66s
 [2025-10-04 14:03:48] [BOT] Emote #25: watchyourback (emote-creepycute) - 9.01s
 [2025-10-04 14:03:57] [BOT] Emote #26: creepypuppet (dance-creepypuppet) - 7.79s
+[2025-10-04 14:04:05] [BOT] Emote #27: saunter (dance-anime) - 9.6s
+[2025-10-04 14:04:17] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-04 14:04:17] [BOT] Starting initial bot appearance setup
+[2025-10-04 14:04:19] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-04 14:04:19] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-04 14:04:19] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-04 14:04:19] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-04 14:04:19] [BOT] Initial bot appearance setup completed
+[2025-10-04 14:04:21] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-04 14:04:21] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-04 14:04:21] [BOT] Iniciando ciclo automático de 224 emotes con pausas
+[2025-10-04 14:04:21] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-04 14:04:31] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
+[2025-10-04 14:04:59] [BOT] Emote #3: launch (emote-launch) - 10.88s
+[2025-10-04 14:05:10] [BOT] Emote #4: cutesalute (emote-cutesalute) - 3.79s
+[2025-10-04 14:05:14] [BOT] Emote #5: atattention (emote-salute) - 4.79s
+[2025-10-04 14:05:19] [BOT] Emote #6: tiktok (dance-tiktok11) - 11.37s
+[2025-10-04 14:05:30] [BOT] Emote #7: smooch (emote-kissing) - 6.69s
+[2025-10-04 14:05:37] [BOT] Emote #8: pushit (dance-employee) - 8.55s
+[2025-10-04 14:05:46] [BOT] Emote #9: foryou (emote-gift) - 6.09s
+[2025-10-04 14:05:48] [CHAT] [PUBLIC] Xx__Daikel__xX: !bot @Xx__Daikel__xX
+[2025-10-04 14:05:52] [BOT] Emote #10: touch (dance-touch) - 13.15s
+[2025-10-04 14:05:59] [CHAT] [PUBLIC] Xx__Daikel__xX: !tome
+[2025-10-04 14:06:05] [BOT] Emote #11: kawaii (dance-kawai) - 10.85s
+[2025-10-04 14:06:16] [BOT] Emote #12: repose (sit-relaxed) - 31.21s
+[2025-10-04 14:06:47] [BOT] Emote #13: sleigh (emote-sleigh) - 12.51s
+[2025-10-04 14:07:00] [BOT] Emote #14: hyped (emote-hyped) - 7.62s
