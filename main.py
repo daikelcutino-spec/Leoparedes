@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 from highrise import BaseBot, User, Reaction, AnchorPosition, Position
-from highrise.models import SessionMetadata, CurrencyItem, Item, Error, Position as PositionModel
+from highrise.models import SessionMetadata, CurrencyItem, Item, Error
 
 # Функция логирования событий
 def log_event(event_type: str, message: str):
@@ -683,13 +683,14 @@ class Bot(BaseBot):
         return ((pos1.x - pos2.x)**2 + (pos1.y - pos2.y)**2 + (pos1.z - pos2.z)**2)**0.5
 
     async def teleport_user(self, user_id: str, x: float, y: float, z: float):
-        """Teletransporta al usuario (método obsoleto)"""
+        """Teletransporta al usuario"""
         try:
-
+            from highrise import Position
             position = Position(x, y, z)
             await self.highrise.teleport(user_id, position)
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Error en teleport_user: {e}")
             return False
 
     async def send_emote_loop(self, user_id: str, emote_id: str):
