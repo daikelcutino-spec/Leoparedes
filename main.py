@@ -40,7 +40,7 @@ ACTIVE_EMOTES = {}
 USER_JOIN_TIMES = {}  # Словарь для хранения времени входа пользователей
 SAVED_OUTFITS = {}  # Diccionario para almacenar outfits guardados {número: outfit}
 
-# Функции для сохранения данных
+# Función para sохранения данных
 def save_user_info():
     """Сохраняет информацию о пользователях"""
     try:
@@ -2477,91 +2477,6 @@ class Bot(BaseBot):
                 await send_response( mute_list)
             else:
                 await send_response( "✅ No hay usuarios silenciados")
-            return
-
-        # === SISTEMA DE ANCHORS (PUNTOS DE ANCLAJE) - Solo Admin y Owner ===
-
-        # Comando !setanchor [id] - establecer punto de anclaje en posición actual
-        if msg.startswith("!setanchor "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden crear anchors!")
-                return
-
-            parts = msg.split()
-            if len(parts) >= 2:
-                anchor_id = parts[1]
-                try:
-                    users = (await self.highrise.get_room_users()).content
-                    user_pos = None
-                    for u, pos in users:
-                        if u.id == user_id:
-                            user_pos = pos
-                            break
-
-                    if user_pos:
-                        ANCHOR_POINTS[anchor_id] = {"x": user_pos.x, "y": user_pos.y, "z": user_pos.z}
-                        await send_response( f"⚓ Anchor '{anchor_id}' creado en ({user_pos.x:.1f}, {user_pos.y:.1f}, {user_pos.z:.1f})")
-                        log_event("ANCHOR", f"{user.username} creó anchor {anchor_id}")
-                    else:
-                        await send_response( "❌ Error obteniendo posición!")
-
-                except Exception as e:
-                    await send_response( f"❌ Error: {e}")
-            else:
-                await send_response( "❌ Usa: !setanchor [id]")
-            return
-
-        # Comando !anchor [id] @user - activar punto de anclaje para usuario
-        if msg.startswith("!anchor "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden usar anchors!")
-                return
-
-            parts = msg.split()
-            if len(parts) >= 3:
-                anchor_id = parts[1]
-                target_username = parts[2].replace("@", "")
-
-                if anchor_id not in ANCHOR_POINTS:
-                    await send_response( f"❌ Anchor '{anchor_id}' no existe!")
-                    return
-
-                try:
-                    users = (await self.highrise.get_room_users()).content
-                    target_user = None
-                    for u, _ in users:
-                        if u.username == target_username:
-                            target_user = u
-                            break
-
-                    if not target_user:
-                        await send_response( f"❌ Usuario {target_username} no encontrado!")
-                        return
-
-                    anchor = ANCHOR_POINTS[anchor_id]
-                    await self.highrise.teleport(target_user.id, Position(anchor["x"], anchor["y"], anchor["z"]))
-                    await send_response( f"⚓ @{target_username} movido al anchor '{anchor_id}'")
-                    log_event("ANCHOR_USE", f"{user.username} movió {target_username} al anchor {anchor_id}")
-
-                except Exception as e:
-                    await send_response( f"❌ Error: {e}")
-            else:
-                await send_response( "❌ Usa: !anchor [id] @user")
-            return
-
-        # Comando !listanchors - ver lista de anchors disponibles
-        if msg == "!listanchors":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID):
-                await send_response( "❌ ¡Solo administradores y propietario pueden ver anchors!")
-                return
-
-            if ANCHOR_POINTS:
-                anchor_list = "⚓ ANCHORS DISPONIBLES:\n"
-                for i, (aid, coords) in enumerate(ANCHOR_POINTS.items(), 1):
-                    anchor_list += f"{i}. {aid} (X:{coords['x']:.1f}, Y:{coords['y']:.1f}, Z:{coords['z']:.1f})\n"
-                await send_response( anchor_list)
-            else:
-                await send_response( "📍 No hay anchors creados")
             return
 
         # === SISTEMA DE PRIVILEGIOS DE SALA - Solo Admin y Owner ===
