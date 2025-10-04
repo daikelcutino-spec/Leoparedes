@@ -685,7 +685,6 @@ class Bot(BaseBot):
     async def teleport_user(self, user_id: str, x: float, y: float, z: float):
         """Teletransporta al usuario"""
         try:
-            from highrise import Position
             position = Position(x, y, z)
             await self.highrise.teleport(user_id, position)
             return True
