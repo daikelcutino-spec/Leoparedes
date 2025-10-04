@@ -5307,3 +5307,13 @@
 [2025-10-04 18:18:56] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-04 18:18:56] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-04 18:18:59] [BOT] Iniciando ciclo automático de 224 emotes
+[2025-10-04 18:39:28] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-04 18:39:30] [BOT] Outfit NOCTURNO aplicado
+[2025-10-04 18:39:30] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-04 18:39:30] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-04 18:39:33] [BOT] Iniciando ciclo automático de 224 emotes
+[2025-10-04 18:40:11] [CHAT] [PUBLIC] Xx__Daikel__xX: !help
+[2025-10-04 18:40:18] [CHAT] [PUBLIC] Xx__Daikel__xX: vip
+[2025-10-04 18:40:53] [CHAT] [PUBLIC] Xx__Daikel__xX: directivo
+[2025-10-04 18:41:05] [CHAT] [PUBLIC] Xx__Daikel__xX: !vip list
+[2025-10-04 18:41:18] [CHAT] [PUBLIC] Xx__Daikel__xX: !vipllist
