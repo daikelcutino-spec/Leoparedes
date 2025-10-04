@@ -4886,3 +4886,4 @@
 [2025-10-04 16:07:23] [BOT] Emote #10: touch (dance-touch) - 13.15s
 [2025-10-04 16:07:36] [BOT] Emote #11: kawaii (dance-kawai) - 10.85s
 [2025-10-04 16:07:47] [BOT] Emote #12: repose (sit-relaxed) - 31.21s
+[2025-10-04 16:08:19] [BOT] Emote #13: sleigh (emote-sleigh) - 12.51s
