@@ -5096,3 +5096,10 @@
 [2025-10-04 16:37:35] [BOT] Emote #10: touch (dance-touch) - 13.15s
 [2025-10-04 16:37:48] [BOT] Emote #11: kawaii (dance-kawai) - 10.85s
 [2025-10-04 16:37:59] [BOT] Emote #12: repose (sit-relaxed) - 31.21s
+[2025-10-04 16:38:30] [BOT] Emote #13: sleigh (emote-sleigh) - 12.51s
+[2025-10-04 16:38:43] [BOT] Emote #14: hyped (emote-hyped) - 7.62s
+[2025-10-04 16:38:50] [BOT] Emote #15: jingle (dance-jinglebell) - 12.09s
+[2025-10-04 16:39:02] [BOT] Emote #16: gottago (idle-toilet) - 33.48s
+[2025-10-04 16:39:36] [BOT] Emote #17: timejump (emote-timejump) - 5.51s
+[2025-10-04 16:39:41] [BOT] Emote #18: scritchy (idle-wild) - 27.35s
+[2025-10-04 16:40:09] [BOT] Emote #19: bitnervous (idle-nervous) - 22.81s
