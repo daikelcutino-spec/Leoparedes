@@ -70,7 +70,7 @@
 [2025-09-18 13:40:27] [BOT] Initial bot outfit configured: outfit_1
 [2025-09-18 13:40:27] [BOT] Auto emote cycle started for bot ID 681d54aa4cedce763169580f
 [2025-09-18 13:40:27] [BOT] Initial bot appearance setup completed
-[2025-09-18 13:40:27] [BOT] Iniciando ciclo automático de emotes
+[2025-09-18 13:40:27] [BOT]Iniciando ciclo automático de emotes
 [2025-09-18 13:40:27] [BOT] Reproduciendo emote #1: fairytwirl (emote-looping) - Duración: 9.89s
 [2025-09-18 13:40:37] [BOT] Reproduciendo emote #2: fairyfloat (idle-floating) - Duración: 27.6s
 [2025-09-18 13:41:05] [BOT] Reproduciendo emote #3: launch (emote-launch) - Duración: 10.88s
@@ -2976,3 +2976,203 @@
 [2025-10-03 15:28:34] [BOT] Emote #14: hyped (emote-hyped) - 7.62s
 [2025-10-03 15:28:41] [BOT] Emote #15: jingle (dance-jinglebell) - 12.09s
 [2025-10-03 15:28:54] [BOT] Emote #16: gottago (idle-toilet) - 33.48s
+[2025-10-03 15:29:27] [BOT] Emote #17: timejump (emote-timejump) - 5.51s
+[2025-10-03 15:29:33] [BOT] Emote #18: scritchy (idle-wild) - 27.35s
+[2025-10-03 15:29:37] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-03 15:29:37] [BOT] Starting initial bot appearance setup
+[2025-10-03 15:29:39] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-03 15:29:39] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-03 15:29:39] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-03 15:29:39] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-03 15:29:39] [BOT] Initial bot appearance setup completed
+[2025-10-03 15:29:41] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-03 15:29:41] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-03 15:29:41] [BOT] Iniciando ciclo automático de 224 emotes con pausas
+[2025-10-03 15:29:41] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-03 15:29:51] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
+[2025-10-03 15:30:01] [CHAT] [PUBLIC] Xx__Daikel__xX: directivo
+[2025-10-03 15:30:09] [CHAT] [PUBLIC] Xx__Daikel__xX: habla
+[2025-10-03 15:30:19] [BOT] Emote #3: launch (emote-launch) - 10.88s
+[2025-10-03 15:30:30] [BOT] Emote #4: cutesalute (emote-cutesalute) - 3.79s
+[2025-10-03 15:30:31] [CHAT] [PUBLIC] Alber_JG_69: ya
+[2025-10-03 15:30:34] [BOT] Emote #5: atattention (emote-salute) - 4.79s
+[2025-10-03 15:30:34] [CHAT] [PUBLIC] Alber_JG_69: ?
+[2025-10-03 15:30:38] [BOT] Emote #6: tiktok (dance-tiktok11) - 11.37s
+[2025-10-03 15:30:39] [CHAT] [PUBLIC] Xx__Daikel__xX: prueba
+[2025-10-03 15:30:46] [CHAT] [PUBLIC] Alber_JG_69: estaba ahí ayudando a la vieja
+[2025-10-03 15:30:50] [BOT] Emote #7: smooch (emote-kissing) - 6.69s
+[2025-10-03 15:30:52] [CHAT] [PUBLIC] Alber_JG_69: vip
+[2025-10-03 15:30:54] [CHAT] [PUBLIC] Xx__Daikel__xX: a ya
+[2025-10-03 15:30:57] [BOT] Emote #8: pushit (dance-employee) - 8.55s
+[2025-10-03 15:30:59] [CHAT] [PUBLIC] Alber_JG_69: la yuk
+[2025-10-03 15:31:05] [BOT] Emote #9: foryou (emote-gift) - 6.09s
+[2025-10-03 15:31:08] [CHAT] [PUBLIC] Xx__Daikel__xX: prueba más comandos
+[2025-10-03 15:31:12] [CHAT] [PUBLIC] Xx__Daikel__xX: !info
+[2025-10-03 15:31:12] [BOT] Emote #10: touch (dance-touch) - 13.15s
+[2025-10-03 15:31:25] [BOT] Emote #11: kawaii (dance-kawai) - 10.85s
+[2025-10-03 15:31:29] [CHAT] [PUBLIC] Alber_JG_69: !info
+[2025-10-03 15:31:29] [CHAT] [PUBLIC] Xx__Daikel__xX: !emote all 117
+[2025-10-03 15:31:36] [BOT] Emote #12: repose (sit-relaxed) - 31.21s
+[2025-10-03 15:31:48] [CHAT] [PUBLIC] Xx__Daikel__xX: ese es para todos los usuarios
+[2025-10-03 15:31:51] [CHAT] [PUBLIC] Alber_JG_69: ta bueno eso jajaja
+[2025-10-03 15:31:58] [CHAT] [PUBLIC] Alber_JG_69: cayó
+[2025-10-03 15:32:00] [CHAT] [PUBLIC] Alber_JG_69: cuál
+[2025-10-03 15:32:07] [BOT] Emote #13: sleigh (emote-sleigh) - 12.51s
+[2025-10-03 15:32:10] [CHAT] [PUBLIC] Alber_JG_69: directivo
+[2025-10-03 15:32:10] [CHAT] [PUBLIC] Xx__Daikel__xX: !emote all ghostfloat
+[2025-10-03 15:32:20] [BOT] Emote #14: hyped (emote-hyped) - 7.62s
+[2025-10-03 15:32:27] [BOT] Emote #15: jingle (dance-jinglebell) - 12.09s
+[2025-10-03 15:32:29] [CHAT] [PUBLIC] Alber_JG_69: eso para ponerle a todos
+[2025-10-03 15:32:32] [CHAT] [PUBLIC] Xx__Daikel__xX: !emote all pones número o nombre y se lo hace a todos
+[2025-10-03 15:32:40] [BOT] Emote #16: gottago (idle-toilet) - 33.48s
+[2025-10-03 15:32:42] [CHAT] [PUBLIC] Alber_JG_69: bueno eso
+[2025-10-03 15:32:43] [CHAT] [PUBLIC] Xx__Daikel__xX: si
+[2025-10-03 15:32:57] [CHAT] [PUBLIC] Alber_JG_69: que más
+[2025-10-03 15:33:06] [CHAT] [PUBLIC] Alber_JG_69: pista
+[2025-10-03 15:33:12] [CHAT] [PUBLIC] Xx__Daikel__xX: !bot @Alber_JG_69
+[2025-10-03 15:33:13] [BOT] Emote #17: timejump (emote-timejump) - 5.51s
+[2025-10-03 15:33:18] [CHAT] [PUBLIC] Xx__Daikel__xX: eso
+[2025-10-03 15:33:19] [BOT] Emote #18: scritchy (idle-wild) - 27.35s
+[2025-10-03 15:33:20] [CHAT] [PUBLIC] Alber_JG_69: jaja
+[2025-10-03 15:33:22] [CHAT] [PUBLIC] Xx__Daikel__xX: pista
+[2025-10-03 15:33:28] [CHAT] [PUBLIC] Alber_JG_69: ta bueno eso
+[2025-10-03 15:33:41] [CHAT] [PUBLIC] Alber_JG_69: 1
+[2025-10-03 15:33:45] [CHAT] [PUBLIC] Alber_JG_69: 2
+[2025-10-03 15:33:46] [BOT] Emote #19: bitnervous (idle-nervous) - 22.81s
+[2025-10-03 15:33:49] [CHAT] [PUBLIC] Alber_JG_69: 3
+[2025-10-03 15:33:53] [CHAT] [PUBLIC] Alber_JG_69: 140
+[2025-10-03 15:33:57] [CHAT] [PUBLIC] Xx__Daikel__xX: ya se le puede susurrar al bot para que ejecute comandos también
+[2025-10-03 15:34:09] [BOT] Emote #20: iceskating (emote-iceskating) - 8.41s
+[2025-10-03 15:34:18] [BOT] Emote #21: partytime (emote-celebrate) - 4.35s
+[2025-10-03 15:34:22] [BOT] Emote #22: arabesque (emote-pose10) - 5.0s
+[2025-10-03 15:34:24] [CHAT] [PUBLIC] Alber_JG_69: !punch @Xx__Daikel__xX
+[2025-10-03 15:34:27] [BOT] Emote #23: bashful (emote-shy2) - 6.34s
+[2025-10-03 15:34:29] [CHAT] [PUBLIC] Alber_JG_69: ta bueno
+[2025-10-03 15:34:33] [BOT] Emote #24: revelations (emote-headblowup) - 13.66s
+[2025-10-03 15:34:36] [CHAT] [PUBLIC] Alber_JG_69: pero eso lo hace cualquiera
+[2025-10-03 15:34:44] [CHAT] [PUBLIC] Xx__Daikel__xX: noooo
+[2025-10-03 15:34:47] [CHAT] [PUBLIC] Alber_JG_69: ah
+[2025-10-03 15:34:47] [BOT] Emote #25: watchyourback (emote-creepycute) - 9.01s
+[2025-10-03 15:34:49] [CHAT] [PUBLIC] Xx__Daikel__xX: solo vip y nosotros
+[2025-10-03 15:34:55] [CHAT] [PUBLIC] Alber_JG_69: ta bueno eso
+[2025-10-03 15:34:56] [BOT] Emote #26: creepypuppet (dance-creepypuppet) - 7.79s
+[2025-10-03 15:35:03] [CHAT] [PUBLIC] Alber_JG_69: ya cuando abrimos
+[2025-10-03 15:35:04] [BOT] Emote #27: saunter (dance-anime) - 9.6s
+[2025-10-03 15:35:13] [CHAT] [PUBLIC] Xx__Daikel__xX: lo del puñado del bot solo somos nosotros
+[2025-10-03 15:35:14] [BOT] Emote #28: surprise (emote-pose6) - 6.46s
+[2025-10-03 15:35:20] [BOT] Emote #29: celebration (emote-celebrationstep) - 5.18s
+[2025-10-03 15:35:21] [CHAT] [PUBLIC] Alber_JG_69: ta bueno
+[2025-10-03 15:35:26] [BOT] Emote #30: penguin (dance-pinguin) - 12.81s
+[2025-10-03 15:35:29] [CHAT] [PUBLIC] Alber_JG_69: eso es para humillar jajaja
+[2025-10-03 15:35:32] [CHAT] [PUBLIC] Xx__Daikel__xX: esperar a que Tito hable orita aver si lo aloja ya
+[2025-10-03 15:35:38] [CHAT] [PUBLIC] Xx__Daikel__xX: msh 🤣
+[2025-10-03 15:35:39] [BOT] Emote #31: boxer (emote-boxer) - 6.75s
+[2025-10-03 15:35:42] [CHAT] [PUBLIC] Alber_JG_69: ah
+[2025-10-03 15:35:45] [CHAT] [PUBLIC] Xx__Daikel__xX: !role list
+[2025-10-03 15:35:46] [BOT] Emote #32: airguitar (idle-guitar) - 14.15s
+[2025-10-03 15:35:49] [CHAT] [PUBLIC] Alber_JG_69: ya solo falta eso entonces
+[2025-10-03 15:35:56] [CHAT] [PUBLIC] Xx__Daikel__xX: yes
+[2025-10-03 15:36:00] [BOT] Emote #33: stargaze (emote-stargazer) - 7.93s
+[2025-10-03 15:36:08] [BOT] Emote #34: ditzy (emote-pose9) - 6.0s
+[2025-10-03 15:36:12] [CHAT] [PUBLIC] Alber_JG_69: dp como dió lucha eso
+[2025-10-03 15:36:14] [BOT] Emote #35: uwu (idle-uwu) - 25.5s
+[2025-10-03 15:36:16] [CHAT] [PUBLIC] Xx__Daikel__xX: !oufit 2
+[2025-10-03 15:36:18] [CHAT] [PUBLIC] Alber_JG_69: 5k porgusto
+[2025-10-03 15:36:19] [CHAT] [PUBLIC] Alber_JG_69: jaja
+[2025-10-03 15:36:36] [CHAT] [PUBLIC] Xx__Daikel__xX: pero bkn el karma
+[2025-10-03 15:36:40] [BOT] Emote #36: wrong (dance-wrong) - 13.6s
+[2025-10-03 15:36:40] [CHAT] [PUBLIC] Xx__Daikel__xX: ghostfloat
+[2025-10-03 15:36:44] [CHAT] [PUBLIC] Alber_JG_69: claro
+[2025-10-03 15:36:52] [CHAT] [PUBLIC] Alber_JG_69: ya es bobería lo que falta
+[2025-10-03 15:36:53] [BOT] Emote #37: fashion (emote-fashionista) - 6.33s
+[2025-10-04 06:41:19] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-04 06:41:19] [BOT] Starting initial bot appearance setup
+[2025-10-04 06:41:21] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-04 06:41:21] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-04 06:41:21] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-04 06:41:21] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-04 06:41:21] [BOT] Initial bot appearance setup completed
+[2025-10-04 06:41:23] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-04 06:41:23] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-04 06:41:23] [BOT] Iniciando ciclo automático de 224 emotes con pausas
+[2025-10-04 06:41:23] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-04 06:41:33] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
+[2025-10-04 06:42:01] [BOT] Emote #3: launch (emote-launch) - 10.88s
+[2025-10-04 06:42:12] [BOT] Emote #4: cutesalute (emote-cutesalute) - 3.79s
+[2025-10-04 06:42:16] [BOT] Emote #5: atattention (emote-salute) - 4.79s
+[2025-10-04 06:42:21] [BOT] Emote #6: tiktok (dance-tiktok11) - 11.37s
+[2025-10-04 06:42:32] [BOT] Emote #7: smooch (emote-kissing) - 6.69s
+[2025-10-04 06:42:39] [BOT] Emote #8: pushit (dance-employee) - 8.55s
+[2025-10-04 06:42:48] [BOT] Emote #9: foryou (emote-gift) - 6.09s
+[2025-10-04 06:42:54] [BOT] Emote #10: touch (dance-touch) - 13.15s
+[2025-10-04 06:43:07] [BOT] Emote #11: kawaii (dance-kawai) - 10.85s
+[2025-10-04 06:43:18] [BOT] Emote #12: repose (sit-relaxed) - 31.21s
+[2025-10-04 06:43:49] [BOT] Emote #13: sleigh (emote-sleigh) - 12.51s
+[2025-10-04 06:44:02] [BOT] Emote #14: hyped (emote-hyped) - 7.62s
+[2025-10-04 06:44:10] [BOT] Emote #15: jingle (dance-jinglebell) - 12.09s
+[2025-10-04 06:44:22] [BOT] Emote #16: gottago (idle-toilet) - 33.48s
+[2025-10-04 06:44:55] [BOT] Emote #17: timejump (emote-timejump) - 5.51s
+[2025-10-04 06:45:01] [BOT] Emote #18: scritchy (idle-wild) - 27.35s
+[2025-10-04 06:45:28] [BOT] Emote #19: bitnervous (idle-nervous) - 22.81s
+[2025-10-04 06:45:51] [BOT] Emote #20: iceskating (emote-iceskating) - 8.41s
+[2025-10-04 06:46:00] [BOT] Emote #21: partytime (emote-celebrate) - 4.35s
+[2025-10-04 06:46:04] [BOT] Emote #22: arabesque (emote-pose10) - 5.0s
+[2025-10-04 06:46:09] [BOT] Emote #23: bashful (emote-shy2) - 6.34s
+[2025-10-04 06:46:16] [BOT] Emote #24: revelations (emote-headblowup) - 13.66s
+[2025-10-04 06:46:30] [BOT] Emote #25: watchyourback (emote-creepycute) - 9.01s
+[2025-10-04 06:46:39] [BOT] Emote #26: creepypuppet (dance-creepypuppet) - 7.79s
+[2025-10-04 06:46:47] [BOT] Emote #27: saunter (dance-anime) - 9.6s
+[2025-10-04 06:46:56] [BOT] Emote #28: surprise (emote-pose6) - 6.46s
+[2025-10-04 06:47:03] [BOT] Emote #29: celebration (emote-celebrationstep) - 5.18s
+[2025-10-04 06:47:08] [BOT] Emote #30: penguin (dance-pinguin) - 12.81s
+[2025-10-04 06:47:21] [BOT] Emote #31: boxer (emote-boxer) - 6.75s
+[2025-10-04 06:47:28] [BOT] Emote #32: airguitar (idle-guitar) - 14.15s
+[2025-10-04 06:47:42] [BOT] Emote #33: stargaze (emote-stargazer) - 7.93s
+[2025-10-04 06:47:50] [BOT] Emote #34: ditzy (emote-pose9) - 6.0s
+[2025-10-04 06:47:56] [BOT] Emote #35: uwu (idle-uwu) - 25.5s
+[2025-10-04 06:48:22] [BOT] Emote #36: wrong (dance-wrong) - 13.6s
+[2025-10-04 06:48:35] [BOT] Emote #37: fashion (emote-fashionista) - 6.33s
+[2025-10-04 06:48:42] [BOT] Emote #38: icecream (dance-icecream) - 16.58s
+[2025-10-04 06:48:58] [BOT] Emote #39: sayso (idle-dance-tiktok4) - 16.55s
+[2025-10-04 06:49:15] [BOT] Emote #40: zombie (idle_zombie) - 31.39s
+[2025-10-04 06:49:47] [BOT] Emote #41: astronaut (emote-astronaut) - 13.93s
+[2025-10-04 06:50:01] [BOT] Emote #42: punk (emote-punkguitar) - 10.59s
+[2025-10-04 06:50:12] [BOT] Emote #43: zerogravity (emote-gravity) - 9.02s
+[2025-10-04 06:50:21] [BOT] Emote #44: beautiful (emote-pose5) - 5.49s
+[2025-10-04 06:50:27] [ERROR] Error reproduciendo emote #45: Emote is not free or owned by target user
+[2025-10-04 06:50:28] [BOT] Emote #46: casual (idle-dance-casual) - 9.57s
+[2025-10-04 06:50:37] [BOT] Emote #47: wink (emote-pose1) - 4.71s
+[2025-10-04 06:50:42] [BOT] Emote #48: fightme (emote-pose3) - 5.57s
+[2025-10-04 06:50:48] [ERROR] Error reproduciendo emote #49: Emote is not free or owned by target user
+[2025-10-04 06:50:49] [BOT] Emote #50: cute (emote-cute) - 7.2s
+[2025-10-04 06:50:56] [BOT] Emote #51: cutey (emote-cutey) - 4.07s
+[2025-10-04 06:51:00] [BOT] Emote #52: greedy (emote-greedy) - 5.72s
+[2025-10-04 06:51:06] [BOT] Emote #53: viralgroove (dance-tiktok9) - 13.04s
+[2025-10-04 06:51:19] [BOT] Emote #54: weird (dance-weird) - 22.87s
+[2025-10-04 06:51:42] [BOT] Emote #55: shuffle (dance-tiktok10) - 9.41s
+[2025-10-04 06:51:52] [BOT] Emote #56: gagging (emoji-gagging) - 6.84s
+[2025-10-04 06:51:59] [BOT] Emote #57: raise (emoji-celebrate) - 4.78s
+[2025-10-04 06:52:03] [BOT] Emote #58: savage (dance-tiktok8) - 13.1s
+[2025-10-04 06:52:17] [BOT] Emote #59: blackpink (dance-blackpink) - 7.97s
+[2025-10-04 06:52:25] [BOT] Emote #60: model (emote-model) - 7.43s
+[2025-10-04 06:52:32] [BOT] Emote #61: dontstartnow (dance-tiktok2) - 11.37s
+[2025-10-04 06:52:44] [BOT] Emote #62: pennywise (dance-pennywise) - 4.16s
+[2025-10-04 06:52:48] [BOT] Emote #63: bow (emote-bow) - 5.1s
+[2025-10-04 06:52:53] [BOT] Emote #64: russian (dance-russian) - 11.39s
+[2025-10-04 06:53:05] [BOT] Emote #65: curtsy (emote-curtsy) - 3.99s
+[2025-10-04 06:53:09] [BOT] Emote #66: snowball (emote-snowball) - 6.32s
+[2025-10-04 06:53:15] [BOT] Emote #67: hot (emote-hot) - 5.57s
+[2025-10-04 06:53:21] [BOT] Emote #68: snowangel (emote-snowangel) - 7.33s
+[2025-10-04 06:53:28] [BOT] Emote #69: charging (emote-charging) - 9.53s
+[2025-10-04 06:53:32] [CHAT] [PUBLIC] Xx__Daikel__xX: !inventory
+[2025-10-04 06:53:38] [BOT] Emote #70: letsgoshopping (dance-shoppingcart) - 5.56s
+[2025-10-04 06:53:43] [BOT] Emote #71: confused (emote-confused) - 9.58s
+[2025-10-04 06:53:53] [BOT] Emote #72: enthused (idle-enthusiastic) - 17.53s
+[2025-10-04 06:54:11] [BOT] Emote #73: telekinesis (emote-telekinesis) - 11.01s
+[2025-10-04 06:54:22] [BOT] Emote #74: float (emote-float) - 9.26s
+[2025-10-04 06:54:27] [CHAT] [PUBLIC] Xx__Daikel__xX: !inventory
+[2025-10-04 06:54:31] [BOT] Emote #75: teleporting (emote-teleporting) - 12.89s
+[2025-10-04 06:54:44] [BOT] Emote #76: swordfight (emote-swordfight) - 7.71s
+[2025-10-04 06:54:52] [BOT] Emote #77: maniac (emote-maniac) - 5.94s
+[2025-10-04 06:54:58] [BOT] Emote #78: energyball (emote-energyball) - 8.28s
+[2025-10-04 06:55:06] [BOT] Emote #79: worm (emote-snake) - 6.63s
