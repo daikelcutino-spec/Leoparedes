@@ -4475,3 +4475,34 @@
 [2025-10-04 14:50:19] [BOT] Emote #38: icecream (dance-icecream) - 16.58s
 [2025-10-04 14:50:35] [BOT] Emote #39: sayso (idle-dance-tiktok4) - 16.55s
 [2025-10-04 14:50:52] [BOT] Emote #40: zombie (idle_zombie) - 31.39s
+[2025-10-04 15:06:55] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-04 15:06:55] [BOT] Starting initial bot appearance setup
+[2025-10-04 15:06:57] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-04 15:06:58] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-04 15:06:58] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-04 15:06:58] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-04 15:06:58] [BOT] Initial bot appearance setup completed
+[2025-10-04 15:07:00] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-04 15:07:00] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-04 15:07:00] [BOT] Iniciando ciclo automático de 224 emotes con pausas
+[2025-10-04 15:07:00] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-04 15:07:10] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
+[2025-10-04 15:07:38] [BOT] Emote #3: launch (emote-launch) - 10.88s
+[2025-10-04 15:07:49] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-04 15:07:49] [BOT] Starting initial bot appearance setup
+[2025-10-04 15:07:51] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-04 15:07:51] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-04 15:07:51] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-04 15:07:51] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-04 15:07:51] [BOT] Initial bot appearance setup completed
+[2025-10-04 15:07:53] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-04 15:07:53] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-04 15:07:53] [BOT] Iniciando ciclo automático de 224 emotes con pausas
+[2025-10-04 15:07:53] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-04 15:08:03] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
+[2025-10-04 15:08:31] [BOT] Emote #3: launch (emote-launch) - 10.88s
+[2025-10-04 15:08:42] [BOT] Emote #4: cutesalute (emote-cutesalute) - 3.79s
+[2025-10-04 15:08:46] [BOT] Emote #5: atattention (emote-salute) - 4.79s
+[2025-10-04 15:08:51] [BOT] Emote #6: tiktok (dance-tiktok11) - 11.37s
+[2025-10-04 15:09:02] [BOT] Emote #7: smooch (emote-kissing) - 6.69s
+[2025-10-04 15:09:09] [BOT] Emote #8: pushit (dance-employee) - 8.55s
