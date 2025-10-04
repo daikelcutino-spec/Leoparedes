@@ -3332,9 +3332,16 @@ class Bot(BaseBot):
                 await self.highrise.teleport(self.bot_id, target_position)
                 await send_response( f"🤖 Bot teletransportado a @{target_username}!")
 
-                # Bot hace un emote al llegar
+                # Bot hace punch y usuario reacciona con revival
                 try:
-                    await self.highrise.send_emote("emoji-hello", self.bot_id)
+                    # Bot ejecuta punch
+                    await self.highrise.send_emote("emoji-punch", self.bot_id)
+                    await asyncio.sleep(0.5)  # Pausa breve
+                    
+                    # Usuario reacciona con revival
+                    await self.highrise.send_emote("emote-death", target_user.id)
+                    
+                    await send_response( f"🥊 Bot golpeó a @{target_username}!")
                 except Exception as emote_error:
                     log_event("WARNING", f"No se pudo hacer emote: {emote_error}")
 
