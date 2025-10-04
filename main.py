@@ -1112,6 +1112,29 @@ class Bot(BaseBot):
         # Comando !myid
         if msg == "!myid": await send_response( f"🆔 Tu ID de usuario es: {user_id}")
 
+        # Comando !position (nuevo - muestra posición actual)
+        if msg == "!position" or msg == "!pos":
+            users = (await self.highrise.get_room_users()).content
+            user_position = next((pos for u, pos in users if u.id == user_id), None)
+            if user_position:
+                await send_response(f"📍 Tu posición:\nX: {user_position.x:.2f}\nY: {user_position.y:.2f}\nZ: {user_position.z:.2f}")
+            else:
+                await send_response("❌ No se pudo obtener tu posición")
+            return
+
+        # Comando !reactions (nuevo - lista de reacciones disponibles)
+        if msg == "!reactions":
+            reactions_list = "💫 REACCIONES DISPONIBLES:\n"
+            reactions_list += "❤️ heart - Corazón\n"
+            reactions_list += "👍 thumbs - Pulgar arriba\n"
+            reactions_list += "👏 clap - Aplauso\n"
+            reactions_list += "👋 wave - Saludo\n"
+            reactions_list += "😂 laugh - Risa\n"
+            reactions_list += "😮 wink - Guiño\n"
+            reactions_list += "\n💡 Usa: !heart @user, !thumbs @user, etc."
+            await send_response(reactions_list)
+            return
+
         # Comando !game love
         if msg.startswith("!game love"):
             parts = msg.split()
@@ -1274,6 +1297,24 @@ class Bot(BaseBot):
                     await send_response( f"👋 Enviaste {wave_count} ola(s) a @{target}")
             else:
                 await send_response( "❌ Usa: !wave @username [cantidad] o !wave all")
+            return
+
+        # Comando !anchor (nuevo - teleporte sin restricciones para admin/owner)
+        if msg.startswith("!anchor "):
+            if not (self.is_admin(user_id) or user_id == OWNER_ID):
+                await send_response("❌ ¡Solo administradores y propietario pueden usar anchor!")
+                return
+            parts = msg.split()
+            if len(parts) >= 4:
+                try:
+                    x, y, z = float(parts[1]), float(parts[2]), float(parts[3])
+                    pos = Position(x, y, z)
+                    await self.highrise.teleport(user_id, pos)
+                    await send_response(f"⚓ Anclado a posición ({x}, {y}, {z})")
+                except ValueError:
+                    await send_response("❌ Usa: !anchor [x] [y] [z]")
+            else:
+                await send_response("❌ Usa: !anchor [x] [y] [z]")
             return
 
         # Comando !flash
@@ -1651,12 +1692,6 @@ class Bot(BaseBot):
             await send_response( f"👮 @{target_username} ahora tiene privilegios de moderador")
             return
 
-        # Comando !removemod (no funcional en API)
-        if msg.startswith("!removemod "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden quitar privilegios!"); return
-            await send_response("⚠️ Nota: La API de Highrise no permite quitar privilegios directamente")
-            return
-
         # Comando !privilege
         if msg.startswith("!privilege "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden ver privilegios!"); return
@@ -1667,84 +1702,6 @@ class Bot(BaseBot):
             if self.is_admin(target_user_id): status = "⚔️ Administrador"
             elif self.is_moderator(target_user_id): status = "👮 Moderador"
             await send_response( f"🔍 Privilegios de @{target_username}: {status}")
-            return
-
-        # Comando !channel create
-        if msg.startswith("!channel create "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden crear canales!"); return
-            await send_response("⚠️ Nota: Highrise no soporta canales personalizados via API")
-            return
-
-        # Comando !channel invite
-        if msg.startswith("!channel invite "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden invitar a canales!"); return
-            await send_response("⚠️ Función de canales no disponible en API de Highrise")
-            return
-
-        # Comando !channel kick
-        if msg.startswith("!channel kick "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden expulsar de canales!"); return
-            await send_response("⚠️ Función de canales no disponible en API de Highrise")
-            return
-
-        # Comando !channel delete
-        if msg.startswith("!channel delete "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden eliminar canales!"); return
-            await send_response("⚠️ Función de canales no disponible en API de Highrise")
-            return
-
-        # Comando !voice enable
-        if msg == "!voice enable":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden gestionar voz!"); return
-            await send_response("⚠️ Nota: Control de voz no disponible via API")
-            return
-
-        # Comando !voice disable
-        if msg == "!voice disable":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden gestionar voz!"); return
-            await send_response("⚠️ Nota: Control de voz no disponible via API")
-            return
-
-        # Comando !voice mute @user
-        if msg.startswith("!voice mute "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden silenciar micrófonos!"); return
-            await send_response("⚠️ Nota: Control de voz no disponible via API")
-            return
-
-        # Comando !voice unmute @user
-        if msg.startswith("!voice unmute "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden gestionar micrófonos!"); return
-            await send_response("⚠️ Nota: Control de voz no disponible via API")
-            return
-
-        # Comando !roomset private
-        if msg == "!roomset private":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden cambiar configuración de sala!"); return
-            await send_response("⚠️ Nota: Cambios de privacidad de sala no disponibles via API")
-            return
-
-        # Comando !roomset public
-        if msg == "!roomset public":
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden cambiar configuración de sala!"); return
-            await send_response("⚠️ Nota: Cambios de privacidad de sala no disponibles via API")
-            return
-
-        # Comando !roomset capacity
-        if msg.startswith("!roomset capacity "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden cambiar capacidad!"); return
-            await send_response("⚠️ Nota: Cambios de capacidad no disponibles via API")
-            return
-
-        # Comando !roomset name
-        if msg.startswith("!roomset name "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden cambiar nombre de sala!"); return
-            await send_response("⚠️ Nota: Cambios de nombre no disponibles via API")
-            return
-
-        # Comando !roomset description
-        if msg.startswith("!roomset description "):
-            if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden cambiar descripción!"); return
-            await send_response("⚠️ Nota: Cambios de descripción no disponibles via API")
             return
 
         # Comando !tplist
