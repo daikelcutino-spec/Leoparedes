@@ -3074,6 +3074,184 @@ class Bot(BaseBot):
                 await send_response( f"Error moviendo jugador: {e}")
             return
 
+        # Comando !stats - mostrar estadísticas completas de la sala
+        if msg == "!stats":
+            try:
+                users = (await self.highrise.get_room_users()).content
+                total_users = len(users)
+                
+                # Contar roles
+                admin_count = sum(1 for u, _ in users if self.is_admin(u.id))
+                mod_count = sum(1 for u, _ in users if self.is_moderator(u.id) and not self.is_admin(u.id))
+                vip_count = sum(1 for u, _ in users if self.is_vip_by_username(u.username))
+                
+                # Estadísticas de actividad
+                total_messages = sum(data.get("messages", 0) for data in USER_ACTIVITY.values())
+                total_hearts = sum(USER_HEARTS.values())
+                
+                stats_msg = f"📊 ESTADÍSTICAS DE LA SALA:\n"
+                stats_msg += f"👥 Usuarios: {total_users}\n"
+                stats_msg += f"🛡️ Admins: {admin_count}\n"
+                stats_msg += f"⚖️ Mods: {mod_count}\n"
+                stats_msg += f"⭐ VIPs: {vip_count}\n"
+                stats_msg += f"💬 Mensajes: {total_messages}\n"
+                stats_msg += f"💖 Corazones: {total_hearts}"
+                
+                await self.highrise.chat(stats_msg)
+                log_event("STATS", f"{user.username} consultó estadísticas")
+            except Exception as e:
+                await send_response(f"❌ Error: {str(e)[:100]}")
+            return
+
+        # Comando !online - lista de usuarios conectados con roles
+        if msg == "!online":
+            try:
+                users = (await self.highrise.get_room_users()).content
+                
+                admins = []
+                mods = []
+                vips = []
+                regular = []
+                
+                for u, _ in users:
+                    if self.is_admin(u.id):
+                        admins.append(u.username)
+                    elif self.is_moderator(u.id):
+                        mods.append(u.username)
+                    elif self.is_vip_by_username(u.username):
+                        vips.append(u.username)
+                    else:
+                        regular.append(u.username)
+                
+                online_msg = f"👥 USUARIOS ONLINE ({len(users)}):\n"
+                if admins:
+                    online_msg += f"🛡️ Admins: {', '.join(admins)}\n"
+                if mods:
+                    online_msg += f"⚖️ Mods: {', '.join(mods)}\n"
+                if vips:
+                    online_msg += f"⭐ VIPs: {', '.join(vips[:5])}"
+                    if len(vips) > 5:
+                        online_msg += f" (+{len(vips)-5} más)"
+                    online_msg += "\n"
+                online_msg += f"👤 Usuarios: {len(regular)}"
+                
+                await self.highrise.chat(online_msg)
+                log_event("ONLINE", f"{user.username} consultó usuarios online")
+            except Exception as e:
+                await send_response(f"❌ Error: {str(e)[:100]}")
+            return
+
+        # Comando !achievements - mostrar logros del usuario
+        if msg == "!achievements":
+            try:
+                user_hearts = self.get_user_hearts(user_id)
+                user_messages = USER_ACTIVITY.get(user_id, {}).get("messages", 0)
+                user_time = self.get_user_total_time(user_id)
+                
+                achievements = []
+                
+                # Logros por corazones
+                if user_hearts >= 1000:
+                    achievements.append("💎 Maestro del Amor")
+                elif user_hearts >= 500:
+                    achievements.append("💖 Coleccionista de Corazones")
+                elif user_hearts >= 100:
+                    achievements.append("❤️ Amante")
+                
+                # Logros por mensajes
+                if user_messages >= 1000:
+                    achievements.append("📢 Locutor Profesional")
+                elif user_messages >= 500:
+                    achievements.append("💬 Conversador Activo")
+                elif user_messages >= 100:
+                    achievements.append("✍️ Participante")
+                
+                # Logros por tiempo
+                if user_time >= 36000:  # 10 horas
+                    achievements.append("⏰ Veterano de la Sala")
+                elif user_time >= 18000:  # 5 horas
+                    achievements.append("🕐 Residente Frecuente")
+                
+                # Logros especiales
+                if self.is_vip_by_username(user.username):
+                    achievements.append("⭐ Miembro VIP")
+                if self.is_admin(user_id):
+                    achievements.append("🛡️ Administrador")
+                
+                if achievements:
+                    ach_msg = f"🏆 LOGROS DE @{user.username}:\n"
+                    ach_msg += "\n".join(f"• {ach}" for ach in achievements)
+                else:
+                    ach_msg = f"🎯 @{user.username} aún no ha desbloqueado logros\n💡 Sé activo para conseguirlos!"
+                
+                await send_response(ach_msg)
+            except Exception as e:
+                await send_response(f"❌ Error: {str(e)[:100]}")
+            return
+
+        # Comando !rank - mostrar rango del usuario
+        if msg == "!rank":
+            try:
+                user_hearts = self.get_user_hearts(user_id)
+                user_messages = USER_ACTIVITY.get(user_id, {}).get("messages", 0)
+                
+                # Calcular rango basado en actividad
+                total_score = user_hearts + (user_messages * 2)
+                
+                if total_score >= 5000:
+                    rank = "💎 Diamante"
+                elif total_score >= 2000:
+                    rank = "🥇 Oro"
+                elif total_score >= 1000:
+                    rank = "🥈 Plata"
+                elif total_score >= 500:
+                    rank = "🥉 Bronce"
+                else:
+                    rank = "🌱 Novato"
+                
+                rank_msg = f"🎖️ RANGO DE @{user.username}:\n"
+                rank_msg += f"{rank}\n"
+                rank_msg += f"Puntuación: {total_score}\n"
+                rank_msg += f"💖 Corazones: {user_hearts}\n"
+                rank_msg += f"💬 Mensajes: {user_messages}"
+                
+                await send_response(rank_msg)
+            except Exception as e:
+                await send_response(f"❌ Error: {str(e)[:100]}")
+            return
+
+        # Comando !daily - recompensa diaria (todos los usuarios)
+        if msg == "!daily":
+            try:
+                current_time = datetime.now()
+                last_daily_key = f"{user_id}_last_daily"
+                
+                # Verificar si ya reclamó hoy
+                if last_daily_key in USER_INFO.get(user_id, {}):
+                    last_claim_str = USER_INFO[user_id][last_daily_key]
+                    last_claim = datetime.fromisoformat(last_claim_str)
+                    
+                    if (current_time - last_claim).days < 1:
+                        hours_left = 24 - (current_time - last_claim).seconds // 3600
+                        await send_response(f"⏰ Ya reclamaste tu recompensa diaria\n🕐 Vuelve en {hours_left}h")
+                        return
+                
+                # Dar recompensa
+                daily_hearts = 10
+                self.add_user_hearts(user_id, daily_hearts, user.username)
+                
+                # Actualizar última reclamación
+                if user_id not in USER_INFO:
+                    USER_INFO[user_id] = {}
+                USER_INFO[user_id][last_daily_key] = current_time.isoformat()
+                save_user_info()
+                
+                await send_response(f"🎁 ¡Recompensa diaria reclamada!\n💖 +{daily_hearts} corazones")
+                log_event("DAILY", f"{user.username} reclamó recompensa diaria")
+            except Exception as e:
+                await send_response(f"❌ Error: {str(e)[:100]}")
+            return
+
         # Comando !TPus - crear punto de teletransporte
         if msg.startswith("!TPus"):
             if user_id != OWNER_ID:
