@@ -6,6 +6,22 @@ This is a Highrise bot application built with Python that manages automated inte
 
 ## Recent Changes
 
+**October 4, 2025**
+- ✅ **MASSIVE FEATURE UPDATE**: Added 8 new command systems with 30+ new commands
+- ✅ **Sistema de Inventario**: !inventory @user, !give @user [item_id] (ADMIN/OWNER only)
+- ✅ **Moderación Extendida**: !unmute, !unban, !banlist, !mutelist, modified !mute to use seconds
+- ✅ **Sistema de Movimiento (Walk)**: !walk [x] [y] [z], !walkto @user - bot walks gradually instead of teleporting
+- ✅ **Sistema de Anchors**: !anchor [id] @user, !setanchor [id], !listanchors (ADMIN/OWNER)
+- ✅ **Sistema de Privilegios**: !setmod @user, !removemod @user, !privilege @user (ADMIN/OWNER)
+- ✅ **Sistema de Canales**: !channel create/invite/kick/delete (with API limitation notes)
+- ✅ **Sistema de Voice/Audio**: !voice enable/disable/mute/unmute (with API limitation notes)
+- ✅ **Sistema de Room Settings**: !roomset private/public/capacity/name/description (with API limitation notes)
+- ✅ **Nuevas Reacciones**: !thumbs @user, !clap @user, !wave @user (available to all users)
+- ✅ **Modified !tome**: Bot now walks gradually to owner instead of instant teleport
+- ✅ **Modified !bot @user**: Bot walks to user, performs action, walks back to original position
+- ✅ Added ANCHOR_POINTS global dictionary for anchor system
+- ✅ All new commands tested and working correctly
+
 **October 3, 2025**
 - ✅ **MAJOR REFACTORING**: Unified command handling system for public chat and whisper commands
 - ✅ Created central `handle_command` method that processes all commands with automatic response routing
