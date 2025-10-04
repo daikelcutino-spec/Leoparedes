@@ -3059,6 +3059,78 @@ class Bot(BaseBot):
                 await send_response( f"Error enviando corazones: {e}")
             return
 
+        # Comando !bot @user — teletransportar bot al usuario, hacer emote, y retornar
+        if msg.startswith("!bot "):
+            if not (self.is_admin(user_id) or user_id == OWNER_ID):
+                await send_response("❌ ¡Solo administradores y propietario pueden usar este comando!")
+                return
+
+            target_username = msg[5:].strip().replace("@", "")
+            try:
+                room_response = await self.highrise.get_room_users()
+                if isinstance(room_response, Error):
+                    await send_response(f"❌ Error obteniendo usuarios: {room_response}")
+                    return
+                
+                users = room_response.content
+                bot_user = None
+                bot_pos = None
+                target_user = None
+                target_pos = None
+
+                for u, pos in users:
+                    if u.id == self.bot_id:
+                        bot_user = u
+                        bot_pos = pos
+                    if u.username == target_username:
+                        target_user = u
+                        target_pos = pos
+
+                if not bot_user:
+                    await send_response("❌ Bot no encontrado en la sala!")
+                    return
+                if not target_user:
+                    await send_response(f"❌ ¡Usuario {target_username} no encontrado!")
+                    return
+
+                if not isinstance(bot_pos, Position) or not isinstance(target_pos, Position):
+                    await send_response("❌ Error: Posiciones inválidas")
+                    return
+
+                # Guardar posición original del bot
+                original_x, original_y, original_z = bot_pos.x, bot_pos.y, bot_pos.z
+
+                # Teletransportar bot directamente al lado del usuario
+                new_x = target_pos.x + 1.0
+                new_y = target_pos.y
+                new_z = target_pos.z
+                
+                target_position = Position(new_x, new_y, new_z)
+                await self.highrise.teleport(self.bot_id, target_position)
+                await send_response(f"🤖 Bot teletransportado a @{target_username}!")
+
+                # Bot hace punch y usuario reacciona con death
+                try:
+                    await self.highrise.send_emote("emoji-punch", self.bot_id)
+                    await asyncio.sleep(0.5)
+                    await self.highrise.send_emote("emote-death", target_user.id)
+                    await send_response(f"🥊 Bot golpeó a @{target_username}!")
+                except Exception as emote_error:
+                    log_event("WARNING", f"No se pudo hacer emote: {emote_error}")
+
+                # Esperar 3 segundos y retornar a posición original
+                await asyncio.sleep(3)
+                
+                original_position = Position(original_x, original_y, original_z)
+                await self.highrise.teleport(self.bot_id, original_position)
+                await send_response("✅ Bot retornó a su posición original")
+                log_event("BOT_MOVE", f"{user.username} teletransportó bot a {target_username} y retornó")
+
+            except Exception as e:
+                await send_response(f"❌ Error: {e}")
+                log_event("ERROR", f"Error en comando !bot: {e}")
+            return
+
         # Comando !bring @username - переместить игрока к Admin/Owner
         if msg.startswith("!bring "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
