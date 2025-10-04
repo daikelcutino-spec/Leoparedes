@@ -1056,7 +1056,7 @@ class Bot(BaseBot):
                 await send_response( f"❌ Error de teletransporte: {e}")
             return
 
-        # Проверяем, если сообщение "directivo" - телепорт en директорию (admin y propietario)
+        # Проверяем, если сообщение "directivo" - телепорт в директорию (admin y propietario)
         if msg.lower() == "directivo":
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden usar la zona directiva!")
@@ -1116,7 +1116,7 @@ class Bot(BaseBot):
                             return
 
                     except Exception as e:
-                        await send_response( f"❌ Error buscando usuario: {e}")
+                        await send_response( f"❌ Error buscando usuarios: {e}")
                         return
                 else:
                     # Formato: animación @username - para ambos usuarios
@@ -1465,7 +1465,7 @@ class Bot(BaseBot):
                             return
 
                         self.add_user_hearts(target_user_id, hearts_count, target_username)
-                        
+
                         # SIEMPRE responder de forma pública en chat público, privada en whisper
                         heart_message = f"💖 {user.username} envió {hearts_count} ❤️ a {target_username}"
                         if is_whisper:
@@ -1486,14 +1486,14 @@ class Bot(BaseBot):
                             return
 
                         self.add_user_hearts(target_user_id, 1, target_username)
-                        
+
                         # SIEMPRE responder de forma pública en chat público, privada en whisper
                         heart_message = f"💖 {user.username} envió ❤️ a {target_username}"
                         if is_whisper:
                             await self.highrise.send_whisper(user.id, heart_message)
                         else:
                             await self.highrise.chat(heart_message)
-                        
+
                         # Отправляем визуальную реакцию сердечка
                         await self.highrise.react("heart", target_user_id)
 
@@ -1504,9 +1504,9 @@ class Bot(BaseBot):
                 print(f"DEBUG: Недостаточно параметров в команде !heart")
                 await send_response( "❌ Usa: !heart @username [cantidad]")
             return
-        
+
         # === NUEVAS REACCIONES - Disponibles para todos los usuarios ===
-        
+
         # Comando !thumbs @user - pulgar arriba 👍
         if msg.startswith("!thumbs "):
             parts = msg.split()
@@ -1519,22 +1519,22 @@ class Bot(BaseBot):
                         if u.username == target_username:
                             target_user = u
                             break
-                    
+
                     if not target_user:
                         await send_response( f"❌ Usuario {target_username} no encontrado!")
                         return
-                    
+
                     # Enviar reacción thumbs up
                     await self.highrise.react("thumbs", target_user.id)
                     await send_response( f"👍 Enviaste pulgar arriba a @{target_username}")
                     log_event("THUMBS", f"{user.username} -> {target_username}")
-                    
+
                 except Exception as e:
                     await send_response( f"❌ Error: {e}")
             else:
                 await send_response( "❌ Usa: !thumbs @username")
             return
-        
+
         # Comando !clap @user - aplauso 👏
         if msg.startswith("!clap "):
             parts = msg.split()
@@ -1547,22 +1547,22 @@ class Bot(BaseBot):
                         if u.username == target_username:
                             target_user = u
                             break
-                    
+
                     if not target_user:
                         await send_response( f"❌ Usuario {target_username} no encontrado!")
                         return
-                    
+
                     # Enviar reacción clap
                     await self.highrise.react("clap", target_user.id)
                     await send_response( f"👏 Enviaste aplauso a @{target_username}")
                     log_event("CLAP", f"{user.username} -> {target_username}")
-                    
+
                 except Exception as e:
                     await send_response( f"❌ Error: {e}")
             else:
                 await send_response( "❌ Usa: !clap @username")
             return
-        
+
         # Comando !wave @user - ola 👋
         if msg.startswith("!wave "):
             parts = msg.split()
@@ -1575,16 +1575,16 @@ class Bot(BaseBot):
                         if u.username == target_username:
                             target_user = u
                             break
-                    
+
                     if not target_user:
                         await send_response( f"❌ Usuario {target_username} no encontrado!")
                         return
-                    
+
                     # Enviar reacción wave
                     await self.highrise.react("wave", target_user.id)
                     await send_response( f"👋 Enviaste ola a @{target_username}")
                     log_event("WAVE", f"{user.username} -> {target_username}")
-                    
+
                 except Exception as e:
                     await send_response( f"❌ Error: {e}")
             else:
@@ -1651,7 +1651,7 @@ class Bot(BaseBot):
                 return
 
             parts = msg.split()
-            
+
             # !inventory @user - ver inventario de otro usuario
             if len(parts) == 2 and parts[1].startswith("@"):
                 target_username = parts[1].replace("@", "")
@@ -1662,16 +1662,16 @@ class Bot(BaseBot):
                         if u.username == target_username:
                             target_user = u
                             break
-                    
+
                     if not target_user:
                         await send_response( f"❌ Usuario {target_username} no encontrado!")
                         return
-                    
+
                     inv_response = await self.highrise.get_user_outfit(target_user.id)
                     if isinstance(inv_response, Error):
                         await send_response( f"❌ Error obteniendo outfit de {target_username}")
                         return
-                    
+
                     outfit = inv_response.outfit
                     if outfit:
                         await send_response( f"👔 OUTFIT de {target_username}:")
@@ -1684,7 +1684,7 @@ class Bot(BaseBot):
                 except Exception as e:
                     await send_response( f"❌ Error: {str(e)[:150]}")
                 return
-            
+
             # !inventory - ver inventario del bot
             try:
                 inventory_response = await self.highrise.get_inventory()
@@ -1711,18 +1711,18 @@ class Bot(BaseBot):
                 error_msg = str(e)[:150]
                 await send_response( f"❌ Error: {error_msg}")
             return
-        
+
         # Comando !give @user [item_id] - dar item a usuario (solo admin y propietario)
         if msg.startswith("!give "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo propietario y administradores pueden dar items!")
                 return
-            
+
             parts = msg.split()
             if len(parts) >= 3:
                 target_username = parts[1].replace("@", "")
                 item_id = " ".join(parts[2:])
-                
+
                 try:
                     users = (await self.highrise.get_room_users()).content
                     target_user = None
@@ -1730,18 +1730,18 @@ class Bot(BaseBot):
                         if u.username == target_username:
                             target_user = u
                             break
-                    
+
                     if not target_user:
                         await send_response( f"❌ Usuario {target_username} no encontrado!")
                         return
-                    
+
                     from highrise.models import Item, Position
                     item = Item(type="clothing", id=item_id, amount=1)
-                    
+
                     await self.highrise.set_inventory(target_user.id, [item])
                     await send_response( f"🎁 Item {item_id} entregado a {target_username}")
                     log_event("GIVE_ITEM", f"{user.username} dio {item_id} a {target_username}")
-                    
+
                 except Exception as e:
                     await send_response( f"❌ Error dando item: {str(e)[:150]}")
             else:
@@ -1892,8 +1892,7 @@ class Bot(BaseBot):
             try:
                 users = (await self.highrise.get_room_users()).content
                 target_user = None
-
-                for u, pos in users:
+                for u, _ in users:
                     if u.username == target_username:
                         target_user = u
                         break
@@ -2367,7 +2366,7 @@ class Bot(BaseBot):
             else:
                 await send_response( "❌ Usa: !mute @username [segundos]")
             return
-        
+
         # Comando !unmute - quitar silencio (solo Admin y Owner)
         if msg.startswith("!unmute"):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
@@ -2404,7 +2403,7 @@ class Bot(BaseBot):
             else:
                 await send_response( "❌ Usa: !unmute @username")
             return
-        
+
         # Comando !unban - desbanear usuario (solo Admin y Owner)
         if msg.startswith("!unban"):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
@@ -2422,7 +2421,7 @@ class Bot(BaseBot):
                         if uname == target_username:
                             target_id = uid
                             break
-                    
+
                     if target_id and target_id in BANNED_USERS:
                         del BANNED_USERS[target_id]
                         await send_response( f"✅ Desbaneaste a {target_username}")
@@ -2435,7 +2434,7 @@ class Bot(BaseBot):
             else:
                 await send_response( "❌ Usa: !unban @username")
             return
-        
+
         # Comando !banlist - ver lista de usuarios baneados (solo Admin y Owner)
         if msg == "!banlist":
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
@@ -2455,7 +2454,7 @@ class Bot(BaseBot):
             else:
                 await send_response( "✅ No hay usuarios baneados")
             return
-        
+
         # Comando !mutelist - ver lista de usuarios silenciados (solo Admin y Owner)
         if msg == "!mutelist":
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
@@ -2471,40 +2470,40 @@ class Bot(BaseBot):
             else:
                 await send_response( "✅ No hay usuarios silenciados")
             return
-        
+
         # === SISTEMA DE MOVIMIENTO (WALK) - Solo Admin y Owner ===
-        
+
         # Comando !walk [x] [y] [z] - hacer que el bot camine gradualmente
         if msg.startswith("!walk "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden usar walk!")
                 return
-            
+
             parts = msg.split()
             if len(parts) >= 4:
                 try:
                     target_x = float(parts[1])
                     target_y = float(parts[2])
                     target_z = float(parts[3])
-                    
+
                     # Obtener bot actual
                     users = (await self.highrise.get_room_users()).content
                     bot_user = None
                     bot_pos = None
-                    
+
                     for u, pos in users:
                         if "bot" in u.username.lower() or "nocturno" in u.username.lower():
                             bot_user = u
                             bot_pos = pos
                             break
-                    
+
                     if not bot_user:
                         await send_response( "❌ Bot no encontrado en la sala!")
                         return
-                    
+
                     # Caminar gradualmente
                     await send_response( f"🚶 Bot caminando hacia ({target_x}, {target_y}, {target_z})...")
-                    
+
                     steps = 10
                     for i in range(1, steps + 1):
                         new_x = bot_pos.x + (target_x - bot_pos.x) * (i / steps)
@@ -2512,22 +2511,22 @@ class Bot(BaseBot):
                         new_z = bot_pos.z + (target_z - bot_pos.z) * (i / steps)
                         await self.highrise.teleport(bot_user.id, Position(new_x, new_y, new_z))
                         await asyncio.sleep(0.3)
-                    
+
                     await send_response( f"✅ Bot llegó a ({target_x}, {target_y}, {target_z})")
                     log_event("WALK", f"{user.username} movió bot a {target_x}, {target_y}, {target_z}")
-                    
+
                 except ValueError:
                     await send_response( "❌ Usa: !walk [x] [y] [z]")
             else:
                 await send_response( "❌ Usa: !walk [x] [y] [z]")
             return
-        
+
         # Comando !walkto @user - hacer que el bot camine hacia un usuario
         if msg.startswith("!walkto "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden usar walkto!")
                 return
-            
+
             target_username = msg[8:].strip().replace("@", "")
             try:
                 users = (await self.highrise.get_room_users()).content
@@ -2535,7 +2534,7 @@ class Bot(BaseBot):
                 bot_pos = None
                 target_user = None
                 target_pos = None
-                
+
                 for u, pos in users:
                     if "bot" in u.username.lower() or "nocturno" in u.username.lower():
                         bot_user = u
@@ -2543,17 +2542,17 @@ class Bot(BaseBot):
                     if u.username == target_username:
                         target_user = u
                         target_pos = pos
-                
+
                 if not bot_user:
                     await send_response( "❌ Bot no encontrado!")
                     return
                 if not target_user:
                     await send_response( f"❌ Usuario {target_username} no encontrado!")
                     return
-                
+
                 # Caminar hacia el usuario
                 await send_response( f"🚶 Bot caminando hacia @{target_username}...")
-                
+
                 steps = 10
                 for i in range(1, steps + 1):
                     new_x = bot_pos.x + (target_pos.x - bot_pos.x) * (i / steps)
@@ -2561,22 +2560,22 @@ class Bot(BaseBot):
                     new_z = bot_pos.z + (target_pos.z - bot_pos.z) * (i / steps)
                     await self.highrise.teleport(bot_user.id, Position(new_x, new_y, new_z))
                     await asyncio.sleep(0.3)
-                
+
                 await send_response( f"✅ Bot llegó a @{target_username}")
                 log_event("WALKTO", f"{user.username} movió bot hacia {target_username}")
-                
+
             except Exception as e:
                 await send_response( f"❌ Error: {e}")
             return
-        
+
         # === SISTEMA DE ANCHORS (PUNTOS DE ANCLAJE) - Solo Admin y Owner ===
-        
+
         # Comando !setanchor [id] - establecer punto de anclaje en posición actual
         if msg.startswith("!setanchor "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden crear anchors!")
                 return
-            
+
             parts = msg.split()
             if len(parts) >= 2:
                 anchor_id = parts[1]
@@ -2587,35 +2586,35 @@ class Bot(BaseBot):
                         if u.id == user_id:
                             user_pos = pos
                             break
-                    
+
                     if user_pos:
                         ANCHOR_POINTS[anchor_id] = {"x": user_pos.x, "y": user_pos.y, "z": user_pos.z}
                         await send_response( f"⚓ Anchor '{anchor_id}' creado en ({user_pos.x:.1f}, {user_pos.y:.1f}, {user_pos.z:.1f})")
                         log_event("ANCHOR", f"{user.username} creó anchor {anchor_id}")
                     else:
                         await send_response( "❌ Error obteniendo posición!")
-                        
+
                 except Exception as e:
                     await send_response( f"❌ Error: {e}")
             else:
                 await send_response( "❌ Usa: !setanchor [id]")
             return
-        
+
         # Comando !anchor [id] @user - activar punto de anclaje para usuario
         if msg.startswith("!anchor "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden usar anchors!")
                 return
-            
+
             parts = msg.split()
             if len(parts) >= 3:
                 anchor_id = parts[1]
                 target_username = parts[2].replace("@", "")
-                
+
                 if anchor_id not in ANCHOR_POINTS:
                     await send_response( f"❌ Anchor '{anchor_id}' no existe!")
                     return
-                
+
                 try:
                     users = (await self.highrise.get_room_users()).content
                     target_user = None
@@ -2623,28 +2622,28 @@ class Bot(BaseBot):
                         if u.username == target_username:
                             target_user = u
                             break
-                    
+
                     if not target_user:
                         await send_response( f"❌ Usuario {target_username} no encontrado!")
                         return
-                    
+
                     anchor = ANCHOR_POINTS[anchor_id]
                     await self.highrise.teleport(target_user.id, Position(anchor["x"], anchor["y"], anchor["z"]))
                     await send_response( f"⚓ @{target_username} movido al anchor '{anchor_id}'")
                     log_event("ANCHOR_USE", f"{user.username} movió {target_username} al anchor {anchor_id}")
-                    
+
                 except Exception as e:
                     await send_response( f"❌ Error: {e}")
             else:
                 await send_response( "❌ Usa: !anchor [id] @user")
             return
-        
+
         # Comando !listanchors - ver lista de anchors disponibles
         if msg == "!listanchors":
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden ver anchors!")
                 return
-            
+
             if ANCHOR_POINTS:
                 anchor_list = "⚓ ANCHORS DISPONIBLES:\n"
                 for i, (aid, coords) in enumerate(ANCHOR_POINTS.items(), 1):
@@ -2653,15 +2652,15 @@ class Bot(BaseBot):
             else:
                 await send_response( "📍 No hay anchors creados")
             return
-        
+
         # === SISTEMA DE PRIVILEGIOS DE SALA - Solo Admin y Owner ===
-        
+
         # Comando !setmod @user - dar privilegios de moderador
         if msg.startswith("!setmod "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden dar privilegios de moderador!")
                 return
-            
+
             target_username = msg[8:].strip().replace("@", "")
             try:
                 users = (await self.highrise.get_room_users()).content
@@ -2670,173 +2669,173 @@ class Bot(BaseBot):
                     if u.username == target_username:
                         target_user = u
                         break
-                
+
                 if not target_user:
                     await send_response( f"❌ Usuario {target_username} no encontrado!")
                     return
-                
+
                 await self.highrise.moderate_room(target_user.id, "moderator", 3600)
                 await send_response( f"👮 @{target_username} ahora tiene privilegios de moderador")
                 log_event("SETMOD", f"{user.username} dio privilegios de moderador a {target_username}")
-                
+
             except Exception as e:
                 await send_response( f"❌ Error: {e}")
             return
-        
+
         # Comando !removemod @user - quitar privilegios de moderador
         if msg.startswith("!removemod "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden quitar privilegios!")
                 return
-            
+
             target_username = msg[11:].strip().replace("@", "")
             await send_response( f"⚠️ Nota: La API de Highrise no permite quitar privilegios directamente")
             await send_response( f"💡 Los privilegios de @{target_username} expirarán automáticamente")
             return
-        
+
         # Comando !privilege @user - ver privilegios de usuario
         if msg.startswith("!privilege "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden ver privilegios!")
                 return
-            
+
             target_username = msg[11:].strip().replace("@", "")
             is_mod = self.is_moderator(target_username) if target_username in USER_NAMES.values() else False
             is_adm = self.is_admin(target_username) if target_username in USER_NAMES.values() else False
-            
+
             status = "👤 Usuario normal"
             if is_adm:
                 status = "⚔️ Administrador"
             elif is_mod:
                 status = "👮 Moderador"
-            
+
             await send_response( f"🔍 Privilegios de @{target_username}: {status}")
             return
-        
+
         # === SISTEMA DE CANALES - Solo Admin y Owner ===
-        
+
         # Comando !channel create [nombre] - crear canal privado
         if msg.startswith("!channel create "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden crear canales!")
                 return
-            
+
             channel_name = msg[16:].strip()
             await send_response( f"⚠️ Nota: Highrise no soporta canales personalizados via API")
             await send_response( f"💡 Considera usar grupos de usuarios o zonas específicas")
             return
-        
+
         # Comando !channel invite @user [canal] - invitar usuario a canal
         if msg.startswith("!channel invite "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden invitar a canales!")
                 return
-            
+
             await send_response( f"⚠️ Función de canales no disponible en API de Highrise")
             return
-        
+
         # Comando !channel kick @user [canal] - expulsar de canal
         if msg.startswith("!channel kick "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden expulsar de canales!")
                 return
-            
+
             await send_response( f"⚠️ Función de canales no disponible en API de Highrise")
             return
-        
+
         # Comando !channel delete [canal] - eliminar canal
         if msg.startswith("!channel delete "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden eliminar canales!")
                 return
-            
+
             await send_response( f"⚠️ Función de canales no disponible en API de Highrise")
             return
-        
+
         # === SISTEMA DE VOICE/AUDIO - Admin y Owner ===
-        
+
         # Comando !voice enable - habilitar voz en sala
         if msg == "!voice enable":
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden gestionar voz!")
                 return
-            
+
             await send_response( f"⚠️ Nota: Control de voz no disponible via API")
             await send_response( f"💡 Configura audio desde la configuración de sala en Highrise")
             return
-        
+
         # Comando !voice disable - deshabilitar voz en sala
         if msg == "!voice disable":
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden gestionar voz!")
                 return
-            
+
             await send_response( f"⚠️ Nota: Control de voz no disponible via API")
             return
-        
+
         # Comando !voice mute @user - silenciar micrófono de usuario
         if msg.startswith("!voice mute "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden silenciar micrófonos!")
                 return
-            
+
             await send_response( f"⚠️ Nota: Control de voz no disponible via API")
             return
-        
+
         # Comando !voice unmute @user - dessilenciar micrófono
         if msg.startswith("!voice unmute "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden gestionar micrófonos!")
                 return
-            
+
             await send_response( f"⚠️ Nota: Control de voz no disponible via API")
             return
-        
+
         # === SISTEMA DE ROOM SETTINGS - Solo Admin y Owner ===
-        
+
         # Comando !roomset private - hacer sala privada
         if msg == "!roomset private":
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden cambiar configuración de sala!")
                 return
-            
+
             await send_response( f"⚠️ Nota: Cambios de privacidad de sala no disponibles via API")
             await send_response( f"💡 Cambia la configuración desde la app de Highrise")
             return
-        
+
         # Comando !roomset public - hacer sala pública
         if msg == "!roomset public":
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden cambiar configuración de sala!")
                 return
-            
+
             await send_response( f"⚠️ Nota: Cambios de privacidad de sala no disponibles via API")
             return
-        
+
         # Comando !roomset capacity [número] - cambiar capacidad máxima
         if msg.startswith("!roomset capacity "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden cambiar capacidad!")
                 return
-            
+
             await send_response( f"⚠️ Nota: Cambios de capacidad no disponibles via API")
             return
-        
+
         # Comando !roomset name [nombre] - cambiar nombre de sala
         if msg.startswith("!roomset name "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden cambiar nombre de sala!")
                 return
-            
+
             await send_response( f"⚠️ Nota: Cambios de nombre no disponibles via API")
             return
-        
+
         # Comando !roomset description - cambiar descripción
         if msg.startswith("!roomset description "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden cambiar descripción!")
                 return
-            
+
             await send_response( f"⚠️ Nota: Cambios de descripción no disponibles via API")
             return
 
@@ -3274,7 +3273,7 @@ class Bot(BaseBot):
                 await send_response( f"Error: {e}")
             return
 
-        # Comando !bot @user - Bot se teletransporta, hace punch, y regresa
+        # Comando !bot @user — copiar completamente a otro usuario (solo admin)
         if msg.startswith("!bot "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response( "❌ ¡Solo administradores y propietario pueden usar este comando!")
@@ -3284,49 +3283,75 @@ class Bot(BaseBot):
             try:
                 users = (await self.highrise.get_room_users()).content
                 target_user = None
-                target_position = None
                 bot_user = None
-                bot_position = None
+                bot_original_pos = None
 
-                # Buscar usuario objetivo y bot
+                # Buscar bot y usuario objetivo
                 for u, pos in users:
+                    if u.id == self.bot_id:
+                        bot_user = u
+                        bot_original_pos = pos
                     if u.username == target_username:
                         target_user = u
-                        target_position = pos
-                    if "bot" in u.username.lower() or "nocturno" in u.username.lower():
-                        bot_user = u
-                        bot_position = pos
 
                 if not target_user:
                     await send_response( f"❌ ¡Usuario {target_username} no encontrado!")
                     return
 
-                if not bot_user:
+                if not bot_user or not bot_original_pos:
                     await send_response( "❌ ¡No se pudo encontrar el bot!")
                     return
 
-                # 1. Bot se teletransporta instantáneamente cerca del usuario
-                move_position = Position(target_position.x + 0.5, target_position.y, target_position.z + 0.5)
-                await self.highrise.teleport(bot_user.id, move_position)
-                await asyncio.sleep(0.3)
+                # Copiar outfit del usuario objetivo
+                try:
+                    outfit_response = await self.highrise.get_user_outfit(target_user.id)
+                    if isinstance(outfit_response, Error):
+                        await send_response( f"❌ No se pudo obtener outfit de {target_username}")
+                        return
 
-                # 2. Bot hace punch, usuario hace revival
-                await self.highrise.send_emote("emoji-punch", bot_user.id)
-                await asyncio.sleep(0.5)
-                await self.highrise.send_emote("emote-death", target_user.id)
+                    await self.highrise.set_outfit(outfit_response.outfit)
+                    await asyncio.sleep(0.5)
+                except Exception as e:
+                    log_event("ERROR", f"Error copiando outfit: {e}")
+                    await send_response( f"⚠️ Error copiando outfit, continuando...")
 
-                # 3. Mensaje global
-                await self.highrise.chat("‼️CALLATE‼️")
-                await asyncio.sleep(1.0)
+                # Obtener posición del usuario objetivo
+                target_pos = None
+                for u, pos in users:
+                    if u.id == target_user.id:
+                        target_pos = pos
+                        break
 
-                # 4. Bot regresa teletransportándose a su posición original
-                if bot_position:
-                    await self.highrise.teleport(bot_user.id, bot_position)
+                if not target_pos:
+                    await send_response( "❌ ¡No se pudo obtener posición del usuario!")
+                    return
 
-                await send_response( f"🤖 Comando !bot ejecutado en @{target_username}")
+                # Caminar gradualmente hacia el usuario
+                steps = 10
+                for i in range(1, steps + 1):
+                    new_x = bot_original_pos.x + (target_pos.x - bot_original_pos.x) * (i / steps)
+                    new_y = bot_original_pos.y + (target_pos.y - bot_original_pos.y) * (i / steps)
+                    new_z = bot_original_pos.z + (target_pos.z - bot_original_pos.z) * (i / steps)
+                    await self.highrise.teleport(self.bot_id, Position(new_x, new_y, new_z))
+                    await asyncio.sleep(0.3)
+
+                # Esperar un momento junto al usuario
+                await asyncio.sleep(2)
+
+                # Volver a la posición original
+                for i in range(1, steps + 1):
+                    new_x = target_pos.x + (bot_original_pos.x - target_pos.x) * (i / steps)
+                    new_y = target_pos.y + (bot_original_pos.y - target_pos.y) * (i / steps)
+                    new_z = target_pos.z + (bot_original_pos.z - target_pos.z) * (i / steps)
+                    await self.highrise.teleport(self.bot_id, Position(new_x, new_y, new_z))
+                    await asyncio.sleep(0.3)
+
+                await send_response( f"🤖 Bot imitó a @{target_username}")
+                log_event("BOT", f"{user.username} activó bot para imitar a {target_username}")
 
             except Exception as e:
-                await send_response( f"❌ Error ejecutando !bot: {e}")
+                log_event("ERROR", f"Error en comando !bot: {e}")
+                await send_response( f"❌ Error en comando bot: {str(e)[:100]}")
             return
 
         # Comando !addzone [nombre] - Crear nueva zona de teletransportación (solo admin/owner)
@@ -3376,16 +3401,19 @@ class Bot(BaseBot):
                 # Buscar usuario
                 users = (await self.highrise.get_room_users()).content
                 target_found = False
+                target_user_id = None
                 for u, pos in users:
                     if u.username == target_username:
                         target_found = True
+                        target_user_id = u.id
                         break
 
                 if target_found:
                     VIP_USERS.add(target_username)  # Añadir por username
                     self.save_data()
                     await send_response( f"⭐ @{target_username} ahora es VIP!")
-                    await self.highrise.send_whisper(u.id, f"🎉 ¡Felicitaciones! Ahora eres VIP gracias a @{user.username}")
+                    if target_user_id:
+                        await self.highrise.send_whisper(target_user_id, f"🎉 ¡Felicitaciones! Ahora eres VIP gracias a @{user.username}")
                 else:
                     await send_response( f"❌ Usuario {target_username} no encontrado en la sala")
 
@@ -3540,7 +3568,7 @@ class Bot(BaseBot):
                 if u.username == "NOCTURNO_BOT" or u.username.upper() == "NOCTURNO_BOT":
                     bot_user = u
                     break
-                elif u.username.lower() in ["highrisebot", "bot"] or any(name in u.username.lower() for name in ["nocturno", "bot", "glux", "highrise"]):
+                elif u.username.lower() in ["highrisebot", "gluxbot", "bot"] or any(name in u.username.lower() for name in ["nocturno", "bot", "glux", "highrise"]):
                     bot_user = u
                     break
 
