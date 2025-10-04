@@ -4570,3 +4570,5 @@
 [2025-10-04 15:24:39] [BOT] Emote #28: surprise (emote-pose6) - 6.46s
 [2025-10-04 15:24:46] [BOT] Emote #29: celebration (emote-celebrationstep) - 5.18s
 [2025-10-04 15:24:51] [BOT] Emote #30: penguin (dance-pinguin) - 12.81s
+[2025-10-04 15:25:04] [BOT] Emote #31: boxer (emote-boxer) - 6.75s
+[2025-10-04 15:25:10] [BOT] Emote #32: airguitar (idle-guitar) - 14.15s
