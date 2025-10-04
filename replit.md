@@ -6,7 +6,15 @@ This is a Highrise bot application built with Python that manages automated inte
 
 ## Recent Changes
 
-**October 4, 2025**
+**October 4, 2025 - Session 2**
+- ✅ **Enhanced Reaction Commands**: Modified !thumbs, !clap, !wave to support advanced features
+- ✅ **Multiple Reactions**: Commands now support !thumbs/@clap/@wave @user [cantidad] to send multiple reactions (up to 30)
+- ✅ **Broadcast Reactions**: Commands now support !thumbs/@clap/@wave all to send reactions to all users in room
+- ✅ **Pattern Consistency**: All reaction commands now follow the same pattern as !heart command
+- ✅ Verified !inventory command already present and working (ADMIN/OWNER only)
+- ✅ Bot tested and running successfully without errors
+
+**October 4, 2025 - Session 1**
 - ✅ **MASSIVE FEATURE UPDATE**: Added 8 new command systems with 30+ new commands
 - ✅ **Sistema de Inventario**: !inventory @user, !give @user [item_id] (ADMIN/OWNER only)
 - ✅ **Moderación Extendida**: !unmute, !unban, !banlist, !mutelist, modified !mute to use seconds
