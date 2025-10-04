@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis y Gráficos - Bot Highrise</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .chart-container h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Análisis y Gráficos</h1>
+            <p style="color: #666; margin-top: 10px;">Visualización de estadísticas del bot</p>
+        </div>
+        
+        <div class="charts-grid">
+            <div class="chart-container">
+                <h2>💖 Top 15 Usuarios por Corazones</h2>
+                <canvas id="heartsChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <h2>💬 Top 15 Usuarios por Actividad</h2>
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="/" class="btn">← Volver al Panel</a>
+        </div>
+    </div>
+    
+    <script>
+        // Datos de corazones
+        const heartsData = {{ hearts_data | tojson }};
+        const heartsLabels = heartsData.map(item => item[0]);
+        const heartsValues = heartsData.map(item => item[1]);
+        
+        // Gráfico de corazones
+        const heartsCtx = document.getElementById('heartsChart').getContext('2d');
+        new Chart(heartsCtx, {
+            type: 'bar',
+            data: {
+                labels: heartsLabels,
+                datasets: [{
+                    label: 'Corazones',
+                    data: heartsValues,
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Datos de actividad
+        const activityData = {{ activity_data | tojson }};
+        const activityLabels = activityData.map(item => item[0]);
+        const activityValues = activityData.map(item => item[1]);
+        
+        // Gráfico de actividad
+        const activityCtx = document.getElementById('activityChart').getContext('2d');
+        new Chart(activityCtx, {
+            type: 'bar',
+            data: {
+                labels: activityLabels,
+                datasets: [{
+                    label: 'Mensajes',
+                    data: activityValues,
+                    backgroundColor: 'rgba(118, 75, 162, 0.8)',
+                    borderColor: 'rgba(118, 75, 162, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

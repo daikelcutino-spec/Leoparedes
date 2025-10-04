@@ -20,7 +20,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
         
@@ -37,11 +37,32 @@
             color: #667eea;
             font-size: 2.5em;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background: #764ba2;
+            transform: scale(1.05);
         }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -52,16 +73,35 @@
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             text-align: center;
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
         }
         
         .stat-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
         }
         
         .stat-card .icon {
             font-size: 3em;
             margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         
         .stat-card .value {
@@ -76,22 +116,33 @@
             font-size: 1.1em;
         }
         
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
         .leaderboard {
             background: white;
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
         }
         
         .leaderboard h2 {
             color: #667eea;
             margin-bottom: 20px;
             font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .leaderboard-list {
             list-style: none;
+            max-height: 500px;
+            overflow-y: auto;
         }
         
         .leaderboard-item {
@@ -100,6 +151,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .leaderboard-item:hover {
+            background: #f8f9fa;
+            transform: translateX(5px);
         }
         
         .leaderboard-item:last-child {
@@ -111,7 +168,12 @@
             color: #667eea;
             margin-right: 15px;
             font-size: 1.2em;
+            min-width: 40px;
         }
+        
+        .leaderboard-item .rank.gold { color: #ffd700; }
+        .leaderboard-item .rank.silver { color: #c0c0c0; }
+        .leaderboard-item .rank.bronze { color: #cd7f32; }
         
         .leaderboard-item .username {
             flex-grow: 1;
@@ -128,6 +190,7 @@
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
+            justify-content: center;
         }
         
         .btn {
@@ -140,7 +203,9 @@
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .btn:hover {
@@ -149,22 +214,57 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
         }
         
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 1.8em;
+                flex-direction: column;
             }
             
             .stats-grid {
                 grid-template-columns: 1fr;
             }
         }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🤖 Panel de Administración</h1>
-            <p style="color: #666; margin-top: 10px;">Bot de Highrise - Control Total</p>
+            <h1>
+                <span>🤖</span>
+                <span>Panel de Administración</span>
+                <span>🎮</span>
+            </h1>
+            <p style="color: #666; margin-top: 10px;">Bot de Highrise NOCTURNO - Control Total</p>
+            <button class="refresh-btn" onclick="location.reload()">
+                🔄 Actualizar Datos
+            </button>
         </div>
         
         <div class="stats-grid">
@@ -181,42 +281,81 @@
             </div>
             
             <div class="stat-card">
-                <div class="icon">🎮</div>
-                <div class="value">{{ top_activity|length }}</div>
-                <div class="label">Usuarios Activos</div>
+                <div class="icon">👥</div>
+                <div class="value">{{ total_users }}</div>
+                <div class="label">Total Usuarios</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon">💬</div>
+                <div class="value">{{ total_messages }}</div>
+                <div class="label">Total Mensajes</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon">📊</div>
+                <div class="value">{{ avg_hearts }}</div>
+                <div class="label">Promedio Corazones</div>
             </div>
         </div>
         
-        <div class="leaderboard">
-            <h2>🏆 Top 10 por Corazones</h2>
-            <ul class="leaderboard-list">
-                {% for username, hearts in top_hearts %}
-                <li class="leaderboard-item">
-                    <span class="rank">#{{ loop.index }}</span>
-                    <span class="username">{{ username }}</span>
-                    <span class="score">{{ hearts }} ❤️</span>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        
-        <div class="leaderboard">
-            <h2>💬 Top 10 por Actividad</h2>
-            <ul class="leaderboard-list">
-                {% for username, messages in top_activity %}
-                <li class="leaderboard-item">
-                    <span class="rank">#{{ loop.index }}</span>
-                    <span class="username">{{ username }}</span>
-                    <span class="score">{{ messages }} mensajes</span>
-                </li>
-                {% endfor %}
-            </ul>
+        <div class="main-content">
+            <div class="leaderboard">
+                <h2>🏆 Top 10 por Corazones</h2>
+                <ul class="leaderboard-list">
+                    {% for username, hearts in top_hearts %}
+                    <li class="leaderboard-item">
+                        <span class="rank {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">
+                            {% if loop.index == 1 %}🥇
+                            {% elif loop.index == 2 %}🥈
+                            {% elif loop.index == 3 %}🥉
+                            {% else %}#{{ loop.index }}
+                            {% endif %}
+                        </span>
+                        <span class="username">{{ username }}</span>
+                        <span class="score">{{ hearts }} ❤️</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="leaderboard">
+                <h2>💬 Top 10 por Actividad</h2>
+                <ul class="leaderboard-list">
+                    {% for username, messages in top_activity %}
+                    <li class="leaderboard-item">
+                        <span class="rank {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">
+                            {% if loop.index == 1 %}🥇
+                            {% elif loop.index == 2 %}🥈
+                            {% elif loop.index == 3 %}🥉
+                            {% else %}#{{ loop.index }}
+                            {% endif %}
+                        </span>
+                        <span class="username">{{ username }}</span>
+                        <span class="score">{{ messages }} 💬</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
         
         <div class="nav-buttons">
             <a href="/vip" class="btn">⭐ Gestionar VIP</a>
-            <a href="/" class="btn" onclick="location.reload()">🔄 Actualizar Datos</a>
+            <a href="/users" class="btn">👥 Ver Todos los Usuarios</a>
+            <a href="/analytics" class="btn">📊 Análisis y Gráficos</a>
+        </div>
+        
+        <div class="footer">
+            <p>🌌 Bot NOCTURNO © 2024 - Panel de Administración</p>
+            <p style="font-size: 0.9em; margin-top: 5px;">Actualizado: {{ config.get('last_update', 'Ahora') }}</p>
         </div>
     </div>
+    
+    <script>
+        // Auto-refresh cada 30 segundos
+        setTimeout(() => {
+            location.reload();
+        }, 30000);
+    </script>
 </body>
 </html>

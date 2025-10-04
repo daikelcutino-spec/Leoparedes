@@ -20,7 +20,8 @@ def load_user_data():
     data = {
         "vip_users": set(),
         "hearts": {},
-        "activity": {}
+        "activity": {},
+        "user_info": {}
     }
     
     # Cargar VIP
@@ -48,6 +49,14 @@ def load_user_data():
                     if len(parts) >= 4:
                         data["activity"][parts[3]] = int(parts[1])
     
+    # Cargar info de usuarios
+    if os.path.exists("data/user_info.json"):
+        try:
+            with open("data/user_info.json", "r", encoding="utf-8") as f:
+                data["user_info"] = json.load(f)
+        except:
+            pass
+    
     return data
 
 @app.route('/')
@@ -61,10 +70,18 @@ def index():
     # Top 10 por actividad
     top_activity = sorted(user_data["activity"].items(), key=lambda x: x[1], reverse=True)[:10]
     
+    # Estadísticas adicionales
+    total_users = len(user_data["user_info"])
+    total_messages = sum(user_data["activity"].values())
+    avg_hearts = sum(user_data["hearts"].values()) / len(user_data["hearts"]) if user_data["hearts"] else 0
+    
     return render_template('index.html', 
                          config=config,
                          vip_count=len(user_data["vip_users"]),
                          total_hearts=sum(user_data["hearts"].values()),
+                         total_users=total_users,
+                         total_messages=total_messages,
+                         avg_hearts=round(avg_hearts, 1),
                          top_hearts=top_hearts,
                          top_activity=top_activity)
 
@@ -72,6 +89,38 @@ def index():
 def vip_management():
     user_data = load_user_data()
     return render_template('vip.html', vip_users=sorted(user_data["vip_users"]))
+
+@app.route('/users')
+def users_list():
+    user_data = load_user_data()
+    
+    # Combinar toda la información de usuarios
+    users_combined = []
+    for username in set(list(user_data["hearts"].keys()) + list(user_data["activity"].keys())):
+        user_info = {
+            "username": username,
+            "hearts": user_data["hearts"].get(username, 0),
+            "messages": user_data["activity"].get(username, 0),
+            "is_vip": username in user_data["vip_users"]
+        }
+        users_combined.append(user_info)
+    
+    # Ordenar por corazones
+    users_combined.sort(key=lambda x: x["hearts"], reverse=True)
+    
+    return render_template('users.html', users=users_combined)
+
+@app.route('/analytics')
+def analytics():
+    user_data = load_user_data()
+    
+    # Preparar datos para gráficos
+    hearts_data = sorted(user_data["hearts"].items(), key=lambda x: x[1], reverse=True)[:15]
+    activity_data = sorted(user_data["activity"].items(), key=lambda x: x[1], reverse=True)[:15]
+    
+    return render_template('analytics.html', 
+                         hearts_data=hearts_data,
+                         activity_data=activity_data)
 
 @app.route('/api/add_vip', methods=['POST'])
 def add_vip():
@@ -120,7 +169,8 @@ def get_stats():
     return jsonify({
         "vip_count": len(user_data["vip_users"]),
         "total_hearts": sum(user_data["hearts"].values()),
-        "total_users": len(user_data["hearts"]),
+        "total_users": len(set(list(user_data["hearts"].keys()) + list(user_data["activity"].keys()))),
+        "total_messages": sum(user_data["activity"].values()),
         "active_users": len(user_data["activity"])
     })
 
