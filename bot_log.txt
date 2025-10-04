@@ -4572,3 +4572,23 @@
 [2025-10-04 15:24:51] [BOT] Emote #30: penguin (dance-pinguin) - 12.81s
 [2025-10-04 15:25:04] [BOT] Emote #31: boxer (emote-boxer) - 6.75s
 [2025-10-04 15:25:10] [BOT] Emote #32: airguitar (idle-guitar) - 14.15s
+[2025-10-04 15:25:25] [BOT] Emote #33: stargaze (emote-stargazer) - 7.93s
+[2025-10-04 15:25:33] [BOT] Emote #34: ditzy (emote-pose9) - 6.0s
+[2025-10-04 15:25:39] [BOT] Emote #35: uwu (idle-uwu) - 25.5s
+[2025-10-04 15:25:56] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-04 15:25:56] [BOT] Starting initial bot appearance setup
+[2025-10-04 15:25:58] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-04 15:25:58] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-04 15:25:58] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-04 15:25:58] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-04 15:25:58] [BOT] Initial bot appearance setup completed
+[2025-10-04 15:26:00] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-04 15:26:00] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-04 15:26:00] [BOT] Iniciando ciclo automático de 224 emotes con pausas
+[2025-10-04 15:26:01] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-04 15:26:11] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
+[2025-10-04 15:26:38] [BOT] Emote #3: launch (emote-launch) - 10.88s
+[2025-10-04 15:26:49] [BOT] Emote #4: cutesalute (emote-cutesalute) - 3.79s
+[2025-10-04 15:26:53] [BOT] Emote #5: atattention (emote-salute) - 4.79s
+[2025-10-04 15:26:58] [BOT] Emote #6: tiktok (dance-tiktok11) - 11.37s
+[2025-10-04 15:27:09] [BOT] Emote #7: smooch (emote-kissing) - 6.69s
