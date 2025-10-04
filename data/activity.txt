@@ -1,2 +1,2 @@
 # Активность пользователей (user_id:messages:last_activity)
-665a9ecc0ee49fe367324365:7:2025-10-04T14:02:13.335563:Xx__Daikel__xX
+665a9ecc0ee49fe367324365:2:2025-10-04T14:05:59.709926:Xx__Daikel__xX
