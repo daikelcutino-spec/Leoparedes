@@ -8,8 +8,8 @@ import time
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Set, Tuple, Union
 
-from highrise import BaseBot, User, Reaction, AnchorPosition, Position
-from highrise.models import SessionMetadata, CurrencyItem, Item, Error
+from highrise import BaseBot, User, Reaction, AnchorPosition
+from highrise.models import Position, SessionMetadata, CurrencyItem, Item, Error
 
 # Функция логирования событий
 def log_event(event_type: str, message: str):
