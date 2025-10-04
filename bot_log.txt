@@ -3342,3 +3342,16 @@
 [2025-10-04 07:14:57] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-04 07:14:57] [BOT] Iniciando ciclo automático de 224 emotes con pausas
 [2025-10-04 07:14:58] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-04 07:15:07] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
+[2025-10-04 07:15:44] [BOT] Bot ID stored: 681d54aa4cedce763169580f
+[2025-10-04 07:15:44] [BOT] Starting initial bot appearance setup
+[2025-10-04 07:15:46] [BOT] Attempting to change bot outfit to: custom_nocturno
+[2025-10-04 07:15:46] [BOT] ✅ Custom NOCTURNO outfit applied successfully
+[2025-10-04 07:15:46] [BOT] Initial bot outfit configured: custom_nocturno
+[2025-10-04 07:15:46] [BOT] Bot inicializado en modo idle (bot ID: 681d54aa4cedce763169580f)
+[2025-10-04 07:15:46] [BOT] Initial bot appearance setup completed
+[2025-10-04 07:15:48] [BOT] Preparando ciclo automático de 224 emotes en bucle infinito
+[2025-10-04 07:15:48] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-04 07:15:48] [BOT] Iniciando ciclo automático de 224 emotes con pausas
+[2025-10-04 07:15:48] [BOT] Emote #1: fairytwirl (emote-looping) - 9.89s
+[2025-10-04 07:15:58] [BOT] Emote #2: fairyfloat (idle-floating) - 27.6s
