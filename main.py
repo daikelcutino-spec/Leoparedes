@@ -1562,10 +1562,11 @@ class Bot(BaseBot):
                     await send_response( f"👔 INVENTARIO: {total_items} items")
                     await asyncio.sleep(0.3)
 
-                    # Mostrar cada ítem con su nombre
+                    # Mostrar cada ítem con su ID
                     for i, item in enumerate(inventory, 1):
-                        item_name = getattr(item, 'item_name', 'Sin nombre')
-                        await send_response( f"{i}. {item_name}")
+                        item_id = item.id
+                        item_type = item.type
+                        await send_response( f"{i}. {item_type}: {item_id}")
                         await asyncio.sleep(0.2)
                 else:
                     await send_response( "📦 Inventario vacío")
