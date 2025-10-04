@@ -1585,36 +1585,6 @@ class Bot(BaseBot):
             await self.highrise.chat(f"💰 Balance del bot: {balance} oro")
             return
 
-        # Comando !buyfloss - comprar emote floss para el bot (solo propietario)
-        if msg == "!buyfloss":
-            if user_id != OWNER_ID:
-                await send_response( "❌ ¡Solo el propietario puede comprar items para el bot!")
-                return
-            
-            try:
-                await send_response( "💸 Intentando comprar emote dance-floss...")
-                
-                # Intentar comprar el emote dance-floss
-                result = await self.highrise.buy_item("dance-floss")
-                
-                if isinstance(result, Error):
-                    error_msg = str(result)
-                    if "already" in error_msg.lower():
-                        await send_response( "✅ ¡El bot ya tiene el emote dance-floss!")
-                    elif "insufficient" in error_msg.lower():
-                        await send_response( "❌ No hay suficiente oro en la billetera del bot")
-                    else:
-                        await send_response( f"❌ Error: {error_msg[:100]}")
-                else:
-                    await send_response( "🕺 ¡Emote dance-floss comprado con éxito!")
-                    log_event("PURCHASE", f"Emote dance-floss comprado por {user.username}")
-                
-            except Exception as e:
-                error_msg = str(e)[:150]
-                await send_response( f"❌ Error comprando emote: {error_msg}")
-                log_event("ERROR", f"Error comprando dance-floss: {error_msg}")
-            return
-
         # Comando !restart - reiniciar bot (solo propietario)
         if msg.startswith("!restart"):
             if user_id != OWNER_ID:
