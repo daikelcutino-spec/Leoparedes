@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 from highrise import BaseBot, User, Reaction
-from highrise.models import SessionMetadata, CurrencyItem, Item, Error, Position, AnchorPosition
+from highrise.models import SessionMetadata, CurrencyItem, Item, Error, Position
 
 # Функция логирования событий
 def log_event(event_type: str, message: str):
@@ -39,7 +39,6 @@ TELEPORT_POINTS = {}
 ACTIVE_EMOTES = {}
 USER_JOIN_TIMES = {}  # Словарь для хранения времени входа пользователей
 SAVED_OUTFITS = {}  # Diccionario para almacenar outfits guardados {número: outfit}
-ANCHOR_POINTS = {}  # Diccionario para almacenar puntos de anclaje {id: {x, y, z}}
 
 # Функции для сохранения данных
 def save_user_info():
@@ -3664,7 +3663,7 @@ class Bot(BaseBot):
         await self.handle_command(user, msg, is_whisper=True)
 
 
-    async def on_user_join(self, user: User, position: Position | AnchorPosition) -> None:
+    async def on_user_join(self, user: User, position: Position) -> None:
         """Manejador de entrada de usuario"""
         user_id = user.id
         username = user.username
@@ -3765,11 +3764,8 @@ class Bot(BaseBot):
         else:
             print(f"DEBUG: Реакция {str(reaction)} не является сердечком")
 
-    async def on_user_move(self, user: User, destination: Position | AnchorPosition) -> None:
+    async def on_user_move(self, user: User, destination: Position) -> None:
         """Manejador de movimiento de usuario - FLASHMODE AUTOMÁTICO SOLO PARA CAMBIOS DE PISO"""
-        def _coords(p):
-            return (p.x, p.y, p.z) if isinstance(p, Position) else None
-
         try:
             user_id = user.id
             username = user.username
@@ -3785,14 +3781,9 @@ class Bot(BaseBot):
                 self.user_positions[user_id] = destination
                 return
 
-            # Extract coordinates - only proceed with flashmode logic if both are Position objects
-            last_xyz = _coords(last_pos)
-            dest_xyz = _coords(destination)
-
-            if not last_xyz or not dest_xyz:
-                # Either is AnchorPosition, skip flashmode logic
-                self.user_positions[user_id] = destination
-                return
+            # Extract coordinates
+            last_xyz = (last_pos.x, last_pos.y, last_pos.z)
+            dest_xyz = (destination.x, destination.y, destination.z)
 
             # Calcular diferencias en cada eje
             x_difference = abs(dest_xyz[0] - last_xyz[0])
@@ -3823,9 +3814,7 @@ class Bot(BaseBot):
                 if not self.is_in_forbidden_zone(dest_xyz[0], dest_xyz[1], dest_xyz[2]):
                     try:
                         # FLASHMODE: Teletransporte automático entre pisos
-                        # Verificar que destination sea Position antes de teleport
-                        if isinstance(destination, Position):
-                            await self.highrise.teleport(user_id, destination)
+                        await self.highrise.teleport(user_id, destination)
 
                         # Actualizar cooldown
                         self.flashmode_cooldown[user_id] = current_time
