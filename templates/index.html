@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Bot NOCTURNO</title>
+    <title>Panel Bot NOCTURNO - Control Total</title>
     <style>
         * {
             margin: 0;
@@ -20,13 +20,13 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
         
         .header {
             background: white;
-            padding: 15px;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             margin-bottom: 15px;
@@ -35,7 +35,7 @@
         
         .header h1 {
             color: #667eea;
-            font-size: 1.5em;
+            font-size: 2em;
             margin-bottom: 5px;
         }
         
@@ -48,82 +48,109 @@
         
         .stat-card {
             background: white;
-            padding: 12px;
+            padding: 15px;
             border-radius: 8px;
             text-align: center;
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
         
         .stat-card .value {
-            font-size: 1.5em;
+            font-size: 1.8em;
             font-weight: bold;
             color: #667eea;
         }
         
         .stat-card .label {
             color: #666;
-            font-size: 0.85em;
-            margin-top: 3px;
+            font-size: 0.9em;
+            margin-top: 5px;
         }
         
-        .main-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 15px;
+        .tabs {
+            display: flex;
+            gap: 10px;
             margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            background: white;
+            color: #667eea;
+            padding: 12px 20px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tab-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
         
         .panel {
             background: white;
-            padding: 15px;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
         }
         
         .panel h2 {
             color: #667eea;
-            font-size: 1.2em;
-            margin-bottom: 12px;
+            font-size: 1.3em;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-        
-        .list {
-            list-style: none;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        
-        .list-item {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9em;
-        }
-        
-        .list-item:hover {
-            background: #f8f9fa;
-        }
-        
-        .actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 10px;
+        }
+        
+        .panel h3 {
+            color: #764ba2;
+            font-size: 1.1em;
+            margin: 15px 0 10px 0;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .input-group input, .input-group select {
+            flex: 1;
+            min-width: 150px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95em;
         }
         
         .btn {
             background: #667eea;
             color: white;
-            padding: 10px 15px;
+            padding: 10px 20px;
             border: none;
             border-radius: 8px;
-            font-size: 0.9em;
+            font-size: 0.95em;
             cursor: pointer;
             transition: all 0.2s;
-            text-align: center;
         }
         
         .btn:hover {
@@ -147,17 +174,46 @@
             background: #218838;
         }
         
-        .input-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
         }
         
-        .input-group input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+        }
+        
+        .btn-info:hover {
+            background: #138496;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px;
+        }
+        
+        .list {
+            list-style: none;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .list-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95em;
+        }
+        
+        .list-item:hover {
+            background: #f8f9fa;
         }
         
         .modal {
@@ -175,16 +231,32 @@
         
         .modal-content {
             background: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: 10px;
-            max-width: 400px;
+            max-width: 500px;
             width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         
         .close {
             float: right;
-            font-size: 1.5em;
+            font-size: 1.8em;
             cursor: pointer;
+            color: #999;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.9em;
         }
     </style>
 </head>
@@ -192,7 +264,7 @@
     <div class="container">
         <div class="header">
             <h1>🤖 Panel Bot NOCTURNO</h1>
-            <p style="color: #666; font-size: 0.9em;">Control Total del Bot</p>
+            <p style="color: #666; font-size: 0.95em;">Control Total & Monitoreo</p>
         </div>
         
         <div class="stats-grid">
@@ -214,127 +286,381 @@
             </div>
         </div>
         
-        <div class="main-grid">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('overview')">📊 Resumen</button>
+            <button class="tab-btn" onclick="openTab('moderation')">🔨 Moderación</button>
+            <button class="tab-btn" onclick="openTab('economy')">💰 Economía</button>
+            <button class="tab-btn" onclick="openTab('emotes')">🎭 Emotes</button>
+            <button class="tab-btn" onclick="openTab('teleport')">⚡ Teleporte</button>
+            <button class="tab-btn" onclick="openTab('interactions')">🥊 Interacciones</button>
+            <button class="tab-btn" onclick="openTab('bot')">🤖 Bot Control</button>
+        </div>
+        
+        <!-- TAB: RESUMEN -->
+        <div id="overview" class="tab-content active">
             <div class="panel">
-                <h2>🏆 Top Corazones</h2>
-                <ul class="list">
-                    {% for username, hearts in top_hearts[:5] %}
-                    <li class="list-item">
-                        <span>{{ username }}</span>
-                        <span style="color: #667eea; font-weight: bold;">{{ hearts }} ❤️</span>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            
-            <div class="panel">
-                <h2>💬 Top Actividad</h2>
-                <ul class="list">
-                    {% for username, msgs in top_activity[:5] %}
-                    <li class="list-item">
-                        <span>{{ username }}</span>
-                        <span style="color: #764ba2; font-weight: bold;">{{ msgs }}</span>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            
-            <div class="panel">
-                <h2>⭐ Gestión VIP</h2>
-                <div class="input-group">
-                    <input type="text" id="vipUsername" placeholder="@username">
-                    <button class="btn btn-success" onclick="addVIP()">Agregar</button>
+                <h2>🏆 Top Rankings</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h3>💖 Top Corazones</h3>
+                        <ul class="list">
+                            {% for username, hearts in top_hearts[:10] %}
+                            <li class="list-item">
+                                <span>{{ username }}</span>
+                                <span style="color: #667eea; font-weight: bold;">{{ hearts }} ❤️</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>💬 Top Actividad</h3>
+                        <ul class="list">
+                            {% for username, msgs in top_activity[:10] %}
+                            <li class="list-item">
+                                <span>{{ username }}</span>
+                                <span style="color: #764ba2; font-weight: bold;">{{ msgs }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <input type="text" id="removeVipUsername" placeholder="@username">
-                    <button class="btn btn-danger" onclick="removeVIP()">Quitar</button>
+            </div>
+            
+            <div class="panel">
+                <h2>🎮 Acciones Rápidas</h2>
+                <div class="actions-grid">
+                    <button class="btn" onclick="sendCommand('!help')">📖 Ayuda</button>
+                    <button class="btn" onclick="sendCommand('!stats')">📊 Estadísticas</button>
+                    <button class="btn" onclick="sendCommand('!online')">👥 Online</button>
+                    <button class="btn btn-info" onclick="location.reload()">🔄 Actualizar</button>
                 </div>
             </div>
         </div>
         
-        <div class="panel">
-            <h2>🎮 Acciones del Bot</h2>
-            <div class="actions">
-                <button class="btn" onclick="sendCommand('!help')">📖 Ayuda</button>
-                <button class="btn" onclick="sendCommand('!leaderboard heart')">🏆 Leaderboard</button>
-                <button class="btn" onclick="openModal('tipModal')">💰 Dar Oro</button>
-                <button class="btn" onclick="openModal('tpModal')">📍 Teletransporte</button>
-                <button class="btn" onclick="openModal('emoteModal')">🎭 Emotes</button>
-                <button class="btn" onclick="openModal('outfitModal')">👔 Outfit</button>
-                <button class="btn btn-danger" onclick="sendCommand('!stopall')">⏹️ Detener Todo</button>
-                <button class="btn" onclick="location.reload()">🔄 Actualizar</button>
+        <!-- TAB: MODERACIÓN -->
+        <div id="moderation" class="tab-content">
+            <div class="panel">
+                <h2>🔨 Moderación de Usuarios</h2>
+                
+                <h3>⭐ Gestión VIP</h3>
+                <div class="input-group">
+                    <input type="text" id="vipUsername" placeholder="@username">
+                    <button class="btn btn-success" onclick="addVIP()">Agregar VIP</button>
+                    <button class="btn btn-danger" onclick="removeVIP()">Quitar VIP</button>
+                    <button class="btn" onclick="checkVIP()">Verificar VIP</button>
+                </div>
+                
+                <h3>🚫 Sanciones</h3>
+                <div class="input-group">
+                    <input type="text" id="banUsername" placeholder="@username">
+                    <button class="btn btn-danger" onclick="banUser()">🚫 Banear</button>
+                    <button class="btn" onclick="unbanUser()">✅ Desbanear</button>
+                    <button class="btn btn-warning" onclick="kickUser()">👢 Expulsar</button>
+                </div>
+                
+                <h3>🔇 Silenciamiento</h3>
+                <div class="input-group">
+                    <input type="text" id="muteUsername" placeholder="@username">
+                    <input type="number" id="muteSeconds" placeholder="Segundos" min="1" value="60">
+                    <button class="btn btn-warning" onclick="muteUser()">🔇 Silenciar</button>
+                    <button class="btn" onclick="unmuteUser()">🔊 Quitar Silencio</button>
+                </div>
+                
+                <h3>🧊 Otras Acciones</h3>
+                <div class="actions-grid">
+                    <button class="btn" onclick="openModal('freezeModal')">🧊 Congelar</button>
+                    <button class="btn" onclick="sendCommand('!banlist')">📋 Lista Baneados</button>
+                    <button class="btn" onclick="sendCommand('!mutelist')">📋 Lista Silenciados</button>
+                    <button class="btn" onclick="openModal('privilegeModal')">🔍 Ver Privilegios</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: ECONOMÍA -->
+        <div id="economy" class="tab-content">
+            <div class="panel">
+                <h2>💰 Sistema Económico</h2>
+                
+                <h3>💖 Corazones</h3>
+                <div class="input-group">
+                    <input type="text" id="heartUsername" placeholder="@username">
+                    <input type="number" id="heartAmount" placeholder="Cantidad" min="1" max="100" value="1">
+                    <button class="btn btn-success" onclick="giveHearts()">💖 Dar Corazones</button>
+                    <button class="btn" onclick="heartAll()">💝 Corazones a Todos</button>
+                </div>
+                
+                <h3>💰 Propinas (Oro)</h3>
+                <div class="input-group">
+                    <input type="number" id="tipAmount" placeholder="Cantidad (1-5)" min="1" max="5" value="1">
+                    <button class="btn btn-success" onclick="tipAll()">💰 Dar a Todos</button>
+                </div>
+                <div class="input-group">
+                    <input type="number" id="tipOnlyAmount" placeholder="Número de usuarios" min="1">
+                    <button class="btn btn-warning" onclick="tipRandom()">🎲 Dar Aleatorio</button>
+                </div>
+                
+                <h3>📊 Economía</h3>
+                <div class="actions-grid">
+                    <button class="btn" onclick="sendCommand('!wallet')">💰 Ver Balance</button>
+                    <button class="btn" onclick="sendCommand('!leaderboard heart')">🏆 Top Corazones</button>
+                    <button class="btn" onclick="sendCommand('!leaderboard active')">📈 Top Actividad</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: EMOTES -->
+        <div id="emotes" class="tab-content">
+            <div class="panel">
+                <h2>🎭 Control de Emotes</h2>
+                
+                <h3>🎭 Enviar Emote</h3>
+                <div class="input-group">
+                    <input type="text" id="emoteTarget" placeholder="@username o 'all'">
+                    <input type="text" id="emoteId" placeholder="Emote (1-224 o nombre)">
+                    <button class="btn" onclick="sendEmoteToUser()">🎭 Enviar</button>
+                </div>
+                
+                <h3>🛑 Detener Emotes</h3>
+                <div class="input-group">
+                    <input type="text" id="stopEmoteTarget" placeholder="@username o 'all'">
+                    <button class="btn btn-danger" onclick="stopEmote()">🛑 Detener</button>
+                    <button class="btn btn-danger" onclick="stopAllEmotes()">⏹️ Detener Todos</button>
+                </div>
+                
+                <h3>🤖 Modo Bot</h3>
+                <div class="actions-grid">
+                    <button class="btn" onclick="sendCommand('!automode')">🎭 Modo Auto (224 emotes)</button>
+                    <button class="btn" onclick="sendCommand('!emote list')">📋 Lista Emotes</button>
+                </div>
+                
+                <div class="info-box">
+                    💡 <strong>Tip:</strong> Usa números 1-224 o nombres de emotes. El modo auto ejecuta todos los 224 emotes en ciclo continuo.
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: TELEPORTE -->
+        <div id="teleport" class="tab-content">
+            <div class="panel">
+                <h2>⚡ Sistema de Teletransporte</h2>
+                
+                <h3>📍 Teletransporte Flash</h3>
+                <div class="input-group">
+                    <input type="number" id="flashX" placeholder="X" step="0.1">
+                    <input type="number" id="flashY" placeholder="Y" step="0.1">
+                    <input type="number" id="flashZ" placeholder="Z" step="0.1">
+                    <button class="btn" onclick="flashTeleport()">⚡ Flash</button>
+                </div>
+                
+                <h3>🎯 Traer Usuario</h3>
+                <div class="input-group">
+                    <input type="text" id="bringUsername" placeholder="@username">
+                    <button class="btn btn-success" onclick="bringUser()">🎯 Traer a Mí</button>
+                </div>
+                
+                <h3>🗺️ Puntos de Teleporte</h3>
+                <div class="input-group">
+                    <input type="text" id="tpPointName" placeholder="Nombre del punto">
+                    <button class="btn" onclick="teleportToPoint()">📍 Ir a Punto</button>
+                    <button class="btn btn-info" onclick="sendCommand('!tplist')">📋 Lista Puntos</button>
+                </div>
+                
+                <h3>➕ Crear Puntos (Admin)</h3>
+                <div class="input-group">
+                    <input type="text" id="newPointName" placeholder="Nombre del nuevo punto">
+                    <button class="btn btn-success" onclick="createPoint()">➕ Crear Punto</button>
+                    <button class="btn btn-danger" onclick="deletePoint()">🗑️ Eliminar Punto</button>
+                </div>
+                
+                <h3>🏠 Zonas Especiales (Owner)</h3>
+                <div class="actions-grid">
+                    <button class="btn" onclick="sendCommand('!setvipzone')">⭐ Zona VIP</button>
+                    <button class="btn" onclick="sendCommand('!setdj')">🎵 Zona DJ</button>
+                    <button class="btn" onclick="sendCommand('!setdirectivo')">👑 Zona Directivo</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: INTERACCIONES -->
+        <div id="interactions" class="tab-content">
+            <div class="panel">
+                <h2>🥊 Interacciones entre Usuarios</h2>
+                
+                <h3>🎯 Seleccionar Objetivo</h3>
+                <div class="input-group">
+                    <input type="text" id="interactionTarget" placeholder="@username">
+                </div>
+                
+                <h3>💞 Acciones Positivas</h3>
+                <div class="actions-grid">
+                    <button class="btn btn-success" onclick="interact('hug')">🤗 Abrazar</button>
+                    <button class="btn btn-success" onclick="interact('flirt')">💕 Coquetear</button>
+                    <button class="btn btn-success" onclick="interact('laugh')">😂 Reír</button>
+                </div>
+                
+                <h3>🥊 Acciones de Combate</h3>
+                <div class="actions-grid">
+                    <button class="btn btn-warning" onclick="interact('punch')">🥊 Golpear</button>
+                    <button class="btn btn-warning" onclick="interact('slap')">👋 Bofetada</button>
+                    <button class="btn btn-warning" onclick="interact('ninja')">🥷 Ninja</button>
+                    <button class="btn btn-danger" onclick="interact('boom')">💥 Explotar</button>
+                </div>
+                
+                <h3>😱 Acciones Especiales</h3>
+                <div class="actions-grid">
+                    <button class="btn" onclick="interact('scare')">😱 Asustar</button>
+                    <button class="btn" onclick="interact('electro')">⚡ Electrocutar</button>
+                </div>
+                
+                <h3>💫 Reacciones</h3>
+                <div class="actions-grid">
+                    <button class="btn" onclick="react('thumbs')">👍 Pulgar Arriba</button>
+                    <button class="btn" onclick="react('clap')">👏 Aplaudir</button>
+                    <button class="btn" onclick="react('wave')">👋 Saludar</button>
+                </div>
+                
+                <div class="info-box">
+                    💡 Las interacciones generan animaciones entre usuarios. Las reacciones pueden enviarse múltiples veces.
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: BOT CONTROL -->
+        <div id="bot" class="tab-content">
+            <div class="panel">
+                <h2>🤖 Control del Bot</h2>
+                
+                <h3>📍 Movimiento del Bot</h3>
+                <div class="input-group">
+                    <input type="text" id="botTargetUser" placeholder="@username">
+                    <button class="btn" onclick="sendCommand('!tome')">🤖 Bot a Mí</button>
+                    <button class="btn btn-warning" onclick="botAttack()">⚔️ Bot Ataca</button>
+                </div>
+                
+                <h3>👔 Apariencia</h3>
+                <div class="input-group">
+                    <input type="number" id="outfitNumber" placeholder="Número de outfit" min="1">
+                    <button class="btn" onclick="changeOutfit()">👔 Cambiar Outfit</button>
+                    <button class="btn" onclick="sendCommand('!copyoutfit')">📋 Copiar Mi Outfit</button>
+                </div>
+                
+                <h3>🎭 Comportamiento</h3>
+                <div class="input-group">
+                    <input type="text" id="mimicTarget" placeholder="@username">
+                    <button class="btn" onclick="mimicUser()">🎭 Imitar Usuario</button>
+                </div>
+                
+                <h3>💬 Bot Habla</h3>
+                <div class="input-group">
+                    <input type="text" id="botMessage" placeholder="Mensaje del bot" style="flex: 2;">
+                    <button class="btn btn-success" onclick="botSay()">💬 Enviar</button>
+                </div>
+                
+                <h3>🎵 DJ & Música</h3>
+                <div class="actions-grid">
+                    <button class="btn" onclick="sendCommand('!dj')">🎵 Panel DJ</button>
+                    <button class="btn btn-success" onclick="sendCommand('!music play')">▶️ Play</button>
+                    <button class="btn btn-warning" onclick="sendCommand('!music pause')">⏸️ Pause</button>
+                    <button class="btn btn-danger" onclick="sendCommand('!music stop')">⏹️ Stop</button>
+                </div>
+                
+                <h3>📦 Inventario</h3>
+                <div class="actions-grid">
+                    <button class="btn" onclick="sendCommand('!inventory')">📦 Ver Inventario</button>
+                    <button class="btn" onclick="openModal('giveItemModal')">🎁 Dar Item</button>
+                </div>
+                
+                <h3>⚙️ Sistema</h3>
+                <div class="actions-grid">
+                    <button class="btn btn-danger" onclick="confirmRestart()">🔄 Reiniciar Bot</button>
+                    <button class="btn btn-info" onclick="location.reload()">🔄 Actualizar Panel</button>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Modal Dar Oro -->
-    <div id="tipModal" class="modal">
+    <!-- MODALES -->
+    
+    <!-- Modal Freeze -->
+    <div id="freezeModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('tipModal')">&times;</span>
-            <h2>💰 Dar Oro</h2>
+            <span class="close" onclick="closeModal('freezeModal')">&times;</span>
+            <h2>🧊 Congelar Usuario</h2>
             <div class="input-group">
-                <input type="number" id="tipAmount" placeholder="Cantidad" min="1" max="5">
-                <button class="btn" onclick="tipAll()">Dar a Todos</button>
+                <input type="text" id="freezeUsername" placeholder="@username">
+                <button class="btn btn-warning" onclick="freezeUser()">🧊 Congelar</button>
             </div>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #666;">Congela al usuario por 5 minutos</p>
+        </div>
+    </div>
+    
+    <!-- Modal Privilege -->
+    <div id="privilegeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('privilegeModal')">&times;</span>
+            <h2>🔍 Ver Privilegios</h2>
             <div class="input-group">
-                <input type="number" id="tipOnlyAmount" placeholder="Número de usuarios" min="1">
-                <button class="btn" onclick="tipRandom()">Dar Aleatorio</button>
+                <input type="text" id="privilegeUsername" placeholder="@username">
+                <button class="btn" onclick="checkPrivilege()">🔍 Verificar</button>
             </div>
         </div>
     </div>
     
-    <!-- Modal Teletransporte -->
-    <div id="tpModal" class="modal">
+    <!-- Modal Give Item -->
+    <div id="giveItemModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('tpModal')">&times;</span>
-            <h2>📍 Teletransporte</h2>
+            <span class="close" onclick="closeModal('giveItemModal')">&times;</span>
+            <h2>🎁 Dar Item</h2>
             <div class="input-group">
-                <input type="text" id="tpUser" placeholder="@username">
-                <input type="text" id="tpPoint" placeholder="punto">
-                <button class="btn" onclick="teleportUser()">Teletransportar</button>
+                <input type="text" id="giveItemUsername" placeholder="@username">
             </div>
-            <p style="margin-top: 10px; font-size: 0.85em; color: #666;">Puntos: vip, dj, directivo</p>
-        </div>
-    </div>
-    
-    <!-- Modal Emotes -->
-    <div id="emoteModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('emoteModal')">&times;</span>
-            <h2>🎭 Emotes</h2>
             <div class="input-group">
-                <input type="text" id="emoteUser" placeholder="@username">
-                <input type="text" id="emoteId" placeholder="emote (1-224)">
-                <button class="btn" onclick="sendEmote()">Enviar</button>
+                <input type="text" id="giveItemId" placeholder="Item ID">
             </div>
-            <button class="btn" style="width: 100%; margin-top: 10px;" onclick="sendCommand('!automode')">🎭 Modo Auto</button>
-        </div>
-    </div>
-    
-    <!-- Modal Outfit -->
-    <div id="outfitModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('outfitModal')">&times;</span>
-            <h2>👔 Cambiar Outfit</h2>
-            <div class="input-group">
-                <input type="number" id="outfitNum" placeholder="Número de outfit" min="1">
-                <button class="btn" onclick="changeOutfit()">Aplicar</button>
-            </div>
-            <button class="btn" style="width: 100%; margin-top: 10px;" onclick="sendCommand('!copyoutfit')">📋 Copiar Mi Outfit</button>
+            <button class="btn btn-success" onclick="giveItem()" style="width: 100%;">🎁 Dar Item</button>
         </div>
     </div>
     
     <script>
+        // Sistema de Tabs
+        function openTab(tabName) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            contents.forEach(c => c.classList.remove('active'));
+            buttons.forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // Funciones de Modal
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+        
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+        
+        // Función base para enviar comandos
         function sendCommand(cmd) {
             fetch('/api/send_command', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({command: cmd})
             }).then(r => r.json()).then(d => {
-                alert(d.message || 'Comando enviado');
-            });
+                alert(d.message || 'Comando enviado: ' + cmd);
+            }).catch(e => alert('Error: ' + e));
         }
         
+        // MODERACIÓN
         function addVIP() {
             const username = document.getElementById('vipUsername').value.replace('@', '');
             if (!username) return alert('Ingresa un username');
@@ -350,7 +676,7 @@
         }
         
         function removeVIP() {
-            const username = document.getElementById('removeVipUsername').value.replace('@', '');
+            const username = document.getElementById('vipUsername').value.replace('@', '');
             if (!username) return alert('Ingresa un username');
             
             fetch('/api/remove_vip', {
@@ -363,55 +689,185 @@
             });
         }
         
+        function checkVIP() {
+            const username = document.getElementById('vipUsername').value.replace('@', '');
+            sendCommand('!checkvip' + (username ? ' @' + username : ''));
+        }
+        
+        function banUser() {
+            const username = document.getElementById('banUsername').value.replace('@', '');
+            if (!username) return alert('Ingresa un username');
+            sendCommand('!ban @' + username);
+        }
+        
+        function unbanUser() {
+            const username = document.getElementById('banUsername').value.replace('@', '');
+            if (!username) return alert('Ingresa un username');
+            sendCommand('!unban @' + username);
+        }
+        
+        function kickUser() {
+            const username = document.getElementById('banUsername').value.replace('@', '');
+            if (!username) return alert('Ingresa un username');
+            sendCommand('!kick @' + username);
+        }
+        
+        function muteUser() {
+            const username = document.getElementById('muteUsername').value.replace('@', '');
+            const seconds = document.getElementById('muteSeconds').value || '60';
+            if (!username) return alert('Ingresa un username');
+            sendCommand('!mute @' + username + ' ' + seconds);
+        }
+        
+        function unmuteUser() {
+            const username = document.getElementById('muteUsername').value.replace('@', '');
+            if (!username) return alert('Ingresa un username');
+            sendCommand('!unmute @' + username);
+        }
+        
+        function freezeUser() {
+            const username = document.getElementById('freezeUsername').value.replace('@', '');
+            if (!username) return alert('Ingresa un username');
+            sendCommand('!freeze @' + username);
+            closeModal('freezeModal');
+        }
+        
+        function checkPrivilege() {
+            const username = document.getElementById('privilegeUsername').value.replace('@', '');
+            if (!username) return alert('Ingresa un username');
+            sendCommand('!privilege @' + username);
+            closeModal('privilegeModal');
+        }
+        
+        // ECONOMÍA
+        function giveHearts() {
+            const username = document.getElementById('heartUsername').value.replace('@', '');
+            const amount = document.getElementById('heartAmount').value || '1';
+            if (!username) return alert('Ingresa un username');
+            sendCommand('!heart @' + username + ' ' + amount);
+        }
+        
+        function heartAll() {
+            sendCommand('!heartall');
+        }
+        
         function tipAll() {
             const amount = document.getElementById('tipAmount').value;
             if (!amount || amount < 1 || amount > 5) return alert('Cantidad debe ser 1-5');
             sendCommand('!tip all ' + amount);
-            closeModal('tipModal');
         }
         
         function tipRandom() {
             const amount = document.getElementById('tipOnlyAmount').value;
             if (!amount || amount < 1) return alert('Ingresa número de usuarios');
             sendCommand('!tip only ' + amount);
-            closeModal('tipModal');
         }
         
-        function teleportUser() {
-            const user = document.getElementById('tpUser').value.replace('@', '');
-            const point = document.getElementById('tpPoint').value;
-            if (!user || !point) return alert('Completa todos los campos');
-            sendCommand('!bring @' + user);
-            closeModal('tpModal');
-        }
-        
-        function sendEmote() {
-            const user = document.getElementById('emoteUser').value.replace('@', '');
+        // EMOTES
+        function sendEmoteToUser() {
+            const target = document.getElementById('emoteTarget').value.replace('@', '');
             const emote = document.getElementById('emoteId').value;
-            if (!user || !emote) return alert('Completa todos los campos');
-            sendCommand('!emote @' + user + ' ' + emote);
-            closeModal('emoteModal');
+            if (!target || !emote) return alert('Completa todos los campos');
+            
+            if (target.toLowerCase() === 'all') {
+                sendCommand('!emote all ' + emote);
+            } else {
+                sendCommand('!emote @' + target + ' ' + emote);
+            }
+        }
+        
+        function stopEmote() {
+            const target = document.getElementById('stopEmoteTarget').value.replace('@', '');
+            if (!target) return alert('Ingresa un username o "all"');
+            sendCommand('!stop ' + (target.toLowerCase() === 'all' ? 'all' : '@' + target));
+        }
+        
+        function stopAllEmotes() {
+            sendCommand('!stopall');
+        }
+        
+        // TELEPORTE
+        function flashTeleport() {
+            const x = document.getElementById('flashX').value;
+            const y = document.getElementById('flashY').value;
+            const z = document.getElementById('flashZ').value;
+            if (!x || !y || !z) return alert('Completa las coordenadas');
+            sendCommand('!flash ' + x + ' ' + y + ' ' + z);
+        }
+        
+        function bringUser() {
+            const username = document.getElementById('bringUsername').value.replace('@', '');
+            if (!username) return alert('Ingresa un username');
+            sendCommand('!bring @' + username);
+        }
+        
+        function teleportToPoint() {
+            const point = document.getElementById('tpPointName').value;
+            if (!point) return alert('Ingresa el nombre del punto');
+            sendCommand('!tp ' + point);
+        }
+        
+        function createPoint() {
+            const name = document.getElementById('newPointName').value;
+            if (!name) return alert('Ingresa un nombre para el punto');
+            sendCommand('!TPus ' + name);
+        }
+        
+        function deletePoint() {
+            const name = document.getElementById('newPointName').value;
+            if (!name) return alert('Ingresa el nombre del punto');
+            sendCommand('!delpoint ' + name);
+        }
+        
+        // INTERACCIONES
+        function interact(action) {
+            const target = document.getElementById('interactionTarget').value.replace('@', '');
+            if (!target) return alert('Ingresa un username');
+            sendCommand('!' + action + ' @' + target);
+        }
+        
+        function react(reaction) {
+            const target = document.getElementById('interactionTarget').value.replace('@', '');
+            if (!target) return alert('Ingresa un username');
+            sendCommand('!' + reaction + ' @' + target);
+        }
+        
+        // BOT CONTROL
+        function botAttack() {
+            const target = document.getElementById('botTargetUser').value.replace('@', '');
+            if (!target) return alert('Ingresa un username');
+            sendCommand('!bot @' + target);
         }
         
         function changeOutfit() {
-            const num = document.getElementById('outfitNum').value;
+            const num = document.getElementById('outfitNumber').value;
             if (!num) return alert('Ingresa número de outfit');
             sendCommand('!outfit ' + num);
-            closeModal('outfitModal');
         }
         
-        function openModal(id) {
-            document.getElementById(id).style.display = 'flex';
+        function mimicUser() {
+            const target = document.getElementById('mimicTarget').value.replace('@', '');
+            if (!target) return alert('Ingresa un username');
+            sendCommand('!mimic @' + target);
         }
         
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
+        function botSay() {
+            const message = document.getElementById('botMessage').value;
+            if (!message) return alert('Ingresa un mensaje');
+            sendCommand('!say ' + message);
         }
         
-        // Cerrar modal al hacer click fuera
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
+        function giveItem() {
+            const username = document.getElementById('giveItemUsername').value.replace('@', '');
+            const itemId = document.getElementById('giveItemId').value;
+            if (!username || !itemId) return alert('Completa todos los campos');
+            sendCommand('!give @' + username + ' ' + itemId);
+            closeModal('giveItemModal');
+        }
+        
+        function confirmRestart() {
+            if (confirm('¿Estás seguro de reiniciar el bot?\nEsto detendrá el bot completamente.')) {
+                sendCommand('!restart');
             }
         }
     </script>
