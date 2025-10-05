@@ -926,28 +926,43 @@
         async function updateBotConsole() {
             try {
                 const response = await fetch('/api/bot_responses');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
-
                 const consoleDiv = document.getElementById('botConsole');
                 
-                if (data.success && data.responses && Array.isArray(data.responses) && data.responses.length > 0) {
-                    const lines = data.responses
-                        .filter(line => line && line.trim() && !line.trim().startsWith('#'))
-                        .map(line => {
+                if (!consoleDiv) {
+                    console.error('Console div not found');
+                    return;
+                }
+                
+                if (data.success && data.responses && Array.isArray(data.responses)) {
+                    const validLines = data.responses.filter(line => 
+                        line && 
+                        typeof line === 'string' && 
+                        line.trim() && 
+                        !line.trim().startsWith('#')
+                    );
+                    
+                    if (validLines.length > 0) {
+                        const htmlLines = validLines.map(line => {
                             const trimmed = line.trim();
                             // Colorear según el tipo de mensaje
                             if (trimmed.includes('BOT →')) {
                                 return `<div class="console-line" style="color: #00ff00;">${escapeHtml(trimmed)}</div>`;
                             } else if (trimmed.startsWith('@')) {
                                 return `<div class="console-line" style="color: #00bfff;">${escapeHtml(trimmed)}</div>`;
+                            } else if (trimmed.includes('!')) {
+                                return `<div class="console-line" style="color: #ffff00;">${escapeHtml(trimmed)}</div>`;
                             } else {
                                 return `<div class="console-line">${escapeHtml(trimmed)}</div>`;
                             }
-                        })
-                        .join('');
-
-                    if (lines) {
-                        consoleDiv.innerHTML = lines;
+                        }).join('');
+                        
+                        consoleDiv.innerHTML = htmlLines;
                         // Auto scroll al final
                         consoleDiv.scrollTop = consoleDiv.scrollHeight;
                     } else {
@@ -957,10 +972,10 @@
                     consoleDiv.innerHTML = '<div class="console-line" style="color: #888;">🤖 Esperando comandos del bot...</div>';
                 }
             } catch (error) {
-                console.error('Error actualizando consola:', error);
+                console.error('Error actualizando consola:', error.message);
                 const consoleDiv = document.getElementById('botConsole');
                 if (consoleDiv) {
-                    consoleDiv.innerHTML = '<div class="console-line" style="color: #ff6b6b;">❌ Error cargando consola</div>';
+                    consoleDiv.innerHTML = `<div class="console-line" style="color: #ff6b6b;">❌ Error: ${error.message}</div>`;
                 }
             }
         }

@@ -1,2 +1,4 @@
 
-# Respuestas del bot (se actualiza automáticamente)
+[00:00:00] 🤖 Bot NOCTURNO iniciado correctamente
+[00:00:00] ✅ Sistema de respuestas activo
+[00:00:00] 💡 Los comandos ejecutados aparecerán aquí

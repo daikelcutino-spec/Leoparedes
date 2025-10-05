@@ -286,11 +286,23 @@ def get_bot_responses():
         if os.path.exists("bot_responses.txt"):
             with open("bot_responses.txt", "r", encoding="utf-8") as f:
                 lines = f.readlines()
-            # Retornar las últimas 20 líneas
-            return jsonify({"success": True, "responses": lines[-20:]})
+            
+            # Filtrar líneas vacías y comentarios
+            valid_lines = [
+                line.strip() 
+                for line in lines 
+                if line.strip() and not line.strip().startswith('#')
+            ]
+            
+            # Retornar las últimas 20 líneas válidas
+            return jsonify({
+                "success": True, 
+                "responses": valid_lines[-20:] if valid_lines else []
+            })
+        
         return jsonify({"success": True, "responses": []})
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
+        return jsonify({"success": False, "message": str(e), "responses": []})
 
 
 if __name__ == '__main__':
