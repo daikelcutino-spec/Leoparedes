@@ -8,7 +8,7 @@ import time
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Set, Tuple, Union
 
-from highrise import BaseBot, User, Reaction
+from highrise import BaseBot, User, Reaction, AnchorPosition
 from highrise.models import SessionMetadata, CurrencyItem, Item, Error, Position
 
 # ============================================================================
@@ -2160,7 +2160,7 @@ class Bot(BaseBot):
         """Manejador de emotes"""
         pass
 
-    async def on_user_move(self, user: User, destination: Position) -> None:
+    async def on_user_move(self, user: User, destination: Position | AnchorPosition) -> None:
         """Manejador de movimiento de usuario para flashmode automático
         Solo activa flashmode cuando:
         - Hay cambio de piso (Y >= 1.0 unidades)
@@ -2168,6 +2168,9 @@ class Bot(BaseBot):
         - NO está en cooldown (3 segundos)
         - Destino no es zona prohibida
         """
+        def _coords(p):
+            return (p.x, p.y, p.z) if isinstance(p, Position) else None
+
         try:
             user_id = user.id
             username = user.username
@@ -2181,8 +2184,12 @@ class Bot(BaseBot):
                 self.user_positions[user_id] = destination
                 return
 
-            last_xyz = (last_pos.x, last_pos.y, last_pos.z)
-            dest_xyz = (destination.x, destination.y, destination.z)
+            last_xyz = _coords(last_pos)
+            dest_xyz = _coords(destination)
+
+            if not last_xyz or not dest_xyz:
+                self.user_positions[user_id] = destination
+                return
 
             floor_change_threshold = 1.0
             horizontal_movement_max = 2.0
@@ -2203,10 +2210,11 @@ class Bot(BaseBot):
                         return
 
                 if not self.is_in_forbidden_zone(dest_xyz[0], dest_xyz[1], dest_xyz[2]):
-                    await self.highrise.teleport(user_id, destination)
-                    self.flashmode_cooldown[user_id] = current_time
-                    log_event("FLASHMODE", f"Auto-flashmode {username}: Y:{last_xyz[1]:.1f}→{dest_xyz[1]:.1f}")
-                    print(f"⚡ FLASHMODE: {username} subió/bajó piso {last_xyz[1]:.1f} → {dest_xyz[1]:.1f}")
+                    if isinstance(destination, Position):
+                        await self.highrise.teleport(user_id, destination)
+                        self.flashmode_cooldown[user_id] = current_time
+                        log_event("FLASHMODE", f"Auto-flashmode {username}: Y:{last_xyz[1]:.1f}→{dest_xyz[1]:.1f}")
+                        print(f"⚡ FLASHMODE: {username} subió/bajó piso {last_xyz[1]:.1f} → {dest_xyz[1]:.1f}")
                 else:
                     print(f"❌ Flashmode bloqueado: {username} intentó zona prohibida")
 
