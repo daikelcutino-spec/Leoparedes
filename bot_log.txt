@@ -5411,3 +5411,8 @@
 [2025-10-05 02:23:09] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-05 02:23:09] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-05 02:23:12] [BOT] Iniciando ciclo automático de 224 emotes
+[2025-10-05 02:25:47] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-05 02:25:49] [BOT] Outfit NOCTURNO aplicado
+[2025-10-05 02:25:49] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-05 02:25:49] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-05 02:25:52] [BOT] Iniciando ciclo automático de 224 emotes
