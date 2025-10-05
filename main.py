@@ -91,7 +91,7 @@ def log_bot_response(message: str):
     try:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open("bot_responses.txt", "a", encoding="utf-8") as f:
-            f.write(f"[{timestamp}] {message}\n")
+            f.write(f"[{timestamp}] BOT: {message}\n")
         
         # Mantener solo las últimas 100 líneas
         try:
@@ -1015,7 +1015,7 @@ class Bot(BaseBot):
 
         async def send_response(text: str):
             # Registrar respuesta para el panel web
-            log_bot_response(f"@{username}: {text}")
+            log_bot_response(text)
             
             # Si es un comando que debe ser público, siempre enviar al chat
             if force_public:
