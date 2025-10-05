@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,19 +10,19 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 15px;
         }
-        
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
         }
-        
+
         .header {
             background: white;
             padding: 20px;
@@ -32,20 +31,20 @@
             margin-bottom: 15px;
             text-align: center;
         }
-        
+
         .header h1 {
             color: #667eea;
             font-size: 2em;
             margin-bottom: 5px;
         }
-        
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 10px;
             margin-bottom: 15px;
         }
-        
+
         .stat-card {
             background: white;
             padding: 15px;
@@ -53,26 +52,26 @@
             text-align: center;
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
-        
+
         .stat-card .value {
             font-size: 1.8em;
             font-weight: bold;
             color: #667eea;
         }
-        
+
         .stat-card .label {
             color: #666;
             font-size: 0.9em;
             margin-top: 5px;
         }
-        
+
         .tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
             flex-wrap: wrap;
         }
-        
+
         .tab-btn {
             background: white;
             color: #667eea;
@@ -83,24 +82,24 @@
             font-size: 0.95em;
             transition: all 0.3s;
         }
-        
+
         .tab-btn.active {
             background: #667eea;
             color: white;
         }
-        
+
         .tab-btn:hover {
             transform: translateY(-2px);
         }
-        
+
         .tab-content {
             display: none;
         }
-        
+
         .tab-content.active {
             display: block;
         }
-        
+
         .panel {
             background: white;
             padding: 20px;
@@ -108,7 +107,7 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             margin-bottom: 15px;
         }
-        
+
         .panel h2 {
             color: #667eea;
             font-size: 1.3em;
@@ -117,7 +116,7 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .panel h3 {
             color: #764ba2;
             font-size: 1.1em;
@@ -125,14 +124,14 @@
             border-bottom: 2px solid #eee;
             padding-bottom: 5px;
         }
-        
+
         .input-group {
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
             flex-wrap: wrap;
         }
-        
+
         .input-group input, .input-group select {
             flex: 1;
             min-width: 150px;
@@ -141,7 +140,7 @@
             border-radius: 6px;
             font-size: 0.95em;
         }
-        
+
         .btn {
             background: #667eea;
             color: white;
@@ -152,57 +151,57 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         .btn:hover {
             background: #764ba2;
             transform: scale(1.02);
         }
-        
+
         .btn-danger {
             background: #dc3545;
         }
-        
+
         .btn-danger:hover {
             background: #c82333;
         }
-        
+
         .btn-success {
             background: #28a745;
         }
-        
+
         .btn-success:hover {
             background: #218838;
         }
-        
+
         .btn-warning {
             background: #ffc107;
             color: #333;
         }
-        
+
         .btn-warning:hover {
             background: #e0a800;
         }
-        
+
         .btn-info {
             background: #17a2b8;
         }
-        
+
         .btn-info:hover {
             background: #138496;
         }
-        
+
         .actions-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 10px;
         }
-        
+
         .list {
             list-style: none;
             max-height: 250px;
             overflow-y: auto;
         }
-        
+
         .list-item {
             padding: 10px;
             border-bottom: 1px solid #eee;
@@ -211,11 +210,11 @@
             align-items: center;
             font-size: 0.95em;
         }
-        
+
         .list-item:hover {
             background: #f8f9fa;
         }
-        
+
         .modal {
             display: none;
             position: fixed;
@@ -228,7 +227,7 @@
             align-items: center;
             z-index: 1000;
         }
-        
+
         .modal-content {
             background: white;
             padding: 25px;
@@ -238,18 +237,18 @@
             max-height: 80vh;
             overflow-y: auto;
         }
-        
+
         .close {
             float: right;
             font-size: 1.8em;
             cursor: pointer;
             color: #999;
         }
-        
+
         .close:hover {
             color: #333;
         }
-        
+
         .info-box {
             background: #e7f3ff;
             border-left: 4px solid #667eea;
@@ -258,7 +257,7 @@
             border-radius: 4px;
             font-size: 0.9em;
         }
-        
+
         .bot-console {
             background: #1a1a2e;
             color: #00ff41;
@@ -270,25 +269,25 @@
             font-size: 0.85em;
             margin-top: 15px;
         }
-        
+
         .bot-console::-webkit-scrollbar {
             width: 8px;
         }
-        
+
         .bot-console::-webkit-scrollbar-track {
             background: #0f0f1e;
         }
-        
+
         .bot-console::-webkit-scrollbar-thumb {
             background: #667eea;
             border-radius: 4px;
         }
-        
+
         .console-line {
             margin: 3px 0;
             line-height: 1.4;
         }
-        
+
         .console-timestamp {
             color: #888;
         }
@@ -300,7 +299,7 @@
             <h1>🤖 Panel Bot NOCTURNO</h1>
             <p style="color: #666; font-size: 0.95em;">Control Total & Monitoreo</p>
         </div>
-        
+
         <!-- Consola de Respuestas del Bot -->
         <div class="panel">
             <h2>💬 Consola de Respuestas del Bot</h2>
@@ -308,7 +307,7 @@
                 <div class="console-line">🤖 Esperando respuestas del bot...</div>
             </div>
         </div>
-        
+
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="value">{{ vip_count }}</div>
@@ -327,7 +326,7 @@
                 <div class="label">💬 Mensajes</div>
             </div>
         </div>
-        
+
         <div class="tabs">
             <button class="tab-btn active" onclick="openTab('overview')">📊 Resumen</button>
             <button class="tab-btn" onclick="openTab('moderation')">🔨 Moderación</button>
@@ -337,7 +336,7 @@
             <button class="tab-btn" onclick="openTab('interactions')">🥊 Interacciones</button>
             <button class="tab-btn" onclick="openTab('bot')">🤖 Bot Control</button>
         </div>
-        
+
         <!-- TAB: RESUMEN -->
         <div id="overview" class="tab-content active">
             <div class="panel">
@@ -367,7 +366,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="panel">
                 <h2>🎮 Acciones Rápidas</h2>
                 <div class="actions-grid">
@@ -378,12 +377,12 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- TAB: MODERACIÓN -->
         <div id="moderation" class="tab-content">
             <div class="panel">
                 <h2>🔨 Moderación de Usuarios</h2>
-                
+
                 <h3>⭐ Gestión VIP</h3>
                 <div class="input-group">
                     <input type="text" id="vipUsername" placeholder="@username">
@@ -391,7 +390,7 @@
                     <button class="btn btn-danger" onclick="removeVIP()">Quitar VIP</button>
                     <button class="btn" onclick="checkVIP()">Verificar VIP</button>
                 </div>
-                
+
                 <h3>🚫 Sanciones</h3>
                 <div class="input-group">
                     <input type="text" id="banUsername" placeholder="@username">
@@ -399,7 +398,7 @@
                     <button class="btn" onclick="unbanUser()">✅ Desbanear</button>
                     <button class="btn btn-warning" onclick="kickUser()">👢 Expulsar</button>
                 </div>
-                
+
                 <h3>🔇 Silenciamiento</h3>
                 <div class="input-group">
                     <input type="text" id="muteUsername" placeholder="@username">
@@ -407,7 +406,7 @@
                     <button class="btn btn-warning" onclick="muteUser()">🔇 Silenciar</button>
                     <button class="btn" onclick="unmuteUser()">🔊 Quitar Silencio</button>
                 </div>
-                
+
                 <h3>🧊 Otras Acciones</h3>
                 <div class="actions-grid">
                     <button class="btn" onclick="openModal('freezeModal')">🧊 Congelar</button>
@@ -417,12 +416,12 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- TAB: ECONOMÍA -->
         <div id="economy" class="tab-content">
             <div class="panel">
                 <h2>💰 Sistema Económico</h2>
-                
+
                 <h3>💖 Corazones</h3>
                 <div class="input-group">
                     <input type="text" id="heartUsername" placeholder="@username">
@@ -430,7 +429,7 @@
                     <button class="btn btn-success" onclick="giveHearts()">💖 Dar Corazones</button>
                     <button class="btn" onclick="heartAll()">💝 Corazones a Todos</button>
                 </div>
-                
+
                 <h3>💰 Propinas (Oro)</h3>
                 <div class="input-group">
                     <input type="number" id="tipAmount" placeholder="Cantidad (1-5)" min="1" max="5" value="1">
@@ -440,7 +439,7 @@
                     <input type="number" id="tipOnlyAmount" placeholder="Número de usuarios" min="1">
                     <button class="btn btn-warning" onclick="tipRandom()">🎲 Dar Aleatorio</button>
                 </div>
-                
+
                 <h3>📊 Economía</h3>
                 <div class="actions-grid">
                     <button class="btn" onclick="sendCommand('!wallet')">💰 Ver Balance</button>
@@ -449,43 +448,43 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- TAB: EMOTES -->
         <div id="emotes" class="tab-content">
             <div class="panel">
                 <h2>🎭 Control de Emotes</h2>
-                
+
                 <h3>🎭 Enviar Emote</h3>
                 <div class="input-group">
                     <input type="text" id="emoteTarget" placeholder="@username o 'all'">
                     <input type="text" id="emoteId" placeholder="Emote (1-224 o nombre)">
                     <button class="btn" onclick="sendEmoteToUser()">🎭 Enviar</button>
                 </div>
-                
+
                 <h3>🛑 Detener Emotes</h3>
                 <div class="input-group">
                     <input type="text" id="stopEmoteTarget" placeholder="@username o 'all'">
                     <button class="btn btn-danger" onclick="stopEmote()">🛑 Detener</button>
                     <button class="btn btn-danger" onclick="stopAllEmotes()">⏹️ Detener Todos</button>
                 </div>
-                
+
                 <h3>🤖 Modo Bot</h3>
                 <div class="actions-grid">
                     <button class="btn" onclick="sendCommand('!automode')">🎭 Modo Auto (224 emotes)</button>
                     <button class="btn" onclick="sendCommand('!emote list')">📋 Lista Emotes</button>
                 </div>
-                
+
                 <div class="info-box">
                     💡 <strong>Tip:</strong> Usa números 1-224 o nombres de emotes. El modo auto ejecuta todos los 224 emotes en ciclo continuo.
                 </div>
             </div>
         </div>
-        
+
         <!-- TAB: TELEPORTE -->
         <div id="teleport" class="tab-content">
             <div class="panel">
                 <h2>⚡ Sistema de Teletransporte</h2>
-                
+
                 <h3>📍 Teletransporte Flash</h3>
                 <div class="input-group">
                     <input type="number" id="flashX" placeholder="X" step="0.1">
@@ -493,27 +492,27 @@
                     <input type="number" id="flashZ" placeholder="Z" step="0.1">
                     <button class="btn" onclick="flashTeleport()">⚡ Flash</button>
                 </div>
-                
+
                 <h3>🎯 Traer Usuario</h3>
                 <div class="input-group">
                     <input type="text" id="bringUsername" placeholder="@username">
                     <button class="btn btn-success" onclick="bringUser()">🎯 Traer a Mí</button>
                 </div>
-                
+
                 <h3>🗺️ Puntos de Teleporte</h3>
                 <div class="input-group">
                     <input type="text" id="tpPointName" placeholder="Nombre del punto">
                     <button class="btn" onclick="teleportToPoint()">📍 Ir a Punto</button>
                     <button class="btn btn-info" onclick="sendCommand('!tplist')">📋 Lista Puntos</button>
                 </div>
-                
+
                 <h3>➕ Crear Puntos (Admin)</h3>
                 <div class="input-group">
                     <input type="text" id="newPointName" placeholder="Nombre del nuevo punto">
                     <button class="btn btn-success" onclick="createPoint()">➕ Crear Punto</button>
                     <button class="btn btn-danger" onclick="deletePoint()">🗑️ Eliminar Punto</button>
                 </div>
-                
+
                 <h3>🏠 Zonas Especiales (Owner)</h3>
                 <div class="actions-grid">
                     <button class="btn" onclick="sendCommand('!setvipzone')">⭐ Zona VIP</button>
@@ -522,24 +521,24 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- TAB: INTERACCIONES -->
         <div id="interactions" class="tab-content">
             <div class="panel">
                 <h2>🥊 Interacciones entre Usuarios</h2>
-                
+
                 <h3>🎯 Seleccionar Objetivo</h3>
                 <div class="input-group">
                     <input type="text" id="interactionTarget" placeholder="@username">
                 </div>
-                
+
                 <h3>💞 Acciones Positivas</h3>
                 <div class="actions-grid">
                     <button class="btn btn-success" onclick="interact('hug')">🤗 Abrazar</button>
                     <button class="btn btn-success" onclick="interact('flirt')">💕 Coquetear</button>
                     <button class="btn btn-success" onclick="interact('laugh')">😂 Reír</button>
                 </div>
-                
+
                 <h3>🥊 Acciones de Combate</h3>
                 <div class="actions-grid">
                     <button class="btn btn-warning" onclick="interact('punch')">🥊 Golpear</button>
@@ -547,57 +546,57 @@
                     <button class="btn btn-warning" onclick="interact('ninja')">🥷 Ninja</button>
                     <button class="btn btn-danger" onclick="interact('boom')">💥 Explotar</button>
                 </div>
-                
+
                 <h3>😱 Acciones Especiales</h3>
                 <div class="actions-grid">
                     <button class="btn" onclick="interact('scare')">😱 Asustar</button>
                     <button class="btn" onclick="interact('electro')">⚡ Electrocutar</button>
                 </div>
-                
+
                 <h3>💫 Reacciones</h3>
                 <div class="actions-grid">
                     <button class="btn" onclick="react('thumbs')">👍 Pulgar Arriba</button>
                     <button class="btn" onclick="react('clap')">👏 Aplaudir</button>
                     <button class="btn" onclick="react('wave')">👋 Saludar</button>
                 </div>
-                
+
                 <div class="info-box">
                     💡 Las interacciones generan animaciones entre usuarios. Las reacciones pueden enviarse múltiples veces.
                 </div>
             </div>
         </div>
-        
+
         <!-- TAB: BOT CONTROL -->
         <div id="bot" class="tab-content">
             <div class="panel">
                 <h2>🤖 Control del Bot</h2>
-                
+
                 <h3>📍 Movimiento del Bot</h3>
                 <div class="input-group">
                     <input type="text" id="botTargetUser" placeholder="@username">
                     <button class="btn" onclick="sendCommand('!tome')">🤖 Bot a Mí</button>
                     <button class="btn btn-warning" onclick="botAttack()">⚔️ Bot Ataca</button>
                 </div>
-                
+
                 <h3>👔 Apariencia</h3>
                 <div class="input-group">
                     <input type="number" id="outfitNumber" placeholder="Número de outfit" min="1">
                     <button class="btn" onclick="changeOutfit()">👔 Cambiar Outfit</button>
                     <button class="btn" onclick="sendCommand('!copyoutfit')">📋 Copiar Mi Outfit</button>
                 </div>
-                
+
                 <h3>🎭 Comportamiento</h3>
                 <div class="input-group">
                     <input type="text" id="mimicTarget" placeholder="@username">
                     <button class="btn" onclick="mimicUser()">🎭 Imitar Usuario</button>
                 </div>
-                
+
                 <h3>💬 Bot Habla</h3>
                 <div class="input-group">
                     <input type="text" id="botMessage" placeholder="Mensaje del bot" style="flex: 2;">
                     <button class="btn btn-success" onclick="botSay()">💬 Enviar</button>
                 </div>
-                
+
                 <h3>🎵 DJ & Música</h3>
                 <div class="actions-grid">
                     <button class="btn" onclick="sendCommand('!dj')">🎵 Panel DJ</button>
@@ -605,13 +604,13 @@
                     <button class="btn btn-warning" onclick="sendCommand('!music pause')">⏸️ Pause</button>
                     <button class="btn btn-danger" onclick="sendCommand('!music stop')">⏹️ Stop</button>
                 </div>
-                
+
                 <h3>📦 Inventario</h3>
                 <div class="actions-grid">
                     <button class="btn" onclick="sendCommand('!inventory')">📦 Ver Inventario</button>
                     <button class="btn" onclick="openModal('giveItemModal')">🎁 Dar Item</button>
                 </div>
-                
+
                 <h3>⚙️ Sistema</h3>
                 <div class="actions-grid">
                     <button class="btn btn-danger" onclick="confirmRestart()">🔄 Reiniciar Bot</button>
@@ -620,9 +619,9 @@
             </div>
         </div>
     </div>
-    
+
     <!-- MODALES -->
-    
+
     <!-- Modal Freeze -->
     <div id="freezeModal" class="modal">
         <div class="modal-content">
@@ -635,7 +634,7 @@
             <p style="margin-top: 10px; font-size: 0.9em; color: #666;">Congela al usuario por 5 minutos</p>
         </div>
     </div>
-    
+
     <!-- Modal Privilege -->
     <div id="privilegeModal" class="modal">
         <div class="modal-content">
@@ -647,7 +646,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Modal Give Item -->
     <div id="giveItemModal" class="modal">
         <div class="modal-content">
@@ -662,35 +661,45 @@
             <button class="btn btn-success" onclick="giveItem()" style="width: 100%;">🎁 Dar Item</button>
         </div>
     </div>
-    
+
     <script>
+        // Helper function to escape HTML entities
+        function escapeHtml(unsafe) {
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
         // Sistema de Tabs
         function openTab(tabName) {
             const contents = document.querySelectorAll('.tab-content');
             const buttons = document.querySelectorAll('.tab-btn');
-            
+
             contents.forEach(c => c.classList.remove('active'));
             buttons.forEach(b => b.classList.remove('active'));
-            
+
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
         }
-        
+
         // Funciones de Modal
         function openModal(id) {
             document.getElementById(id).style.display = 'flex';
         }
-        
+
         function closeModal(id) {
             document.getElementById(id).style.display = 'none';
         }
-        
+
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.style.display = 'none';
             }
         }
-        
+
         // Función base para enviar comandos
         function sendCommand(cmd) {
             fetch('/api/send_command', {
@@ -701,12 +710,12 @@
                 alert(d.message || 'Comando enviado: ' + cmd);
             }).catch(e => alert('Error: ' + e));
         }
-        
+
         // MODERACIÓN
         function addVIP() {
             const username = document.getElementById('vipUsername').value.replace('@', '');
             if (!username) return alert('Ingresa un username');
-            
+
             fetch('/api/add_vip', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -716,11 +725,11 @@
                 if (d.success) location.reload();
             });
         }
-        
+
         function removeVIP() {
             const username = document.getElementById('vipUsername').value.replace('@', '');
             if (!username) return alert('Ingresa un username');
-            
+
             fetch('/api/remove_vip', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -730,57 +739,57 @@
                 if (d.success) location.reload();
             });
         }
-        
+
         function checkVIP() {
             const username = document.getElementById('vipUsername').value.replace('@', '');
             sendCommand('!checkvip' + (username ? ' @' + username : ''));
         }
-        
+
         function banUser() {
             const username = document.getElementById('banUsername').value.replace('@', '');
             if (!username) return alert('Ingresa un username');
             sendCommand('!ban @' + username);
         }
-        
+
         function unbanUser() {
             const username = document.getElementById('banUsername').value.replace('@', '');
             if (!username) return alert('Ingresa un username');
             sendCommand('!unban @' + username);
         }
-        
+
         function kickUser() {
             const username = document.getElementById('banUsername').value.replace('@', '');
             if (!username) return alert('Ingresa un username');
             sendCommand('!kick @' + username);
         }
-        
+
         function muteUser() {
             const username = document.getElementById('muteUsername').value.replace('@', '');
             const seconds = document.getElementById('muteSeconds').value || '60';
             if (!username) return alert('Ingresa un username');
             sendCommand('!mute @' + username + ' ' + seconds);
         }
-        
+
         function unmuteUser() {
             const username = document.getElementById('muteUsername').value.replace('@', '');
             if (!username) return alert('Ingresa un username');
             sendCommand('!unmute @' + username);
         }
-        
+
         function freezeUser() {
             const username = document.getElementById('freezeUsername').value.replace('@', '');
             if (!username) return alert('Ingresa un username');
             sendCommand('!freeze @' + username);
             closeModal('freezeModal');
         }
-        
+
         function checkPrivilege() {
             const username = document.getElementById('privilegeUsername').value.replace('@', '');
             if (!username) return alert('Ingresa un username');
             sendCommand('!privilege @' + username);
             closeModal('privilegeModal');
         }
-        
+
         // ECONOMÍA
         function giveHearts() {
             const username = document.getElementById('heartUsername').value.replace('@', '');
@@ -788,46 +797,46 @@
             if (!username) return alert('Ingresa un username');
             sendCommand('!heart @' + username + ' ' + amount);
         }
-        
+
         function heartAll() {
             sendCommand('!heartall');
         }
-        
+
         function tipAll() {
             const amount = document.getElementById('tipAmount').value;
             if (!amount || amount < 1 || amount > 5) return alert('Cantidad debe ser 1-5');
             sendCommand('!tip all ' + amount);
         }
-        
+
         function tipRandom() {
             const amount = document.getElementById('tipOnlyAmount').value;
             if (!amount || amount < 1) return alert('Ingresa número de usuarios');
             sendCommand('!tip only ' + amount);
         }
-        
+
         // EMOTES
         function sendEmoteToUser() {
             const target = document.getElementById('emoteTarget').value.replace('@', '');
             const emote = document.getElementById('emoteId').value;
             if (!target || !emote) return alert('Completa todos los campos');
-            
+
             if (target.toLowerCase() === 'all') {
                 sendCommand('!emote all ' + emote);
             } else {
                 sendCommand('!emote @' + target + ' ' + emote);
             }
         }
-        
+
         function stopEmote() {
             const target = document.getElementById('stopEmoteTarget').value.replace('@', '');
             if (!target) return alert('Ingresa un username o "all"');
             sendCommand('!stop ' + (target.toLowerCase() === 'all' ? 'all' : '@' + target));
         }
-        
+
         function stopAllEmotes() {
             sendCommand('!stopall');
         }
-        
+
         // TELEPORTE
         function flashTeleport() {
             const x = document.getElementById('flashX').value;
@@ -836,69 +845,69 @@
             if (!x || !y || !z) return alert('Completa las coordenadas');
             sendCommand('!flash ' + x + ' ' + y + ' ' + z);
         }
-        
+
         function bringUser() {
             const username = document.getElementById('bringUsername').value.replace('@', '');
             if (!username) return alert('Ingresa un username');
             sendCommand('!bring @' + username);
         }
-        
+
         function teleportToPoint() {
             const point = document.getElementById('tpPointName').value;
             if (!point) return alert('Ingresa el nombre del punto');
             sendCommand('!tp ' + point);
         }
-        
+
         function createPoint() {
             const name = document.getElementById('newPointName').value;
             if (!name) return alert('Ingresa un nombre para el punto');
             sendCommand('!TPus ' + name);
         }
-        
+
         function deletePoint() {
             const name = document.getElementById('newPointName').value;
             if (!name) return alert('Ingresa el nombre del punto');
             sendCommand('!delpoint ' + name);
         }
-        
+
         // INTERACCIONES
         function interact(action) {
             const target = document.getElementById('interactionTarget').value.replace('@', '');
             if (!target) return alert('Ingresa un username');
             sendCommand('!' + action + ' @' + target);
         }
-        
+
         function react(reaction) {
             const target = document.getElementById('interactionTarget').value.replace('@', '');
             if (!target) return alert('Ingresa un username');
             sendCommand('!' + reaction + ' @' + target);
         }
-        
+
         // BOT CONTROL
         function botAttack() {
             const target = document.getElementById('botTargetUser').value.replace('@', '');
             if (!target) return alert('Ingresa un username');
             sendCommand('!bot @' + target);
         }
-        
+
         function changeOutfit() {
             const num = document.getElementById('outfitNumber').value;
             if (!num) return alert('Ingresa número de outfit');
             sendCommand('!outfit ' + num);
         }
-        
+
         function mimicUser() {
             const target = document.getElementById('mimicTarget').value.replace('@', '');
             if (!target) return alert('Ingresa un username');
             sendCommand('!mimic @' + target);
         }
-        
+
         function botSay() {
             const message = document.getElementById('botMessage').value;
             if (!message) return alert('Ingresa un mensaje');
             sendCommand('!say ' + message);
         }
-        
+
         function giveItem() {
             const username = document.getElementById('giveItemUsername').value.replace('@', '');
             const itemId = document.getElementById('giveItemId').value;
@@ -906,49 +915,51 @@
             sendCommand('!give @' + username + ' ' + itemId);
             closeModal('giveItemModal');
         }
-        
+
         function confirmRestart() {
             if (confirm('¿Estás seguro de reiniciar el bot?\nEsto detendrá el bot completamente.')) {
                 sendCommand('!restart');
             }
         }
-        
+
         // Actualizar consola de respuestas del bot
         async function updateBotConsole() {
             try {
                 const response = await fetch('/api/bot_responses');
                 const data = await response.json();
-                
-                if (data.success && data.responses.length > 0) {
+
+                if (data.success && data.responses && Array.isArray(data.responses)) {
                     const consoleDiv = document.getElementById('botConsole');
-                    consoleDiv.innerHTML = '';
-                    
-                    data.responses.forEach(line => {
-                        const div = document.createElement('div');
-                        div.className = 'console-line';
-                        
-                        // Parsear timestamp y mensaje
-                        const match = line.match(/\[(.*?)\] (.*)/);
-                        if (match) {
-                            div.innerHTML = `<span class="console-timestamp">[${match[1]}]</span> ${match[2]}`;
-                        } else {
-                            div.textContent = line;
-                        }
-                        
-                        consoleDiv.appendChild(div);
-                    });
-                    
-                    // Auto-scroll al final
+                    const lines = data.responses
+                        .filter(line => line && line.trim())
+                        .map(line => {
+                            const trimmed = line.trim();
+                            // Colorear según el tipo de mensaje
+                            if (trimmed.includes('BOT →')) {
+                                return `<div class="console-line" style="color: #00ff00;">${escapeHtml(trimmed)}</div>`;
+                            } else if (trimmed.startsWith('@')) {
+                                return `<div class="console-line" style="color: #00bfff;">${escapeHtml(trimmed)}</div>`;
+                            } else {
+                                return `<div class="console-line">${escapeHtml(trimmed)}</div>`;
+                            }
+                        })
+                        .join('');
+
+                    consoleDiv.innerHTML = lines || '<div class="console-line" style="color: #666;">Esperando comandos...</div>';
+
+                    // Auto scroll al final
                     consoleDiv.scrollTop = consoleDiv.scrollHeight;
                 }
-            } catch (e) {
-                console.error('Error actualizando consola:', e);
+            } catch (error) {
+                console.error('Error actualizando consola:', error);
+                const consoleDiv = document.getElementById('botConsole');
+                consoleDiv.innerHTML = '<div class="console-line" style="color: #ff6b6b;">Error cargando consola</div>';
             }
         }
-        
+
         // Actualizar consola cada 2 segundos
         setInterval(updateBotConsole, 2000);
-        
+
         // Actualizar inmediatamente al cargar
         updateBotConsole();
     </script>

@@ -1000,10 +1000,6 @@ class Bot(BaseBot):
         msg = message.strip()
         user_id = user.id
         username = user.username
-        
-        # Registrar el comando recibido
-        if msg.startswith("!"):
-            log_bot_response(f"👤 @{username} ejecutó: {msg}")
 
         public_commands = [
             "!game love", "!stats", "!online", "!info", "!role"
@@ -1018,9 +1014,10 @@ class Bot(BaseBot):
         is_context_dependent = any(msg.startswith(cmd) for cmd in context_dependent_commands)
 
         async def send_response(text: str):
-            # Registrar COMANDO ejecutado y RESPUESTA para el panel web
-            command_executed = msg.split()[0] if msg else "unknown"
-            log_bot_response(f"[CMD: {command_executed}] {text}")
+            # Registrar comando y respuesta en formato claro
+            if msg.startswith("!"):
+                log_bot_response(f"@{username}: {msg}")
+                log_bot_response(f"BOT → {text}")
             
             # Si es un comando que debe ser público, siempre enviar al chat
             if force_public:
