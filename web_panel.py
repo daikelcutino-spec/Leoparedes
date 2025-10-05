@@ -279,6 +279,19 @@ def get_stats():
         len(user_data["activity"])
     })
 
+@app.route('/api/bot_responses')
+def get_bot_responses():
+    """Obtiene las últimas respuestas del bot"""
+    try:
+        if os.path.exists("bot_responses.txt"):
+            with open("bot_responses.txt", "r", encoding="utf-8") as f:
+                lines = f.readlines()
+            # Retornar las últimas 20 líneas
+            return jsonify({"success": True, "responses": lines[-20:]})
+        return jsonify({"success": True, "responses": []})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
 
 if __name__ == '__main__':
     os.makedirs("templates", exist_ok=True)

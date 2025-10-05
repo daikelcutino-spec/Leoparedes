@@ -86,6 +86,25 @@ def log_event(event_type: str, message: str):
     except Exception as e:
         print(f"Error logging event: {e}")
 
+def log_bot_response(message: str):
+    """Registra las respuestas del bot para el panel web"""
+    try:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open("bot_responses.txt", "a", encoding="utf-8") as f:
+            f.write(f"[{timestamp}] {message}\n")
+        
+        # Mantener solo las últimas 100 líneas
+        try:
+            with open("bot_responses.txt", "r", encoding="utf-8") as f:
+                lines = f.readlines()
+            if len(lines) > 100:
+                with open("bot_responses.txt", "w", encoding="utf-8") as f:
+                    f.writelines(lines[-100:])
+        except:
+            pass
+    except Exception as e:
+        print(f"Error logging bot response: {e}")
+
 # ============================================================================
 # SISTEMA DE PERSISTENCIA DE DATOS
 # ============================================================================
@@ -995,6 +1014,9 @@ class Bot(BaseBot):
         is_context_dependent = any(msg.startswith(cmd) for cmd in context_dependent_commands)
 
         async def send_response(text: str):
+            # Registrar respuesta para el panel web
+            log_bot_response(f"@{username}: {text}")
+            
             # Si es un comando que debe ser público, siempre enviar al chat
             if force_public:
                 await self.highrise.chat(text)
