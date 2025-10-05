@@ -298,11 +298,12 @@ def get_bot_responses():
             return jsonify({
                 "success": True, 
                 "responses": valid_lines[-20:] if valid_lines else []
-            })
+            }), 200
         
-        return jsonify({"success": True, "responses": []})
+        return jsonify({"success": True, "responses": []}), 200
     except Exception as e:
-        return jsonify({"success": False, "message": str(e), "responses": []})
+        print(f"Error en /api/bot_responses: {e}")
+        return jsonify({"success": False, "message": str(e), "responses": []}), 500
 
 
 if __name__ == '__main__':

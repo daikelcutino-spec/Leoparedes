@@ -928,10 +928,16 @@
                 const response = await fetch('/api/bot_responses');
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP ${response.status}`);
                 }
                 
                 const data = await response.json();
+                
+                // Validar que data sea un objeto
+                if (!data || typeof data !== 'object') {
+                    throw new Error('Respuesta inválida del servidor');
+                }
+                
                 const consoleDiv = document.getElementById('botConsole');
                 
                 if (!consoleDiv) {
@@ -939,7 +945,7 @@
                     return;
                 }
                 
-                if (data.success && data.responses && Array.isArray(data.responses)) {
+                if (data.success && Array.isArray(data.responses)) {
                     const validLines = data.responses.filter(line => 
                         line && 
                         typeof line === 'string' && 
@@ -975,7 +981,7 @@
                 console.error('Error actualizando consola:', error.message);
                 const consoleDiv = document.getElementById('botConsole');
                 if (consoleDiv) {
-                    consoleDiv.innerHTML = `<div class="console-line" style="color: #ff6b6b;">❌ Error: ${error.message}</div>`;
+                    consoleDiv.innerHTML = `<div class="console-line" style="color: #ff6b6b;">❌ Error: ${escapeHtml(error.message)}</div>`;
                 }
             }
         }
