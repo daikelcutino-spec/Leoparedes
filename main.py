@@ -895,20 +895,30 @@ class Bot(BaseBot):
         username = user.username
 
         public_commands = [
-            "!game love", "!stats", "!online"
+            "!game love", "!stats", "!online", "!info", "!role"
         ]
         force_public = any(msg.startswith(cmd) for cmd in public_commands)
+
+        context_dependent_commands = [
+            "!heart", "!thumbs", "!clap", "!wave",
+            "!punch", "!slap", "!flirt", "!scare", "!electro", 
+            "!hug", "!ninja", "!laugh", "!boom"
+        ]
+        is_context_dependent = any(msg.startswith(cmd) for cmd in context_dependent_commands)
 
         async def send_response(text: str):
             # Si es un comando que debe ser público, siempre enviar al chat
             if force_public:
                 await self.highrise.chat(text)
-            # Si el mensaje original fue por whisper, responder por whisper
-            elif is_whisper:
-                await self.highrise.send_whisper(user.id, text)
-            # Si el mensaje fue público, responder público
+            # Si es un comando que depende del contexto (reacciones/interacciones)
+            elif is_context_dependent:
+                if is_whisper:
+                    await self.highrise.send_whisper(user.id, text)
+                else:
+                    await self.highrise.chat(text)
+            # Todos los demás comandos siempre por whisper
             else:
-                await self.highrise.chat(text)
+                await self.highrise.send_whisper(user.id, text)
 
         # Comando !help
         if msg == "!help":
@@ -951,10 +961,20 @@ class Bot(BaseBot):
         # Comando !role
         if msg == "!role":
             role_info = self.get_user_role_info(user)
-            await send_response(f"🎭 {role_info}")
+            await self.highrise.chat(f"🎭 {role_info}")
+            return
+        if msg.startswith("!role @"):
+            target_username = msg[7:].strip()
+            users = (await self.highrise.get_room_users()).content
+            target_user = next((u for u, _ in users if u.username == target_username), None)
+            if not target_user:
+                await self.highrise.chat(f"❌ Usuario {target_username} no encontrado!")
+                return
+            role_info = self.get_user_role_info(target_user)
+            await self.highrise.chat(f"🎭 {role_info}")
             return
         if msg == "!role list":
-            await send_response("🎭 LISTA DE ROLES:\n👑 Propietario\n🛡️ Administrador\n⚖️ Moderador\n⭐ VIP\n👤 Usuario Normal")
+            await self.highrise.chat("🎭 LISTA DE ROLES:\n👑 Propietario\n🛡️ Administrador\n⚖️ Moderador\n⭐ VIP\n👤 Usuario Normal")
             return
 
         # Ayuda para secciones
