@@ -2162,11 +2162,7 @@ class Bot(BaseBot):
 
     async def on_user_move(self, user: User, destination: Position | AnchorPosition) -> None:
         """Manejador de movimiento de usuario para flashmode automático
-        Solo activa flashmode cuando:
-        - Hay cambio de piso (Y >= 1.0 unidades)
-        - Movimiento horizontal es mínimo (< 2.0 unidades en X y Z)
-        - NO está en cooldown (3 segundos)
-        - Destino no es zona prohibida
+        Activa flashmode cuando hay cambio de piso (Y >= 1.0 unidades)
         """
         def _coords(p):
             return (p.x, p.y, p.z) if isinstance(p, Position) else None
@@ -2192,16 +2188,9 @@ class Bot(BaseBot):
                 return
 
             floor_change_threshold = 1.0
-            horizontal_movement_max = 2.0
-
             y_change = abs(dest_xyz[1] - last_xyz[1])
-            x_change = abs(dest_xyz[0] - last_xyz[0])
-            z_change = abs(dest_xyz[2] - last_xyz[2])
 
-            is_floor_change = y_change >= floor_change_threshold
-            is_minimal_horizontal = (x_change < horizontal_movement_max and z_change < horizontal_movement_max)
-
-            if is_floor_change and is_minimal_horizontal:
+            if y_change >= floor_change_threshold:
                 cooldown_time = 3.0
                 if user_id in self.flashmode_cooldown:
                     time_since_last = current_time - self.flashmode_cooldown[user_id]
