@@ -1,13 +1,9 @@
 {
-  "room_id": "686c527e9668a3cb40e1f58d",
-  "api_token": "b0c7b29926c42a39987057723b8def359ce211d320ecd7f946401fdf9b14d56a",
-  "admin_ids": [
-    "669da7b73867bac51391c757"
-  ],
-  "owner_id": "665a9ecc0ee49fe367324365",
-  "moderator_ids": [
-    "669da7b73867bac51391c757"
-  ],
+  "room_id": "",
+  "api_token": "",
+  "admin_ids": [],
+  "owner_id": "",
+  "moderator_ids": [],
   "vip_zone": {
     "x": 16.5,
     "y": 17.0,
