@@ -5364,3 +5364,22 @@
 [2025-10-05 01:48:49] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-05 01:48:49] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-05 01:48:52] [BOT] Iniciando ciclo automático de 224 emotes
+[2025-10-05 01:51:06] [FLASHMODE] Auto-flashmode Xx__Daikel__xX: Y:4.2→12.0
+[2025-10-05 01:51:20] [FLASHMODE] Auto-flashmode Xx__Daikel__xX: Y:12.0→7.4
+[2025-10-05 01:51:25] [FLASHMODE] Auto-flashmode Xx__Daikel__xX: Y:7.4→0.2
+[2025-10-05 01:51:32] [CHAT] [PUBLIC] Xx__Daikel__xX: !help
+[2025-10-05 01:53:01] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-05 01:53:03] [BOT] Outfit NOCTURNO aplicado
+[2025-10-05 01:53:03] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-05 01:53:03] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-05 01:53:06] [BOT] Iniciando ciclo automático de 224 emotes
+[2025-10-05 01:53:27] [CHAT] [PUBLIC] Xx__Daikel__xX: ghostfloat
+[2025-10-05 01:53:39] [CHAT] [PUBLIC] Xx__Daikel__xX: !role
+[2025-10-05 01:53:50] [CHAT] [PUBLIC] Xx__Daikel__xX: !emote list
+[2025-10-05 01:54:13] [CHAT] [PUBLIC] Xx__Daikel__xX: @NOCTURNO_BOT [BOT_MENTION]
+[2025-10-05 01:54:31] [CHAT] [PUBLIC] Xx__Daikel__xX: !help
+[2025-10-05 01:57:14] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-05 01:57:16] [BOT] Outfit NOCTURNO aplicado
+[2025-10-05 01:57:16] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-05 01:57:16] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-05 01:57:19] [BOT] Iniciando ciclo automático de 224 emotes

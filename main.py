@@ -928,24 +928,24 @@ class Bot(BaseBot):
             # Enviar cada grupo de comandos por separado con delay
             for group in help_groups:
                 if group.strip():
-                    # Dividir grupos muy largos en sub-mensajes si exceden ~450 caracteres
+                    # Dividir grupos muy largos en sub-mensajes si exceden ~250 caracteres
                     group_text = group.strip()
-                    if len(group_text) > 450:
+                    if len(group_text) > 250:
                         lines = group_text.split('\n')
                         current_msg = ""
                         for line in lines:
-                            if len(current_msg) + len(line) + 1 > 450:
+                            if len(current_msg) + len(line) + 1 > 250:
                                 if current_msg:
-                                    await send_response(current_msg)
+                                    await self.highrise.send_whisper(user.id, current_msg)
                                     await asyncio.sleep(0.5)
                                 current_msg = line
                             else:
                                 current_msg += ("\n" if current_msg else "") + line
                         if current_msg:
-                            await send_response(current_msg)
+                            await self.highrise.send_whisper(user.id, current_msg)
                             await asyncio.sleep(0.5)
                     else:
-                        await send_response(group_text)
+                        await self.highrise.send_whisper(user.id, group_text)
                         await asyncio.sleep(0.5)
             return
 
@@ -2295,10 +2295,10 @@ class Bot(BaseBot):
                         await self.highrise.send_emote(emote_id, self.bot_id)
                         if int(number) % 20 == 0:
                             print(f"🎭 Emote #{number}/{len(emotes)}: {emote_name}")
-                        await asyncio.sleep(emote_duration)
+                        await asyncio.sleep(max(0.1, emote_duration - 0.3))
                     except Exception as e:
                         print(f"❌ Error emote #{number} ({emote_name}): {e}")
-                        await asyncio.sleep(1.0)
+                        await asyncio.sleep(0.5)
                         continue
                 
                 print(f"✅ Ciclo #{cycle_count} completado. Esperando 2 segundos...")
