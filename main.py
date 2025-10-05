@@ -89,9 +89,9 @@ def log_event(event_type: str, message: str):
 def log_bot_response(message: str):
     """Registra las respuestas del bot para el panel web"""
     try:
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = datetime.now().strftime("%H:%M:%S")
         with open("bot_responses.txt", "a", encoding="utf-8") as f:
-            f.write(f"[{timestamp}] BOT: {message}\n")
+            f.write(f"[{timestamp}] {message}\n")
         
         # Mantener solo las últimas 100 líneas
         try:
@@ -1000,6 +1000,10 @@ class Bot(BaseBot):
         msg = message.strip()
         user_id = user.id
         username = user.username
+        
+        # Registrar el comando recibido
+        if msg.startswith("!"):
+            log_bot_response(f"👤 @{username} ejecutó: {msg}")
 
         public_commands = [
             "!game love", "!stats", "!online", "!info", "!role"
@@ -1014,8 +1018,9 @@ class Bot(BaseBot):
         is_context_dependent = any(msg.startswith(cmd) for cmd in context_dependent_commands)
 
         async def send_response(text: str):
-            # Registrar respuesta para el panel web
-            log_bot_response(text)
+            # Registrar COMANDO ejecutado y RESPUESTA para el panel web
+            command_executed = msg.split()[0] if msg else "unknown"
+            log_bot_response(f"[CMD: {command_executed}] {text}")
             
             # Si es un comando que debe ser público, siempre enviar al chat
             if force_public:
