@@ -928,10 +928,11 @@
                 const response = await fetch('/api/bot_responses');
                 const data = await response.json();
 
-                if (data.success && data.responses && Array.isArray(data.responses)) {
-                    const consoleDiv = document.getElementById('botConsole');
+                const consoleDiv = document.getElementById('botConsole');
+                
+                if (data.success && data.responses && Array.isArray(data.responses) && data.responses.length > 0) {
                     const lines = data.responses
-                        .filter(line => line && line.trim())
+                        .filter(line => line && line.trim() && !line.trim().startsWith('#'))
                         .map(line => {
                             const trimmed = line.trim();
                             // Colorear según el tipo de mensaje
@@ -945,15 +946,22 @@
                         })
                         .join('');
 
-                    consoleDiv.innerHTML = lines || '<div class="console-line" style="color: #666;">Esperando comandos...</div>';
-
-                    // Auto scroll al final
-                    consoleDiv.scrollTop = consoleDiv.scrollHeight;
+                    if (lines) {
+                        consoleDiv.innerHTML = lines;
+                        // Auto scroll al final
+                        consoleDiv.scrollTop = consoleDiv.scrollHeight;
+                    } else {
+                        consoleDiv.innerHTML = '<div class="console-line" style="color: #888;">🤖 Esperando comandos del bot...</div>';
+                    }
+                } else {
+                    consoleDiv.innerHTML = '<div class="console-line" style="color: #888;">🤖 Esperando comandos del bot...</div>';
                 }
             } catch (error) {
                 console.error('Error actualizando consola:', error);
                 const consoleDiv = document.getElementById('botConsole');
-                consoleDiv.innerHTML = '<div class="console-line" style="color: #ff6b6b;">Error cargando consola</div>';
+                if (consoleDiv) {
+                    consoleDiv.innerHTML = '<div class="console-line" style="color: #ff6b6b;">❌ Error cargando consola</div>';
+                }
             }
         }
 
