@@ -401,6 +401,8 @@ class Bot(BaseBot):
         self.current_emote_task = None
         self.webapi = None
         self.flashmode_cooldown = {}
+        self.session_active = False
+        self.reconnection_in_progress = False
 
     # ========================================================================
     # MÉTODOS DE INICIALIZACIÓN Y CONEXIÓN
@@ -411,10 +413,76 @@ class Bot(BaseBot):
         print("✅ Conexión establecida con High Rise")
         return True
 
+    async def auto_reconnect_loop(self):
+        """Sistema de reconexión automática"""
+        while True:
+            try:
+                await asyncio.sleep(30)  # Verificar cada 30 segundos
+                
+                # Verificar si el bot está en la sala
+                try:
+                    room_users = await self.highrise.get_room_users()
+                    if isinstance(room_users, Error):
+                        raise Exception("Error obteniendo usuarios de la sala")
+                    
+                    # Verificar si el bot está en la lista de usuarios
+                    users = room_users.content
+                    bot_in_room = any(u.id == self.bot_id for u, _ in users)
+                    
+                    if not bot_in_room:
+                        log_event("WARNING", "Bot no encontrado en la sala, intentando reconectar...")
+                        print("⚠️ Bot desconectado de la sala, reconectando...")
+                        await self.attempt_reconnection()
+                        
+                except Exception as e:
+                    log_event("ERROR", f"Error verificando presencia del bot: {e}")
+                    print(f"❌ Error verificando conexión: {e}")
+                    await self.attempt_reconnection()
+                    
+            except Exception as e:
+                log_event("ERROR", f"Error en auto_reconnect_loop: {e}")
+                await asyncio.sleep(5)
+
+    async def attempt_reconnection(self):
+        """Intenta reconectar el bot"""
+        max_attempts = 5
+        for attempt in range(1, max_attempts + 1):
+            try:
+                print(f"🔄 Intento de reconexión {attempt}/{max_attempts}...")
+                log_event("BOT", f"Intento de reconexión {attempt}/{max_attempts}")
+                
+                # Esperar antes de reintentar
+                await asyncio.sleep(attempt * 2)
+                
+                # Intentar obtener usuarios de la sala como prueba de conexión
+                room_users = await self.highrise.get_room_users()
+                if not isinstance(room_users, Error):
+                    print("✅ Reconexión exitosa!")
+                    log_event("BOT", "Reconexión exitosa")
+                    
+                    # Reiniciar tareas en segundo plano si es necesario
+                    asyncio.create_task(self.start_announcements())
+                    asyncio.create_task(self.check_console_messages())
+                    asyncio.create_task(self.periodic_inventory_save())
+                    
+                    if self.bot_mode == "auto":
+                        asyncio.create_task(self.start_auto_emote_cycle())
+                        
+                    return True
+                    
+            except Exception as e:
+                log_event("ERROR", f"Fallo en intento {attempt}: {e}")
+                print(f"❌ Fallo en intento {attempt}: {e}")
+                
+        print("❌ No se pudo reconectar después de varios intentos")
+        log_event("ERROR", "Reconexión fallida después de múltiples intentos")
+        return False
+
     async def on_start(self, session_metadata: SessionMetadata) -> None:
         """Inicio del bot"""
         try:
             self.bot_id = session_metadata.user_id
+            self.session_active = True
             log_event("BOT", f"Bot ID almacenado: {self.bot_id}")
 
             if await self.connect_with_retry():
@@ -425,6 +493,7 @@ class Bot(BaseBot):
                 asyncio.create_task(self.start_announcements())
                 asyncio.create_task(self.check_console_messages())
                 asyncio.create_task(self.periodic_inventory_save())
+                asyncio.create_task(self.auto_reconnect_loop())
 
                 # Configurar apariencia inicial
                 await self.setup_initial_bot_appearance()
