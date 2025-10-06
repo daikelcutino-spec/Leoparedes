@@ -2,3 +2,7 @@
 [00:00:00] 🤖 Bot NOCTURNO iniciado correctamente
 [00:00:00] ✅ Sistema de respuestas activo
 [00:00:00] 💡 Los comandos ejecutados aparecerán aquí
+[00:52:49] @baby__lax: !myid
+[00:52:49] BOT → 🆔 Tu ID de usuario es: 662aae9b602b4a897557ec18
+[00:53:14] @baby__lax: !tome
+[00:53:14] BOT → ❌ ¡Solo el propietario puede usar este comando!
