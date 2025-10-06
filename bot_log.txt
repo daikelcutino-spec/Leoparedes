@@ -5531,3 +5531,20 @@
 [2025-10-06 01:30:14] [CHAT] [PUBLIC] baby__lax: vip
 [2025-10-06 01:30:19] [CHAT] [PUBLIC] baby__lax: nocturno
 [2025-10-06 01:30:32] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 01:36:12] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 01:36:22] [CHAT] [PUBLIC] baby__lax: !restar
+[2025-10-06 01:36:30] [CHAT] [PUBLIC] baby__lax: pv
+[2025-10-06 01:36:39] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 01:36:48] [CHAT] [PUBLIC] baby__lax: directivo
+[2025-10-06 01:36:57] [CHAT] [PUBLIC] baby__lax: dj
+[2025-10-06 01:37:08] [CHAT] [PUBLIC] baby__lax: !tp dj
+[2025-10-06 01:37:24] [CHAT] [PUBLIC] baby__lax: !tplist
+[2025-10-06 01:37:40] [CHAT] [PUBLIC] baby__lax: !help
+[2025-10-06 01:38:41] [CHAT] [PUBLIC] baby__lax: !restart
+[2025-10-06 01:39:48] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-06 01:39:50] [BOT] Outfit NOCTURNO aplicado
+[2025-10-06 01:39:50] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-06 01:39:50] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-06 01:39:53] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-06 01:42:13] [CHAT] [PUBLIC] baby__lax: !setvipzone
+[2025-10-06 01:42:20] [CHAT] [PUBLIC] baby__lax: vip

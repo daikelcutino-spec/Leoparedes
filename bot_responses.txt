@@ -16,3 +16,23 @@
 [01:02:11] BOT → 👑 Zona directiva establecida en: X=5.0, Y=17.5, Z=4.5
 [01:02:39] @baby__lax: !vip @baby__lax
 [01:02:39] BOT → ⭐ @baby__lax ahora es VIP!
+[01:37:08] @baby__lax: !tp dj
+[01:37:08] BOT → ❌ Punto 'dj' no encontrado. Usa !tplist para ver los disponibles
+[01:37:24] @baby__lax: !tplist
+[01:37:24] BOT → 📍 PUNTOS DE TELETRANSPORTE:
+🔹 pista
+🔹 piso2
+🔹 p2
+🔹 pv
+🔹 bar
+🔹 puerta
+
+💡 Usa: !tp [nombre] o escribe el nombre directamente
+[01:38:41] @baby__lax: !restart
+[01:38:41] BOT → 🔄 Reiniciando bot...
+[01:38:41] @baby__lax: !restart
+[01:38:41] BOT → ⚠️ El bot se detendrá en 3 segundos!
+[01:38:41] @baby__lax: !restart
+[01:38:41] BOT → 💡 Usa restart_bot.bat para reinicio automático!
+[01:42:13] @baby__lax: !setvipzone
+[01:42:13] BOT → 🎯 Zona VIP establecida en: X=16.0, Y=17.0, Z=19.0
