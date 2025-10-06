@@ -2146,8 +2146,10 @@ class Bot(BaseBot):
                     teleport_position = Position(point["x"], point["y"], point["z"])
                     await self.highrise.teleport(user_id, teleport_position)
                     await send_response(f"🚀 Te teletransportaste a '{point_name}'!")
+                    log_event("TELEPORT", f"{username} fue a zona '{point_name}' - X:{point['x']}, Y:{point['y']}, Z:{point['z']}")
                 except Exception as e: 
                     await send_response(f"❌ Error de teletransporte: {e}")
+                    log_event("ERROR", f"Error teletransporte {username} a '{point_name}': {e}")
             else:
                 await send_response(f"❌ Punto '{point_name}' no encontrado. Usa !tplist para ver los disponibles")
             return
@@ -2188,6 +2190,7 @@ class Bot(BaseBot):
                 )
                 if not has_permission:
                     await send_response(f"🔒 '{point_name}' es zona VIP. ¡Solo VIP, admins y el propietario pueden acceder!")
+                    log_event("TELEPORT", f"{username} intentó acceder a '{point_name}' sin permisos")
                     return
             
             elif point_name in ["directivo", "dj"]:
@@ -2197,15 +2200,18 @@ class Bot(BaseBot):
                 )
                 if not has_permission:
                     await send_response(f"🔒 '{point_name}' es zona exclusiva. ¡Solo admins y el propietario pueden acceder!")
+                    log_event("TELEPORT", f"{username} intentó acceder a '{point_name}' sin permisos")
                     return
             
             point = TELEPORT_POINTS[point_name]
             try:
                 teleport_position = Position(point["x"], point["y"], point["z"])
                 await self.highrise.teleport(user_id, teleport_position)
-                await send_response( f"🚀 @{user.username} se teletransportó al punto '{point_name}'!")
+                await send_response(f"🚀 @{user.username} se teletransportó al punto '{point_name}'!")
+                log_event("TELEPORT", f"{username} accedió a '{point_name}' - X:{point['x']}, Y:{point['y']}, Z:{point['z']}")
             except Exception as e: 
-                await send_response( f"❌ Error de teletransporte: {e}")
+                await send_response(f"❌ Error de teletransporte: {e}")
+                log_event("ERROR", f"Error teletransporte {username} a '{point_name}': {e}")
             return
 
         # Comando !tele @user (VIP)
