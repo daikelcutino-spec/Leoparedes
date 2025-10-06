@@ -2106,17 +2106,29 @@ class Bot(BaseBot):
         if msg.startswith("!tp "):
             point_name = msg[4:].strip().lower()
             if point_name in TELEPORT_POINTS:
-                private_zones = ["pv", "privada", "vip", "directivo", "dj"]
-                is_private_zone = any(private_word in point_name for private_word in private_zones)
+                vip_zones = ["pv", "privada", "vip"]
+                admin_zones = ["directivo", "dj"]
                 
-                if is_private_zone:
+                is_vip_zone = any(vip_word in point_name for vip_word in vip_zones)
+                is_admin_zone = any(admin_word in point_name for admin_word in admin_zones)
+                
+                if is_vip_zone:
                     has_permission = (
                         user_id == OWNER_ID or 
                         self.is_admin(user_id) or 
                         self.is_vip_by_username(user.username)
                     )
                     if not has_permission:
-                        await send_response(f"🔒 '{point_name}' es una zona privada. ¡Solo VIP, admins y el propietario pueden acceder!")
+                        await send_response(f"🔒 '{point_name}' es zona VIP. ¡Solo VIP, admins y el propietario pueden acceder!")
+                        return
+                
+                elif is_admin_zone:
+                    has_permission = (
+                        user_id == OWNER_ID or 
+                        self.is_admin(user_id)
+                    )
+                    if not has_permission:
+                        await send_response(f"🔒 '{point_name}' es zona exclusiva. ¡Solo admins y el propietario pueden acceder!")
                         return
                 
                 point = TELEPORT_POINTS[point_name]
@@ -2133,17 +2145,29 @@ class Bot(BaseBot):
         # Teletransporte a puntos (escribiendo el nombre directamente)
         if msg.lower() in TELEPORT_POINTS:
             point_name = msg.lower()
-            private_zones = ["pv", "privada", "vip", "directivo", "dj"]
-            is_private_zone = any(private_word in point_name for private_word in private_zones)
+            vip_zones = ["pv", "privada", "vip"]
+            admin_zones = ["directivo", "dj"]
             
-            if is_private_zone:
+            is_vip_zone = any(vip_word in point_name for vip_word in vip_zones)
+            is_admin_zone = any(admin_word in point_name for admin_word in admin_zones)
+            
+            if is_vip_zone:
                 has_permission = (
                     user_id == OWNER_ID or 
                     self.is_admin(user_id) or 
                     self.is_vip_by_username(user.username)
                 )
                 if not has_permission:
-                    await send_response(f"🔒 '{point_name}' es una zona privada. ¡Solo VIP, admins y el propietario pueden acceder!")
+                    await send_response(f"🔒 '{point_name}' es zona VIP. ¡Solo VIP, admins y el propietario pueden acceder!")
+                    return
+            
+            elif is_admin_zone:
+                has_permission = (
+                    user_id == OWNER_ID or 
+                    self.is_admin(user_id)
+                )
+                if not has_permission:
+                    await send_response(f"🔒 '{point_name}' es zona exclusiva. ¡Solo admins y el propietario pueden acceder!")
                     return
             
             point = TELEPORT_POINTS[point_name]
