@@ -2439,6 +2439,68 @@ class Bot(BaseBot):
                 await send_response(f"❌ Punto '{point_name}' no encontrado. Usa !tplist para ver los disponibles")
             return
 
+        # Comando vip (teletransporte a zona VIP usando VIP_ZONE del config)
+        if msg == "vip" or msg == "!vip":
+            has_permission = (
+                user_id == OWNER_ID or 
+                self.is_admin(user_id) or 
+                username in VIP_USERS
+            )
+            if not has_permission:
+                await send_response("🔒 Zona VIP solo para VIP, admins y propietario!")
+                return
+            
+            if VIP_ZONE and VIP_ZONE.get("x") is not None:
+                try:
+                    vip_position = Position(VIP_ZONE["x"], VIP_ZONE["y"], VIP_ZONE["z"])
+                    await self.highrise.teleport(user_id, vip_position)
+                    await send_response(f"⭐ Te teletransportaste a la zona VIP!")
+                    log_event("TELEPORT", f"{username} accedió a zona VIP - X:{VIP_ZONE['x']}, Y:{VIP_ZONE['y']}, Z:{VIP_ZONE['z']}")
+                except Exception as e:
+                    await send_response(f"❌ Error de teletransporte: {e}")
+                    log_event("ERROR", f"Error teletransporte {username} a zona VIP: {e}")
+            else:
+                await send_response("❌ Zona VIP no configurada. Usa !setvipzone para establecerla")
+            return
+
+        # Comando dj (teletransporte a zona DJ)
+        if msg == "dj" or msg == "!dj":
+            has_permission = (user_id == OWNER_ID or self.is_admin(user_id))
+            if not has_permission:
+                await send_response("🔒 Zona DJ solo para admins y propietario!")
+                return
+            
+            if DJ_ZONE and DJ_ZONE.get("x") is not None:
+                try:
+                    dj_position = Position(DJ_ZONE["x"], DJ_ZONE["y"], DJ_ZONE["z"])
+                    await self.highrise.teleport(user_id, dj_position)
+                    await send_response(f"🎵 Te teletransportaste a la zona DJ!")
+                    log_event("TELEPORT", f"{username} accedió a zona DJ - X:{DJ_ZONE['x']}, Y:{DJ_ZONE['y']}, Z:{DJ_ZONE['z']}")
+                except Exception as e:
+                    await send_response(f"❌ Error de teletransporte: {e}")
+            else:
+                await send_response("❌ Zona DJ no configurada. Usa !setdj para establecerla")
+            return
+
+        # Comando directivo (teletransporte a zona directivo)
+        if msg == "directivo" or msg == "!directivo":
+            has_permission = (user_id == OWNER_ID or self.is_admin(user_id))
+            if not has_permission:
+                await send_response("🔒 Zona directivo solo para admins y propietario!")
+                return
+            
+            if DIRECTIVO_ZONE and DIRECTIVO_ZONE.get("x") is not None:
+                try:
+                    directivo_position = Position(DIRECTIVO_ZONE["x"], DIRECTIVO_ZONE["y"], DIRECTIVO_ZONE["z"])
+                    await self.highrise.teleport(user_id, directivo_position)
+                    await send_response(f"👑 Te teletransportaste a la zona directivo!")
+                    log_event("TELEPORT", f"{username} accedió a zona directivo - X:{DIRECTIVO_ZONE['x']}, Y:{DIRECTIVO_ZONE['y']}, Z:{DIRECTIVO_ZONE['z']}")
+                except Exception as e:
+                    await send_response(f"❌ Error de teletransporte: {e}")
+            else:
+                await send_response("❌ Zona directivo no configurada. Usa !setdirectivo para establecerla")
+            return
+
         # Teletransporte a puntos (escribiendo el nombre directamente)
         if msg.lower() in TELEPORT_POINTS:
             point_name = msg.lower()
