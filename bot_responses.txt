@@ -68,3 +68,20 @@
 🔹 [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
 
 💡 Usa: !tp [nombre] o escribe el nombre directamente
+[06:40:04] @baby__lax: !setvipzone
+[06:40:04] BOT → 🎯 Zona VIP establecida en: X=16.0, Y=17.0, Z=20.0
+[06:40:27] @baby__lax: !tplist
+[06:40:27] BOT → 📍 No hay puntos de teletransporte creados
+[06:40:51] @baby__lax: !tp vip
+[06:40:51] BOT → ❌ Punto 'vip' no encontrado. Usa !tplist para ver los disponibles
+[06:41:14] @baby__lax: !TPus vip
+[06:41:14] BOT → 📍 Punto de teletransporte 'vip' creado en posición: X=15.5, Y=17.0, Z=19.5
+[06:41:46] @baby__lax: !tplist
+[06:41:46] BOT → 📍 PUNTOS DE TELETRANSPORTE:
+🔹 vip
+
+💡 Usa: !tp [nombre] o escribe el nombre directamente
+[06:42:09] @baby__lax: !delpoint
+[06:42:09] BOT → ❌ Usa: !delpoint [nombre]
+[06:42:21] @baby__lax: !delpoint vip
+[06:42:21] BOT → ✅ Punto 'vip' eliminado!

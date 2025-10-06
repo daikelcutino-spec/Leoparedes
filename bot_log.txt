@@ -5602,3 +5602,16 @@
 [2025-10-06 06:30:33] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-06 06:30:33] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-06 06:30:36] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-06 06:38:50] [FLASHMODE] Auto-flashmode baby__lax: Y:12.0→4.2
+[2025-10-06 06:38:54] [FLASHMODE] Auto-flashmode baby__lax: Y:4.2→12.0
+[2025-10-06 06:40:04] [CHAT] [PUBLIC] baby__lax: !setvipzone
+[2025-10-06 06:40:13] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 06:40:27] [CHAT] [PUBLIC] baby__lax: !tplist
+[2025-10-06 06:40:37] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 06:40:51] [CHAT] [PUBLIC] baby__lax: !tp vip
+[2025-10-06 06:41:14] [CHAT] [PUBLIC] baby__lax: !TPus vip
+[2025-10-06 06:41:21] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 06:41:21] [TELEPORT] baby__lax accedió a 'vip' - X:15.5, Y:17.0, Z:19.5
+[2025-10-06 06:41:46] [CHAT] [PUBLIC] baby__lax: !tplist
+[2025-10-06 06:42:09] [CHAT] [PUBLIC] baby__lax: !delpoint
+[2025-10-06 06:42:21] [CHAT] [PUBLIC] baby__lax: !delpoint vip
