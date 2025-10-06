@@ -5596,3 +5596,9 @@
 [2025-10-06 06:04:33] [CHAT] [PUBLIC] baby__lax: !delpoint !addzone [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
 [2025-10-06 06:05:42] [CHAT] [PUBLIC] baby__lax: [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
 [2025-10-06 06:06:29] [CHAT] [PUBLIC] baby__lax: !tplist
+[2025-10-06 06:30:31] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-06 06:30:33] [BOT] Outfit NOCTURNO aplicado
+[2025-10-06 06:30:33] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-06 06:30:33] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-06 06:30:33] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-06 06:30:36] [BOT] Iniciando ciclo automático de 222 emotes gratuitos

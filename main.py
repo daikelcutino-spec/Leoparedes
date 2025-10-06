@@ -418,7 +418,6 @@ class Bot(BaseBot):
         self.connection_retries = 0
         self.bot_mode = "idle"
         self.current_emote_task = None
-        self.webapi = None
         self.flashmode_cooldown = {}
         self.session_active = False
         self.reconnection_in_progress = False
@@ -1078,7 +1077,12 @@ class Bot(BaseBot):
             return
         if msg.startswith("!role @"):
             target_username = msg[7:].strip()
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await self.highrise.chat("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             target_user = next((u for u, _ in users if u.username == target_username), None)
             if not target_user:
                 await self.highrise.chat(f"❌ Usuario {target_username} no encontrado!")
@@ -1122,7 +1126,12 @@ class Bot(BaseBot):
             emote = emotes.get(emote_number)
             if emote and emote["is_free"]:
                 try:
-                    users = (await self.highrise.get_room_users()).content
+                    response = await self.highrise.get_room_users()
+                    if isinstance(response, Error):
+                        await send_response("❌ Error obteniendo usuarios")
+                        log_event("ERROR", f"get_room_users failed: {response.message}")
+                        return
+                    users = response.content
                     user_obj = next((u for u, _ in users if u.id == user.id), None)
                     if user_obj:
                         asyncio.create_task(self.send_emote_loop(user.id, emote["id"]))
@@ -1146,7 +1155,12 @@ class Bot(BaseBot):
                     return
                 apply_to_all = True
                 emote_key = " ".join(parts[2:])
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    log_event("ERROR", f"get_room_users failed: {response.message}")
+                    return
+                users = response.content
                 target_user_ids = [u.id for u, _ in users if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"])]
 
             elif len(parts) >= 3 and parts[1].startswith("@"):
@@ -1155,7 +1169,12 @@ class Bot(BaseBot):
                     return
                 target_username = parts[1][1:]
                 emote_key = " ".join(parts[2:])
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    log_event("ERROR", f"get_room_users failed: {response.message}")
+                    return
+                users = response.content
                 target_user = next((u for u, _ in users if u.username == target_username), None)
                 if not target_user: await send_response( f"❌ ¡Usuario {target_username} no encontrado!"); return
                 target_user_ids = [target_user.id]
@@ -1198,7 +1217,12 @@ class Bot(BaseBot):
                     target_username = parts[0][1:]
                     emote_name = " ".join(parts[1:])
                     include_self = False
-                    users = (await self.highrise.get_room_users()).content
+                    response = await self.highrise.get_room_users()
+                    if isinstance(response, Error):
+                        await send_response("❌ Error obteniendo usuarios")
+                        log_event("ERROR", f"get_room_users failed: {response.message}")
+                        return
+                    users = response.content
                     target_user = next((u for u, _ in users if u.username == target_username), None)
                     if not target_user: await send_response( f"❌ ¡Usuario {target_username} no encontrado!"); return
                     target_user_ids = [target_user.id]
@@ -1208,7 +1232,12 @@ class Bot(BaseBot):
                         return
                     emote_name = parts[0]
                     target_parts = parts[1:]
-                    users = (await self.highrise.get_room_users()).content
+                    response = await self.highrise.get_room_users()
+                    if isinstance(response, Error):
+                        await send_response("❌ Error obteniendo usuarios")
+                        log_event("ERROR", f"get_room_users failed: {response.message}")
+                        return
+                    users = response.content
                     target_user_ids = []
                     for part in target_parts:
                         if part == "all":
@@ -1250,7 +1279,12 @@ class Bot(BaseBot):
             elif stop_target.startswith("@"):
                 if not (self.is_vip(user_id) or self.is_admin(user_id)): await send_response("❌ ¡Solo VIP y administradores pueden detener animaciones de otros!"); return
                 target_username = stop_target[1:]
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    log_event("ERROR", f"get_room_users failed: {response.message}")
+                    return
+                users = response.content
                 target_user = next((u for u, _ in users if u.username == target_username), None)
                 if not target_user: await send_response( f"❌ ¡Usuario {target_username} no encontrado!"); return
                 await self.stop_emote_loop(target_user.id)
@@ -1269,10 +1303,23 @@ class Bot(BaseBot):
 
         # Comando !position (nuevo - muestra posición actual)
         if msg == "!position" or msg == "!pos":
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             user_position = next((pos for u, pos in users if u.id == user_id), None)
             if user_position:
-                await send_response(f"📍 Tu posición:\nX: {user_position.x:.2f}\nY: {user_position.y:.2f}\nZ: {user_position.z:.2f}")
+                if isinstance(user_position, Position):
+                    await send_response(f"📍 Tu posición:\nX: {user_position.x:.2f}\nY: {user_position.y:.2f}\nZ: {user_position.z:.2f}")
+                elif isinstance(user_position, AnchorPosition):
+                    if user_position.offset:
+                        await send_response(f"📍 Tu posición:\nX: {user_position.offset.x:.2f}\nY: {user_position.offset.y:.2f}\nZ: {user_position.offset.z:.2f}")
+                    else:
+                        await send_response("❌ No se pudo obtener tu posición (sin offset)")
+                else:
+                    await send_response("❌ No se pudo obtener tu posición")
             else:
                 await send_response("❌ No se pudo obtener tu posición")
             return
@@ -1308,7 +1355,12 @@ class Bot(BaseBot):
                 lb_type = parts[1].lower()
                 if lb_type == "heart":
                     top = sorted(USER_HEARTS.items(), key=lambda x: x[1], reverse=True)[:10]
-                    id_to_name = {u.id: u.username for u, _ in (await self.highrise.get_room_users()).content}
+                    response = await self.highrise.get_room_users()
+                    if isinstance(response, Error):
+                        await send_response("❌ Error obteniendo usuarios")
+                        log_event("ERROR", f"get_room_users failed: {response.message}")
+                        return
+                    id_to_name = {u.id: u.username for u, _ in response.content}
                     lines = ["❤️ Top por corazones:"]
                     count = 0
                     for i, (uid, count_val) in enumerate(top, 1):
@@ -1319,7 +1371,12 @@ class Bot(BaseBot):
                     await send_response("\n".join(lines))
                 elif lb_type == "active":
                     top = sorted(USER_ACTIVITY.items(), key=lambda x: x[1]["messages"], reverse=True)[:10]
-                    id_to_name = {u.id: u.username for u, _ in (await self.highrise.get_room_users()).content}
+                    response = await self.highrise.get_room_users()
+                    if isinstance(response, Error):
+                        await send_response("❌ Error obteniendo usuarios")
+                        log_event("ERROR", f"get_room_users failed: {response.message}")
+                        return
+                    id_to_name = {u.id: u.username for u, _ in response.content}
                     lines = ["💬 Top por actividad:"]
                     count = 0
                     for i, (uid, data) in enumerate(top, 1):
@@ -1336,7 +1393,12 @@ class Bot(BaseBot):
         # Comando !heartall (Owner)
         if msg == "!heartall":
             if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede enviar corazones a todos!"); return
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             heart_count = 0
             for u, _ in users:
                 if not any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):
@@ -1352,7 +1414,12 @@ class Bot(BaseBot):
             if len(parts) >= 2:
                 target_username = parts[1].replace("@", "")
                 hearts_count = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 1
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    log_event("ERROR", f"get_room_users failed: {response.message}")
+                    return
+                users = response.content
                 target_user_obj = next((u for u, _ in users if u.username == target_username), None)
                 if not target_user_obj: await send_response( f"❌ ¡Usuario {target_username} no encontrado!"); return
 
@@ -1379,7 +1446,12 @@ class Bot(BaseBot):
             if len(parts) >= 2:
                 target = parts[1].replace("@", "")
                 thumbs_count = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 1
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    log_event("ERROR", f"get_room_users failed: {response.message}")
+                    return
+                users = response.content
                 
                 if target.lower() == "all":
                     count = 0
@@ -1406,7 +1478,12 @@ class Bot(BaseBot):
             if len(parts) >= 2:
                 target = parts[1].replace("@", "")
                 clap_count = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 1
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    log_event("ERROR", f"get_room_users failed: {response.message}")
+                    return
+                users = response.content
                 
                 if target.lower() == "all":
                     count = 0
@@ -1433,7 +1510,12 @@ class Bot(BaseBot):
             if len(parts) >= 2:
                 target = parts[1].replace("@", "")
                 wave_count = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 1
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    log_event("ERROR", f"get_room_users failed: {response.message}")
+                    return
+                users = response.content
                 
                 if target.lower() == "all":
                     count = 0
@@ -1478,11 +1560,19 @@ class Bot(BaseBot):
             if len(parts) >= 4:
                 try:
                     x, y, z = float(parts[1]), float(parts[2]), float(parts[3])
-                    users = (await self.highrise.get_room_users()).content
+                    response = await self.highrise.get_room_users()
+                    if isinstance(response, Error):
+                        await send_response("❌ Error obteniendo usuarios")
+                        log_event("ERROR", f"get_room_users failed: {response.message}")
+                        return
+                    users = response.content
                     current_position = next((pos for u, pos in users if u.id == user.id), None)
                     if current_position:
-                        if abs(current_position.y - y) < 1.0: await send_response("❌ ¡Flash solo para subir/bajar pisos!"); return
-                        if abs(current_position.x - x) > 3.0 or abs(current_position.z - z) > 3.0: await send_response("❌ ¡Flash solo para subir/bajar pisos!"); return
+                        current_y = current_position.y if isinstance(current_position, Position) else (current_position.offset.y if current_position.offset else 0)
+                        current_x = current_position.x if isinstance(current_position, Position) else (current_position.offset.x if current_position.offset else 0)
+                        current_z = current_position.z if isinstance(current_position, Position) else (current_position.offset.z if current_position.offset else 0)
+                        if abs(current_y - y) < 1.0: await send_response("❌ ¡Flash solo para subir/bajar pisos!"); return
+                        if abs(current_x - x) > 3.0 or abs(current_z - z) > 3.0: await send_response("❌ ¡Flash solo para subir/bajar pisos!"); return
                         if not self.is_in_forbidden_zone(x, y, z):
                             pos = Position(x, y, z)
                             await self.highrise.teleport(user.id, pos)
@@ -1503,11 +1593,19 @@ class Bot(BaseBot):
             parts = msg.split()
             if len(parts) == 2 and parts[1].startswith("@"):
                 target_username = parts[1].replace("@", "")
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    log_event("ERROR", f"get_room_users failed: {response.message}")
+                    return
+                users = response.content
                 target_user = next((u for u, _ in users if u.username == target_username), None)
                 if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
                 inv_response = await self.highrise.get_user_outfit(target_user.id)
-                if isinstance(inv_response, Error): await send_response( f"❌ Error obteniendo outfit de {target_username}"); return
+                if isinstance(inv_response, Error):
+                    await send_response( f"❌ Error obteniendo outfit de {target_username}")
+                    log_event("ERROR", f"get_user_outfit failed: {inv_response.message}")
+                    return
                 outfit = inv_response.outfit
                 if outfit:
                     await send_response( f"👔 OUTFIT de {target_username}:")
@@ -1515,7 +1613,10 @@ class Bot(BaseBot):
                 else: await send_response( f"👔 {target_username} no tiene outfit equipado")
             else:
                 inventory_response = await self.highrise.get_inventory()
-                if isinstance(inventory_response, Error): await send_response( f"❌ Error: {str(inventory_response)[:100]}"); return
+                if isinstance(inventory_response, Error):
+                    await send_response( f"❌ Error obteniendo inventario")
+                    log_event("ERROR", f"get_inventory failed: {inventory_response.message}")
+                    return
                 inventory = inventory_response.items
                 if inventory:
                     total_items = len(inventory)
@@ -1531,13 +1632,15 @@ class Bot(BaseBot):
             if len(parts) >= 3:
                 target_username = parts[1].replace("@", "")
                 item_id = " ".join(parts[2:])
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    log_event("ERROR", f"get_room_users failed: {response.message}")
+                    return
+                users = response.content
                 target_user = next((u for u, _ in users if u.username == target_username), None)
                 if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
-                from highrise.models import Item
-                item = Item(type="clothing", id=item_id, amount=1)
-                await self.highrise.set_inventory(target_user.id, [item])
-                await send_response( f"🎁 Item {item_id} entregado a {target_username}")
+                await send_response( f"⚠️ Comando !give deshabilitado (set_inventory no disponible)")
             else: await send_response("❌ Usa: !give @user [item_id]")
             return
 
@@ -1568,13 +1671,24 @@ class Bot(BaseBot):
         # Comando !tome (Owner)
         if msg == "!tome":
             if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede usar este comando!"); return
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             bot_user, bot_pos, user_pos = None, None, None
             for u, pos in users:
                 if hasattr(self, 'bot_id') and u.id == self.bot_id: bot_user, bot_pos = u, pos
                 if u.id == user_id: user_pos = pos
             if bot_user and user_pos:
-                target_pos = Position(user_pos.x + 1.0, user_pos.y, user_pos.z)
+                if isinstance(user_pos, Position):
+                    target_pos = Position(user_pos.x + 1.0, user_pos.y, user_pos.z)
+                elif isinstance(user_pos, AnchorPosition) and user_pos.offset:
+                    target_pos = Position(user_pos.offset.x + 1.0, user_pos.offset.y, user_pos.offset.z)
+                else:
+                    await send_response("❌ No se pudo obtener tu posición!")
+                    return
                 await self.highrise.teleport(bot_user.id, target_pos)
                 await send_response( f"🤖 Bot teletransportado a @{user.username}")
             elif not bot_user: await send_response("❌ ¡Bot no encontrado en la sala!")
@@ -1618,14 +1732,29 @@ class Bot(BaseBot):
         if msg.startswith("!mimic "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo propietario y administradores pueden usar este comando!"); return
             target_username = msg[7:].strip().replace("@", "")
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             target_user = next((u for u, _ in users if u.username == target_username), None)
             if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado"); return
-            target_outfit = await self.highrise.get_user_outfit(target_user.id)
-            await self.highrise.set_outfit(target_outfit.outfit)
+            target_outfit_response = await self.highrise.get_user_outfit(target_user.id)
+            if isinstance(target_outfit_response, Error):
+                await send_response(f"❌ Error obteniendo outfit de {target_username}")
+                log_event("ERROR", f"get_user_outfit failed: {target_outfit_response.message}")
+                return
+            await self.highrise.set_outfit(target_outfit_response.outfit)
             target_position = next((pos for u, pos in users if u.id == target_user.id), None)
             if target_position:
-                mimic_position = Position(target_position.x + 0.5, target_position.y, target_position.z + 0.5)
+                if isinstance(target_position, Position):
+                    mimic_position = Position(target_position.x + 0.5, target_position.y, target_position.z + 0.5)
+                elif isinstance(target_position, AnchorPosition) and target_position.offset:
+                    mimic_position = Position(target_position.offset.x + 0.5, target_position.offset.y, target_position.offset.z + 0.5)
+                else:
+                    await send_response("❌ No se pudo obtener la posición")
+                    return
                 await self.highrise.teleport(self.bot_id, mimic_position)
             await send_response( f"🎭 Bot imitando a @{target_username}"); await self.highrise.chat(f"🎭 ¡Soy @{target_username}!")
             return
@@ -1633,10 +1762,14 @@ class Bot(BaseBot):
         # Comando !copyoutfit (Admin/Owner)
         if msg == "!copyoutfit":
             if not (user_id == OWNER_ID or self.is_admin(user_id)): await send_response("❌ ¡Solo propietario y administradores pueden usar este comando!"); return
-            user_outfit = await self.highrise.get_user_outfit(user.id)
-            await self.highrise.set_outfit(user_outfit.outfit)
+            user_outfit_response = await self.highrise.get_user_outfit(user.id)
+            if isinstance(user_outfit_response, Error):
+                await send_response("❌ Error obteniendo outfit")
+                log_event("ERROR", f"get_user_outfit failed: {user_outfit_response.message}")
+                return
+            await self.highrise.set_outfit(user_outfit_response.outfit)
             outfit_number = len(SAVED_OUTFITS) + 1
-            SAVED_OUTFITS[outfit_number] = user_outfit.outfit
+            SAVED_OUTFITS[outfit_number] = user_outfit_response.outfit
             self.save_data()
             await send_response( f"👔 Outfit copiado y guardado como #{outfit_number}")
             return
@@ -1644,10 +1777,21 @@ class Bot(BaseBot):
         # Comando !setdirectivo (Owner)
         if msg == "!setdirectivo":
             if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede establecer la zona directiva!"); return
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             user_position = next((pos for u, pos in users if u.id == user_id), None)
             if user_position:
-                new_directivo_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                if isinstance(user_position, Position):
+                    new_directivo_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                elif isinstance(user_position, AnchorPosition) and user_position.offset:
+                    new_directivo_zone = {"x": user_position.offset.x, "y": user_position.offset.y, "z": user_position.offset.z}
+                else:
+                    await send_response("¡Error obteniendo posición del usuario!")
+                    return
                 config = load_config()
                 config["directivo_zone"] = new_directivo_zone
                 with open("config.json", "w", encoding="utf-8") as f: json.dump(config, f, indent=2, ensure_ascii=False)
@@ -1686,7 +1830,12 @@ class Bot(BaseBot):
 
                 if tip_type == "all" and 1 <= amount <= 5:
                     try:
-                        users = (await self.highrise.get_room_users()).content
+                        response = await self.highrise.get_room_users()
+                        if isinstance(response, Error):
+                            await send_response("❌ Error obteniendo usuarios")
+                            log_event("ERROR", f"get_room_users failed: {response.message}")
+                            return
+                        users = response.content
                         bot_user = next((u for u, _ in users if u.username == "NOCTURNO_BOT" or u.username.upper() == "NOCTURNO_BOT" or u.username.lower() in ["highrisebot", "gluxbot", "bot"] or any(name in u.username.lower() for name in ["nocturno", "bot", "glux", "highrise"])), None)
                         available_users = [u for u, _ in users if bot_user and u.id != bot_user.id]
                         user_count = len(available_users)
@@ -1694,15 +1843,22 @@ class Bot(BaseBot):
                         real_balance = await self.get_bot_wallet_balance()
                         if total_cost > real_balance: await send_response( f"❌ ¡Oro insuficiente! Necesario: {total_cost}, disponible: {real_balance}"); return
 
+                        valid_tips = ["gold_bar_1", "gold_bar_5", "gold_bar_10", "gold_bar_50", "gold_bar_100", "gold_bar_500", "gold_bar_1k", "gold_bar_5000", "gold_bar_10k"]
                         for u in available_users:
                             tip_bars = self.convert_to_gold_bars(amount)
-                            if tip_bars: await self.highrise.tip_user(u.id, tip_bars)
+                            if tip_bars and tip_bars in valid_tips:
+                                await self.highrise.tip_user(u.id, tip_bars)
                         await self.highrise.chat(f"💰 ¡Bot dio {amount} oro a todos los {user_count} jugadores en la sala!")
                     except Exception as e: await send_response( f"❌ Error dando oro: {e}")
 
                 elif tip_type == "only" and amount > 0:
                     try:
-                        users = (await self.highrise.get_room_users()).content
+                        response = await self.highrise.get_room_users()
+                        if isinstance(response, Error):
+                            await send_response("❌ Error obteniendo usuarios")
+                            log_event("ERROR", f"get_room_users failed: {response.message}")
+                            return
+                        users = response.content
                         bot_user = next((u for u, _ in users if u.username == "NOCTURNO_BOT" or u.username.upper() == "NOCTURNO_BOT" or u.username.lower() in ["highrisebot", "gluxbot", "bot"] or any(name in u.username.lower() for name in ["nocturno", "bot", "glux", "highrise"])), None)
                         available_users = [u for u, _ in users if bot_user and u.id != bot_user.id]
                         num_users = min(amount, len(available_users))
@@ -1710,9 +1866,11 @@ class Bot(BaseBot):
                         total_cost = num_users * 5
                         real_balance = await self.get_bot_wallet_balance()
                         if total_cost > real_balance: await send_response( f"❌ ¡Oro insuficiente! Necesario: {total_cost}, disponible: {real_balance}"); return
+                        valid_tips = ["gold_bar_1", "gold_bar_5", "gold_bar_10", "gold_bar_50", "gold_bar_100", "gold_bar_500", "gold_bar_1k", "gold_bar_5000", "gold_bar_10k"]
                         for u in selected_users:
                             tip_bars = self.convert_to_gold_bars(5)
-                            if tip_bars: await self.highrise.tip_user(u.id, tip_bars)
+                            if tip_bars and tip_bars in valid_tips:
+                                await self.highrise.tip_user(u.id, tip_bars)
                         user_names = ", ".join([u.username for u in selected_users])
                         await self.highrise.chat(f"💰 Bot dio 5 oro a {num_users} usuarios aleatorios: {user_names}")
                     except Exception as e: await send_response( f"❌ Error al dar oro: {e}")
@@ -1727,7 +1885,12 @@ class Bot(BaseBot):
             if len(parts) >= 2:
                 target_username = parts[1].replace("@", "")
                 command = parts[0]
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    log_event("ERROR", f"get_room_users failed: {response.message}")
+                    return
+                users = response.content
                 target_user = next((u for u, _ in users if u.username == target_username), None)
                 if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado en la sala!"); return
                 if command == "!kick":
@@ -1748,8 +1911,10 @@ class Bot(BaseBot):
                 VIP_USERS.add(target_user)
                 self.save_data()
                 await send_response( f"🎉 Otorgaste estatus VIP a {target_user}!")
-                target_user_id = next((u.id for u, _ in (await self.highrise.get_room_users()).content if u.username == target_user), None)
-                if target_user_id: await self.highrise.send_whisper(target_user_id, f"🎉 ¡Felicitaciones! Ahora eres VIP gracias a @{user.username}")
+                response = await self.highrise.get_room_users()
+                if not isinstance(response, Error):
+                    target_user_id = next((u.id for u, _ in response.content if u.username == target_user), None)
+                    if target_user_id: await self.highrise.send_whisper(target_user_id, f"🎉 ¡Felicitaciones! Ahora eres VIP gracias a @{user.username}")
             else: await send_response( f"¡Usuario {target_user} ya tiene estatus VIP!")
             return
 
@@ -1768,7 +1933,12 @@ class Bot(BaseBot):
         if msg.startswith("!freeze"):
             if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden usar freeze!"); return
             target_username = msg[7:].strip().replace("@", "")
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             target_user = next((u for u, _ in users if u.username == target_username), None)
             if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado en la sala!"); return
             await self.highrise.moderate_room(target_user.id, "mute", 300)
@@ -1782,7 +1952,12 @@ class Bot(BaseBot):
             if len(parts) >= 2:
                 target_username = parts[1].replace("@", "")
                 duration = int(parts[2]) if len(parts) >= 3 and parts[2].isdigit() else 60
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    log_event("ERROR", f"get_room_users failed: {response.message}")
+                    return
+                users = response.content
                 target_user = next((u for u, _ in users if u.username == target_username), None)
                 if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
                 await self.highrise.moderate_room(target_user.id, "mute", duration)
@@ -1794,7 +1969,12 @@ class Bot(BaseBot):
         if msg.startswith("!unmute"):
             if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden usar unmute!"); return
             target_username = msg[7:].strip().replace("@", "")
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             target_user = next((u for u, _ in users if u.username == target_username), None)
             if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
             await self.highrise.moderate_room(target_user.id, "mute", 0)
@@ -1898,10 +2078,21 @@ class Bot(BaseBot):
         # Comando !setvipzone (Owner)
         if msg.startswith("!setvipzone") or msg == "!sv":
             if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede establecer la zona VIP!"); return
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             user_position = next((pos for u, pos in users if u.id == user_id), None)
             if user_position:
-                new_vip_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                if isinstance(user_position, Position):
+                    new_vip_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                elif isinstance(user_position, AnchorPosition) and user_position.offset:
+                    new_vip_zone = {"x": user_position.offset.x, "y": user_position.offset.y, "z": user_position.offset.z}
+                else:
+                    await send_response("¡Error obteniendo posición del usuario!")
+                    return
                 config = load_config()
                 config["vip_zone"] = new_vip_zone
                 with open("config.json", "w", encoding="utf-8") as f: json.dump(config, f, indent=2, ensure_ascii=False)
@@ -1913,10 +2104,21 @@ class Bot(BaseBot):
         # Comando !setdj (Owner)
         if msg == "!setdj":
             if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede establecer la zona DJ!"); return
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             user_position = next((pos for u, pos in users if u.id == user_id), None)
             if user_position:
-                new_dj_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                if isinstance(user_position, Position):
+                    new_dj_zone = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                elif isinstance(user_position, AnchorPosition) and user_position.offset:
+                    new_dj_zone = {"x": user_position.offset.x, "y": user_position.offset.y, "z": user_position.offset.z}
+                else:
+                    await send_response("¡Error obteniendo posición del usuario!")
+                    return
                 config = load_config()
                 config["dj_zone"] = new_dj_zone
                 with open("config.json", "w", encoding="utf-8") as f: json.dump(config, f, indent=2, ensure_ascii=False)
@@ -1927,10 +2129,21 @@ class Bot(BaseBot):
         # Comando !setspawn (Owner)
         if msg == "!setspawn":
             if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede establecer el punto de inicio del bot!"); return
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             user_position = next((pos for u, pos in users if u.id == user_id), None)
             if user_position:
-                spawn_point = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                if isinstance(user_position, Position):
+                    spawn_point = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                elif isinstance(user_position, AnchorPosition) and user_position.offset:
+                    spawn_point = {"x": user_position.offset.x, "y": user_position.offset.y, "z": user_position.offset.z}
+                else:
+                    await send_response("¡Error obteniendo posición del usuario!")
+                    return
                 config = load_config()
                 config["spawn_point"] = spawn_point
                 with open("config.json", "w", encoding="utf-8") as f: json.dump(config, f, indent=2, ensure_ascii=False)
@@ -1942,7 +2155,12 @@ class Bot(BaseBot):
         if msg.startswith("!bot "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden usar este comando!"); return
             target_username = msg[5:].strip().replace("@", "")
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             bot_user, bot_pos, target_user, target_pos = None, None, None, None
             for u, pos in users:
                 if hasattr(self, 'bot_id') and u.id == self.bot_id: bot_user, bot_pos = u, pos
@@ -1950,8 +2168,20 @@ class Bot(BaseBot):
             if not bot_user: await send_response("❌ Bot no encontrado!"); return
             if not target_user: await send_response(f"❌ ¡Usuario {target_username} no encontrado!"); return
             if not bot_pos or not target_pos: await send_response("❌ Error: No se pudieron obtener las posiciones"); return
-            original_x, original_y, original_z = bot_pos.x, bot_pos.y, bot_pos.z
-            new_position = Position(target_pos.x + 1.0, target_pos.y, target_pos.z)
+            if isinstance(bot_pos, Position):
+                original_x, original_y, original_z = bot_pos.x, bot_pos.y, bot_pos.z
+            elif isinstance(bot_pos, AnchorPosition) and bot_pos.offset:
+                original_x, original_y, original_z = bot_pos.offset.x, bot_pos.offset.y, bot_pos.offset.z
+            else:
+                await send_response("❌ Error obteniendo posición del bot")
+                return
+            if isinstance(target_pos, Position):
+                new_position = Position(target_pos.x + 1.0, target_pos.y, target_pos.z)
+            elif isinstance(target_pos, AnchorPosition) and target_pos.offset:
+                new_position = Position(target_pos.offset.x + 1.0, target_pos.offset.y, target_pos.offset.z)
+            else:
+                await send_response("❌ Error obteniendo posición del objetivo")
+                return
             await self.highrise.teleport(bot_user.id, new_position)
             await send_response(f"🤖 Bot teletransportado a @{target_username}!")
             try:
@@ -1970,19 +2200,35 @@ class Bot(BaseBot):
         if msg.startswith("!bring "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden mover jugadores!"); return
             target_username = msg[7:].strip().replace("@", "")
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             command_user_position = next((pos for u, pos in users if u.id == user_id), None)
             target_user_obj = next((u for u, _ in users if u.username == target_username), None)
             if not command_user_position: await send_response("❌ ¡Error obteniendo tu posición!"); return
             if not target_user_obj: await send_response( f"❌ ¡Jugador {target_username} no encontrado en la sala!"); return
-            new_position = Position(command_user_position.x + 1, command_user_position.y, command_user_position.z)
+            if isinstance(command_user_position, Position):
+                new_position = Position(command_user_position.x + 1, command_user_position.y, command_user_position.z)
+            elif isinstance(command_user_position, AnchorPosition) and command_user_position.offset:
+                new_position = Position(command_user_position.offset.x + 1, command_user_position.offset.y, command_user_position.offset.z)
+            else:
+                await send_response("❌ ¡Error obteniendo tu posición!")
+                return
             await self.highrise.teleport(target_user_obj.id, new_position)
             await send_response( f"🎯 @{user.username} movió a {target_username} hacia sí mismo!")
             return
 
         # Comando !stats
         if msg == "!stats":
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             total_users = len(users)
             admin_count = sum(1 for u, _ in users if self.is_admin(u.id))
             mod_count = sum(1 for u, _ in users if self.is_moderator(u.id) and not self.is_admin(u.id))
@@ -1995,7 +2241,12 @@ class Bot(BaseBot):
 
         # Comando !online
         if msg == "!online":
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
             admins, mods, vips, regular = [], [], [], []
             for u, _ in users:
                 if self.is_admin(u.id): admins.append(u.username)
@@ -2072,12 +2323,24 @@ class Bot(BaseBot):
             parts = msg.split()
             if len(parts) >= 2:
                 point_name = parts[1]
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    log_event("ERROR", f"get_room_users failed: {response.message}")
+                    return
+                users = response.content
                 user_position = next((pos for u, pos in users if u.id == user_id), None)
                 if user_position:
-                    TELEPORT_POINTS[point_name] = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
-                    self.save_data()
-                    await send_response( f"📍 Punto de teletransporte '{point_name}' creado en posición: X={user_position.x}, Y={user_position.y}, Z={user_position.z}")
+                    if isinstance(user_position, Position):
+                        TELEPORT_POINTS[point_name] = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                        self.save_data()
+                        await send_response( f"📍 Punto de teletransporte '{point_name}' creado en posición: X={user_position.x}, Y={user_position.y}, Z={user_position.z}")
+                    elif isinstance(user_position, AnchorPosition) and user_position.offset:
+                        TELEPORT_POINTS[point_name] = {"x": user_position.offset.x, "y": user_position.offset.y, "z": user_position.offset.z}
+                        self.save_data()
+                        await send_response( f"📍 Punto de teletransporte '{point_name}' creado en posición: X={user_position.offset.x}, Y={user_position.offset.y}, Z={user_position.offset.z}")
+                    else:
+                        await send_response("¡Error obteniendo posición del usuario!")
                 else: await send_response("¡Error obteniendo posición del usuario!")
             else: await send_response("❌ Usa: !TPus [nombre]")
             return
@@ -2599,8 +2862,7 @@ class Bot(BaseBot):
                 followers, following, friends = str(user_info.user.num_followers), str(user_info.user.num_following), str(user_info.user.num_friends)
                 if hasattr(user_info.user, 'crew') and user_info.user.crew:
                     crew_name = user_info.user.crew.name if hasattr(user_info.user.crew, 'name') else "Unknown"
-                    crew_tag = user_info.user.crew.tag if hasattr(user_info.user.crew, 'tag') else ""
-                    crew_info = f"{crew_name} [{crew_tag}]" if crew_tag else crew_name
+                    crew_info = crew_name
             elif user_data.get("account_created"):
                 try:
                     created_dt = datetime.fromisoformat(user_data["account_created"].replace('Z', '+00:00'))
@@ -2624,7 +2886,12 @@ class Bot(BaseBot):
     async def show_user_info_by_username(self, username: str):
         """Muestra información de usuario por nombre de usuario"""
         target_user_id = None
-        users = (await self.highrise.get_room_users()).content
+        response = await self.highrise.get_room_users()
+        if isinstance(response, Error):
+            await self.highrise.chat("❌ Error obteniendo usuarios")
+            log_event("ERROR", f"get_room_users failed: {response.message}")
+            return
+        users = response.content
         for u, _ in users:
             if u.username == username:
                 target_user_id = u.id
