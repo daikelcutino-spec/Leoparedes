@@ -2154,31 +2154,6 @@ class Bot(BaseBot):
                 await send_response(f"❌ Punto '{point_name}' no encontrado. Usa !tplist para ver los disponibles")
             return
 
-        # Acceso especial a zona VIP con "nocturno"
-        if msg.lower() == "nocturno":
-            has_permission = (
-                user_id == OWNER_ID or 
-                self.is_admin(user_id) or 
-                username in VIP_USERS
-            )
-            if not has_permission:
-                await send_response(f"🔒 Zona VIP restringida. ¡Solo VIP, admins y el propietario pueden acceder!")
-                log_event("ACCESS", f"{username} intentó acceder a zona VIP sin permisos (nocturno)")
-                return
-            
-            if "vip" in TELEPORT_POINTS:
-                point = TELEPORT_POINTS["vip"]
-                try:
-                    teleport_position = Position(point["x"], point["y"], point["z"])
-                    await self.highrise.teleport(user_id, teleport_position)
-                    await send_response(f"🌙 @{username} accedió a la zona VIP!")
-                    log_event("ACCESS", f"{username} accedió a zona VIP (nocturno)")
-                except Exception as e:
-                    await send_response(f"❌ Error de teletransporte: {e}")
-            else:
-                await send_response("❌ La zona VIP no está configurada.")
-            return
-
         # Teletransporte a puntos (escribiendo el nombre directamente)
         if msg.lower() in TELEPORT_POINTS:
             point_name = msg.lower()
