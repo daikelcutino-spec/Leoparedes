@@ -5555,3 +5555,13 @@
 [2025-10-06 05:36:32] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
 [2025-10-06 05:45:41] [CHAT] [PUBLIC] baby__lax: vip
 [2025-10-06 05:45:52] [CHAT] [PUBLIC] baby__lax: directivo
+[2025-10-06 05:49:23] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-06 05:49:25] [BOT] Outfit NOCTURNO aplicado
+[2025-10-06 05:49:25] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-06 05:49:25] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-06 05:49:28] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-06 05:49:53] [CHAT] [PUBLIC] baby__lax: !setspawn
+[2025-10-06 05:50:03] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 05:50:55] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 05:51:00] [CHAT] [PUBLIC] baby__lax: bar
+[2025-10-06 05:51:00] [TELEPORT] baby__lax accedió a 'bar' - X:1.5, Y:7.0, Z:4.5

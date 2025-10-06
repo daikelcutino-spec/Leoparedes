@@ -36,3 +36,5 @@
 [01:38:41] BOT → 💡 Usa restart_bot.bat para reinicio automático!
 [01:42:13] @baby__lax: !setvipzone
 [01:42:13] BOT → 🎯 Zona VIP establecida en: X=16.0, Y=17.0, Z=19.0
+[05:49:53] @baby__lax: !setspawn
+[05:49:53] BOT → 📍 Punto de inicio del bot establecido en: X=9.5, Y=4.25, Z=23.5
