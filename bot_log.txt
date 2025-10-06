@@ -5553,3 +5553,5 @@
 [2025-10-06 05:36:29] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-06 05:36:29] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-06 05:36:32] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-06 05:45:41] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 05:45:52] [CHAT] [PUBLIC] baby__lax: directivo
