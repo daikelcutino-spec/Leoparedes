@@ -1,2 +1,1 @@
 # Puntos de teletransporte (nombre|x|y|z)
-[nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto|0.5|0.25|2.5
