@@ -2126,7 +2126,7 @@ class Bot(BaseBot):
                     has_permission = (
                         user_id == OWNER_ID or 
                         self.is_admin(user_id) or 
-                        username in VIP_USERS
+                        self.is_vip_by_username(username)
                     )
                     if not has_permission:
                         await send_response(f"🔒 '{point_name}' es zona VIP. ¡Solo VIP, admins y el propietario pueden acceder!")
@@ -2159,10 +2159,11 @@ class Bot(BaseBot):
             has_permission = (
                 user_id == OWNER_ID or 
                 self.is_admin(user_id) or 
-                username in VIP_USERS
+                self.is_vip_by_username(username)
             )
             if not has_permission:
                 await send_response(f"🔒 Zona VIP restringida. ¡Solo VIP, admins y el propietario pueden acceder!")
+                log_event("ACCESS", f"{username} intentó acceder a zona VIP sin permisos (nocturno)")
                 return
             
             if "vip" in TELEPORT_POINTS:
@@ -2170,7 +2171,8 @@ class Bot(BaseBot):
                 try:
                     teleport_position = Position(point["x"], point["y"], point["z"])
                     await self.highrise.teleport(user_id, teleport_position)
-                    await send_response(f"🌙 @{user.username} accedió a la zona VIP!")
+                    await send_response(f"🌙 @{username} accedió a la zona VIP!")
+                    log_event("ACCESS", f"{username} accedió a zona VIP (nocturno)")
                 except Exception as e:
                     await send_response(f"❌ Error de teletransporte: {e}")
             else:
@@ -2186,7 +2188,7 @@ class Bot(BaseBot):
                 has_permission = (
                     user_id == OWNER_ID or 
                     self.is_admin(user_id) or 
-                    username in VIP_USERS
+                    self.is_vip_by_username(username)
                 )
                 if not has_permission:
                     await send_response(f"🔒 '{point_name}' es zona VIP. ¡Solo VIP, admins y el propietario pueden acceder!")
