@@ -2126,7 +2126,7 @@ class Bot(BaseBot):
                     has_permission = (
                         user_id == OWNER_ID or 
                         self.is_admin(user_id) or 
-                        self.is_vip_by_username(username)
+                        username in VIP_USERS
                     )
                     if not has_permission:
                         await send_response(f"🔒 '{point_name}' es zona VIP. ¡Solo VIP, admins y el propietario pueden acceder!")
@@ -2159,7 +2159,7 @@ class Bot(BaseBot):
             has_permission = (
                 user_id == OWNER_ID or 
                 self.is_admin(user_id) or 
-                self.is_vip_by_username(username)
+                username in VIP_USERS
             )
             if not has_permission:
                 await send_response(f"🔒 Zona VIP restringida. ¡Solo VIP, admins y el propietario pueden acceder!")
@@ -2188,7 +2188,7 @@ class Bot(BaseBot):
                 has_permission = (
                     user_id == OWNER_ID or 
                     self.is_admin(user_id) or 
-                    self.is_vip_by_username(username)
+                    username in VIP_USERS
                 )
                 if not has_permission:
                     await send_response(f"🔒 '{point_name}' es zona VIP. ¡Solo VIP, admins y el propietario pueden acceder!")
@@ -2209,7 +2209,7 @@ class Bot(BaseBot):
             try:
                 teleport_position = Position(point["x"], point["y"], point["z"])
                 await self.highrise.teleport(user_id, teleport_position)
-                await send_response(f"🚀 @{user.username} se teletransportó al punto '{point_name}'!")
+                await send_response(f"🚀 @{username} se teletransportó al punto '{point_name}'!")
                 log_event("TELEPORT", f"{username} accedió a '{point_name}' - X:{point['x']}, Y:{point['y']}, Z:{point['z']}")
             except Exception as e: 
                 await send_response(f"❌ Error de teletransporte: {e}")
