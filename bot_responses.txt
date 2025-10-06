@@ -6,3 +6,13 @@
 [00:52:49] BOT → 🆔 Tu ID de usuario es: 662aae9b602b4a897557ec18
 [00:53:14] @baby__lax: !tome
 [00:53:14] BOT → ❌ ¡Solo el propietario puede usar este comando!
+[00:56:00] @baby__lax: !tome
+[00:56:00] BOT → 🤖 Bot teletransportado a @baby__lax
+[01:00:18] @baby__lax: !setvipzone
+[01:00:18] BOT → 🎯 Zona VIP establecida en: X=16.0, Y=17.0, Z=19.0
+[01:01:32] @baby__lax: !setdj
+[01:01:32] BOT → 🎵 Zona DJ establecida en: X=15.5, Y=16.0, Z=2.5
+[01:02:11] @baby__lax: !setdirectivo
+[01:02:11] BOT → 👑 Zona directiva establecida en: X=5.0, Y=17.5, Z=4.5
+[01:02:39] @baby__lax: !vip @baby__lax
+[01:02:39] BOT → ⭐ @baby__lax ahora es VIP!

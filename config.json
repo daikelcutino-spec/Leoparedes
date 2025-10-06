@@ -1,23 +1,27 @@
 {
-  "room_id": "",
-  "api_token": "",
-  "admin_ids": [],
-  "owner_id": "",
-  "moderator_ids": [],
+  "room_id": "686c527e9668a3cb40e1f58d",
+  "api_token": "b0c7b29926c42a39987057723b8def359ce211d320ecd7f946401fdf9b14d56a",
+  "admin_ids": [
+    "669da7b73867bac51391c757"
+  ],
+  "owner_id": "662aae9b602b4a897557ec18",
+  "moderator_ids": [
+    "669da7b73867bac51391c757"
+  ],
   "vip_zone": {
-    "x": 16.5,
+    "x": 16.0,
     "y": 17.0,
-    "z": 24.0
+    "z": 19.0
   },
   "dj_zone": {
-    "x": 12.5,
+    "x": 15.5,
     "y": 16.0,
     "z": 2.5
   },
   "directivo_zone": {
-    "x": 5.5,
-    "y": 17.0,
-    "z": 1.5
+    "x": 5.0,
+    "y": 17.5,
+    "z": 4.5
   },
   "forbidden_zones": [
     {

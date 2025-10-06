@@ -2106,6 +2106,19 @@ class Bot(BaseBot):
         if msg.startswith("!tp "):
             point_name = msg[4:].strip().lower()
             if point_name in TELEPORT_POINTS:
+                private_zones = ["pv", "privada", "vip", "directivo", "dj"]
+                is_private_zone = any(private_word in point_name for private_word in private_zones)
+                
+                if is_private_zone:
+                    has_permission = (
+                        user_id == OWNER_ID or 
+                        self.is_admin(user_id) or 
+                        self.is_vip_by_username(user.username)
+                    )
+                    if not has_permission:
+                        await send_response(f"🔒 '{point_name}' es una zona privada. ¡Solo VIP, admins y el propietario pueden acceder!")
+                        return
+                
                 point = TELEPORT_POINTS[point_name]
                 try:
                     teleport_position = Position(point["x"], point["y"], point["z"])
@@ -2119,12 +2132,27 @@ class Bot(BaseBot):
 
         # Teletransporte a puntos (escribiendo el nombre directamente)
         if msg.lower() in TELEPORT_POINTS:
-            point = TELEPORT_POINTS[msg.lower()]
+            point_name = msg.lower()
+            private_zones = ["pv", "privada", "vip", "directivo", "dj"]
+            is_private_zone = any(private_word in point_name for private_word in private_zones)
+            
+            if is_private_zone:
+                has_permission = (
+                    user_id == OWNER_ID or 
+                    self.is_admin(user_id) or 
+                    self.is_vip_by_username(user.username)
+                )
+                if not has_permission:
+                    await send_response(f"🔒 '{point_name}' es una zona privada. ¡Solo VIP, admins y el propietario pueden acceder!")
+                    return
+            
+            point = TELEPORT_POINTS[point_name]
             try:
                 teleport_position = Position(point["x"], point["y"], point["z"])
                 await self.highrise.teleport(user_id, teleport_position)
-                await send_response( f"🚀 @{user.username} se teletransportó al punto '{msg.lower()}'!")
-            except Exception as e: await send_response( f"❌ Error de teletransporte: {e}")
+                await send_response( f"🚀 @{user.username} se teletransportó al punto '{point_name}'!")
+            except Exception as e: 
+                await send_response( f"❌ Error de teletransporte: {e}")
             return
 
         # Comando !tele @user (VIP)
