@@ -48,6 +48,8 @@ ADMIN_IDS = config.get("admin_ids", [])
 OWNER_ID = config.get("owner_id", "")
 MODERATOR_IDS = config.get("moderator_ids", [])
 VIP_ZONE = config.get("vip_zone", {"x": 0, "y": 0, "z": 0})
+DJ_ZONE = config.get("dj_zone", {"x": 0, "y": 0, "z": 0})
+DIRECTIVO_ZONE = config.get("directivo_zone", {"x": 0, "y": 0, "z": 0})
 FORBIDDEN_ZONES = config.get("forbidden_zones", [])
 BOT_WALLET = config.get("bot_wallet", 0)
 
@@ -1792,10 +1794,17 @@ class Bot(BaseBot):
                 else:
                     await send_response("¡Error obteniendo posición del usuario!")
                     return
+                # Cargar config actual
                 config = load_config()
                 config["directivo_zone"] = new_directivo_zone
-                with open("config.json", "w", encoding="utf-8") as f: json.dump(config, f, indent=2, ensure_ascii=False)
+                # Guardar a archivo
+                with open("config.json", "w", encoding="utf-8") as f: 
+                    json.dump(config, f, indent=2, ensure_ascii=False)
+                # Actualizar variable global
+                global DIRECTIVO_ZONE
+                DIRECTIVO_ZONE = new_directivo_zone
                 await send_response( f"👑 Zona directiva establecida en: X={new_directivo_zone['x']}, Y={new_directivo_zone['y']}, Z={new_directivo_zone['z']}")
+                log_event("CONFIG", f"Zona directiva actualizada: {new_directivo_zone}")
             else: await send_response("¡Error obteniendo posición del usuario!")
             return
 
@@ -2093,11 +2102,17 @@ class Bot(BaseBot):
                 else:
                     await send_response("¡Error obteniendo posición del usuario!")
                     return
+                # Cargar config actual
                 config = load_config()
                 config["vip_zone"] = new_vip_zone
-                with open("config.json", "w", encoding="utf-8") as f: json.dump(config, f, indent=2, ensure_ascii=False)
-                VIP_ZONE.update(new_vip_zone)
+                # Guardar a archivo
+                with open("config.json", "w", encoding="utf-8") as f: 
+                    json.dump(config, f, indent=2, ensure_ascii=False)
+                # Actualizar variable global
+                global VIP_ZONE
+                VIP_ZONE = new_vip_zone
                 await send_response( f"🎯 Zona VIP establecida en: X={new_vip_zone['x']}, Y={new_vip_zone['y']}, Z={new_vip_zone['z']}")
+                log_event("CONFIG", f"Zona VIP actualizada: {new_vip_zone}")
             else: await send_response("¡Error obteniendo posición del usuario!")
             return
 
@@ -2119,10 +2134,17 @@ class Bot(BaseBot):
                 else:
                     await send_response("¡Error obteniendo posición del usuario!")
                     return
+                # Cargar config actual
                 config = load_config()
                 config["dj_zone"] = new_dj_zone
-                with open("config.json", "w", encoding="utf-8") as f: json.dump(config, f, indent=2, ensure_ascii=False)
+                # Guardar a archivo
+                with open("config.json", "w", encoding="utf-8") as f: 
+                    json.dump(config, f, indent=2, ensure_ascii=False)
+                # Actualizar variable global
+                global DJ_ZONE
+                DJ_ZONE = new_dj_zone
                 await send_response( f"🎵 Zona DJ establecida en: X={new_dj_zone['x']}, Y={new_dj_zone['y']}, Z={new_dj_zone['z']}")
+                log_event("CONFIG", f"Zona DJ actualizada: {new_dj_zone}")
             else: await send_response("¡Error obteniendo posición del usuario!")
             return
 
