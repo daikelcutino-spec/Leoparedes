@@ -283,27 +283,28 @@ def get_stats():
 def get_bot_responses():
     """Obtiene las últimas respuestas del bot"""
     try:
-        if os.path.exists("bot_responses.txt"):
-            with open("bot_responses.txt", "r", encoding="utf-8") as f:
-                lines = f.readlines()
+        if not os.path.exists("bot_responses.txt"):
+            return jsonify({"success": True, "responses": []}), 200
             
-            # Filtrar líneas vacías y comentarios
-            valid_lines = [
-                line.strip() 
-                for line in lines 
-                if line.strip() and not line.strip().startswith('#')
-            ]
-            
-            # Retornar las últimas 20 líneas válidas
-            return jsonify({
-                "success": True, 
-                "responses": valid_lines[-20:] if valid_lines else []
-            }), 200
+        with open("bot_responses.txt", "r", encoding="utf-8") as f:
+            lines = f.readlines()
         
-        return jsonify({"success": True, "responses": []}), 200
+        # Filtrar líneas vacías y comentarios
+        valid_lines = [
+            line.strip() 
+            for line in lines 
+            if line.strip() and not line.startswith('#')
+        ]
+        
+        # Retornar las últimas 20 líneas válidas
+        return jsonify({
+            "success": True, 
+            "responses": valid_lines[-20:] if valid_lines else []
+        })
+        
     except Exception as e:
         print(f"Error en /api/bot_responses: {e}")
-        return jsonify({"success": False, "message": str(e), "responses": []}), 500
+        return jsonify({"success": True, "responses": []})
 
 
 if __name__ == '__main__':

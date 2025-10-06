@@ -2465,16 +2465,20 @@ class Bot(BaseBot):
     async def start_auto_emote_cycle(self):
         """Ciclo automático de emotes"""
         await asyncio.sleep(3)
-        print("🎭 INICIANDO CICLO AUTOMÁTICO DE 224 EMOTES...")
-        log_event("BOT", "Iniciando ciclo automático de 224 emotes")
+        
+        # Filtrar solo emotes gratuitos
+        free_emotes = {num: data for num, data in emotes.items() if data.get("is_free", True)}
+        
+        print(f"🎭 INICIANDO CICLO AUTOMÁTICO DE {len(free_emotes)} EMOTES GRATUITOS...")
+        log_event("BOT", f"Iniciando ciclo automático de {len(free_emotes)} emotes gratuitos")
         
         try:
             cycle_count = 0
             while True:
                 cycle_count += 1
-                print(f"🔄 Ciclo #{cycle_count} - Iniciando secuencia de 224 emotes")
+                print(f"🔄 Ciclo #{cycle_count} - Iniciando secuencia de {len(free_emotes)} emotes")
                 
-                for number, emote_data in emotes.items():
+                for number, emote_data in free_emotes.items():
                     if self.bot_mode != "auto":
                         print("⏸️ Ciclo automático detenido (modo cambiado)")
                         return
@@ -2486,7 +2490,7 @@ class Bot(BaseBot):
                     try:
                         await self.highrise.send_emote(emote_id, self.bot_id)
                         if int(number) % 20 == 0:
-                            print(f"🎭 Emote #{number}/{len(emotes)}: {emote_name}")
+                            print(f"🎭 Emote #{number}/{len(free_emotes)}: {emote_name}")
                         await asyncio.sleep(max(0.1, emote_duration - 0.3))
                     except Exception as e:
                         print(f"❌ Error emote #{number} ({emote_name}): {e}")
