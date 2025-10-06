@@ -2308,7 +2308,7 @@ class Bot(BaseBot):
         log_event("WHISPER", f"{username}: {message}")
         await self.handle_command(user, msg, is_whisper=True)
 
-    async def on_user_join(self, user: User, position: Position) -> None:
+    async def on_user_join(self, user: User, position: Position | AnchorPosition) -> None:
         """Usuario entra a la sala"""
         user_id = user.id
         username = user.username
@@ -2338,6 +2338,7 @@ class Bot(BaseBot):
 
     async def on_tip(self, sender: User, receiver: User, tip: CurrencyItem | Item) -> None:
         """Manejador de propinas"""
+        global BOT_WALLET
         if str(tip.type) == "currency" and tip.amount == 100 and receiver.id == self.bot_id:
             VIP_USERS.add(sender.username)
             self.save_data()
