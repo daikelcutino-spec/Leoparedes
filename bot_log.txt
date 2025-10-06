@@ -5548,3 +5548,8 @@
 [2025-10-06 01:39:53] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
 [2025-10-06 01:42:13] [CHAT] [PUBLIC] baby__lax: !setvipzone
 [2025-10-06 01:42:20] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 05:36:27] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-06 05:36:29] [BOT] Outfit NOCTURNO aplicado
+[2025-10-06 05:36:29] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-06 05:36:29] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-06 05:36:32] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
