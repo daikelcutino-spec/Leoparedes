@@ -809,7 +809,8 @@ class Bot(BaseBot):
                     "⚙️ ZONAS:\n"
                     "!setvipzone / !sv - Establecer zona VIP\n"
                     "!setdj - Establecer zona DJ\n"
-                    "!setdirectivo - Establecer zona directivo|||"
+                    "!setdirectivo - Establecer zona directivo\n"
+                    "!setspawn - Establecer punto de inicio del bot|||"
                     "🥊 INTERACCIONES:\n"
                     "!punch @user - Golpear\n"
                     "!slap @user - Bofetada\n"
@@ -1923,6 +1924,20 @@ class Bot(BaseBot):
             else: await send_response("¡Error obteniendo posición del usuario!")
             return
 
+        # Comando !setspawn (Owner)
+        if msg == "!setspawn":
+            if user_id != OWNER_ID: await send_response("❌ ¡Solo el propietario puede establecer el punto de inicio del bot!"); return
+            users = (await self.highrise.get_room_users()).content
+            user_position = next((pos for u, pos in users if u.id == user_id), None)
+            if user_position:
+                spawn_point = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                config = load_config()
+                config["spawn_point"] = spawn_point
+                with open("config.json", "w", encoding="utf-8") as f: json.dump(config, f, indent=2, ensure_ascii=False)
+                await send_response( f"📍 Punto de inicio del bot establecido en: X={spawn_point['x']}, Y={spawn_point['y']}, Z={spawn_point['z']}")
+            else: await send_response("¡Error obteniendo posición del usuario!")
+            return
+
         # Comando !bot (Admin/Owner)
         if msg.startswith("!bot "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden usar este comando!"); return
@@ -2491,6 +2506,17 @@ class Bot(BaseBot):
                 outfit_id = config["bot_initial_outfit"]
                 await self.change_bot_outfit(outfit_id)
                 print(f"🎽 Outfit inicial configurado: {outfit_id}")
+            
+            if "spawn_point" in config and config["spawn_point"]:
+                spawn = config["spawn_point"]
+                try:
+                    spawn_position = Position(spawn["x"], spawn["y"], spawn["z"])
+                    await self.highrise.teleport(self.bot_id, spawn_position)
+                    print(f"📍 Bot teletransportado al punto de inicio: X={spawn['x']}, Y={spawn['y']}, Z={spawn['z']}")
+                    log_event("BOT", f"Bot posicionado en spawn point: {spawn}")
+                except Exception as e:
+                    print(f"⚠️ Error teletransportando al spawn: {e}")
+            
             log_event("BOT", f"Bot inicializado en modo idle (ID: {self.bot_id})")
         except Exception as e:
             log_event("ERROR", f"Error en setup: {e}")
