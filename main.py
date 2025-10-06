@@ -2121,14 +2121,15 @@ class Bot(BaseBot):
         if msg.startswith("!tp "):
             point_name = msg[4:].strip().lower()
             if point_name in TELEPORT_POINTS:
-                if point_name == "vip":
+                # Verificar permisos para zonas restringidas
+                if point_name in ["vip", "pv"]:
                     has_permission = (
                         user_id == OWNER_ID or 
                         self.is_admin(user_id) or 
-                        self.is_vip_by_username(user.username)
+                        username in VIP_USERS
                     )
                     if not has_permission:
-                        await send_response(f"🔒 'vip' es zona VIP. ¡Solo VIP, admins y el propietario pueden acceder!")
+                        await send_response(f"🔒 '{point_name}' es zona VIP. ¡Solo VIP, admins y el propietario pueden acceder!")
                         return
                 
                 elif point_name in ["directivo", "dj"]:
@@ -2156,7 +2157,7 @@ class Bot(BaseBot):
             has_permission = (
                 user_id == OWNER_ID or 
                 self.is_admin(user_id) or 
-                self.is_vip_by_username(user.username)
+                username in VIP_USERS
             )
             if not has_permission:
                 await send_response(f"🔒 Zona VIP restringida. ¡Solo VIP, admins y el propietario pueden acceder!")
@@ -2178,14 +2179,15 @@ class Bot(BaseBot):
         if msg.lower() in TELEPORT_POINTS:
             point_name = msg.lower()
             
-            if point_name == "vip":
+            # Verificar permisos para zonas restringidas
+            if point_name in ["vip", "pv"]:
                 has_permission = (
                     user_id == OWNER_ID or 
                     self.is_admin(user_id) or 
-                    self.is_vip_by_username(user.username)
+                    username in VIP_USERS
                 )
                 if not has_permission:
-                    await send_response(f"🔒 'vip' es zona VIP. ¡Solo VIP, admins y el propietario pueden acceder!")
+                    await send_response(f"🔒 '{point_name}' es zona VIP. ¡Solo VIP, admins y el propietario pueden acceder!")
                     return
             
             elif point_name in ["directivo", "dj"]:
