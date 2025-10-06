@@ -5574,3 +5574,25 @@
 [2025-10-06 05:56:48] [CHAT] [PUBLIC] baby__lax: vip
 [2025-10-06 05:56:55] [CHAT] [PUBLIC] baby__lax: nocturno
 [2025-10-06 05:57:11] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 05:59:24] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-06 05:59:26] [BOT] Outfit NOCTURNO aplicado
+[2025-10-06 05:59:27] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-06 05:59:27] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-06 05:59:27] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-06 05:59:30] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-06 06:00:21] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 06:00:21] [TELEPORT] baby__lax accedió a 'vip' - X:0.5, Y:0.25, Z:2.5
+[2025-10-06 06:00:47] [CHAT] [PUBLIC] baby__lax: !help
+[2025-10-06 06:01:14] [CHAT] [PUBLIC] baby__lax: !addzone [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
+[2025-10-06 06:02:22] [CHAT] [PUBLIC] baby__lax: !delpoint vip
+[2025-10-06 06:02:30] [CHAT] [PUBLIC] baby__lax: !delpoint pv
+[2025-10-06 06:02:37] [CHAT] [PUBLIC] baby__lax: !delpoint bar
+[2025-10-06 06:02:46] [CHAT] [PUBLIC] baby__lax: !delpoint privado
+[2025-10-06 06:03:00] [CHAT] [PUBLIC] baby__lax: !delpoint p2
+[2025-10-06 06:03:14] [CHAT] [PUBLIC] baby__lax: !delpoint piso2
+[2025-10-06 06:03:23] [CHAT] [PUBLIC] baby__lax: !delpoint puerta
+[2025-10-06 06:03:31] [CHAT] [PUBLIC] baby__lax: !delpoint pista
+[2025-10-06 06:03:43] [CHAT] [PUBLIC] baby__lax: !tplist
+[2025-10-06 06:04:33] [CHAT] [PUBLIC] baby__lax: !delpoint !addzone [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
+[2025-10-06 06:05:42] [CHAT] [PUBLIC] baby__lax: [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
+[2025-10-06 06:06:29] [CHAT] [PUBLIC] baby__lax: !tplist

@@ -38,3 +38,33 @@
 [01:42:13] BOT → 🎯 Zona VIP establecida en: X=16.0, Y=17.0, Z=19.0
 [05:49:53] @baby__lax: !setspawn
 [05:49:53] BOT → 📍 Punto de inicio del bot establecido en: X=9.5, Y=4.25, Z=23.5
+[06:01:15] @baby__lax: !addzone [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
+[06:01:15] BOT → 🗺️ Zona '[nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto' creada en posición (0.5, 0.25, 2.5)
+[06:02:22] @baby__lax: !delpoint vip
+[06:02:22] BOT → ✅ Punto 'vip' eliminado!
+[06:02:30] @baby__lax: !delpoint pv
+[06:02:30] BOT → ✅ Punto 'pv' eliminado!
+[06:02:37] @baby__lax: !delpoint bar
+[06:02:37] BOT → ✅ Punto 'bar' eliminado!
+[06:02:46] @baby__lax: !delpoint privado
+[06:02:46] BOT → ❌ Punto 'privado' no encontrado!
+[06:03:00] @baby__lax: !delpoint p2
+[06:03:00] BOT → ✅ Punto 'p2' eliminado!
+[06:03:14] @baby__lax: !delpoint piso2
+[06:03:14] BOT → ✅ Punto 'piso2' eliminado!
+[06:03:23] @baby__lax: !delpoint puerta
+[06:03:23] BOT → ✅ Punto 'puerta' eliminado!
+[06:03:31] @baby__lax: !delpoint pista
+[06:03:31] BOT → ✅ Punto 'pista' eliminado!
+[06:03:43] @baby__lax: !tplist
+[06:03:43] BOT → 📍 PUNTOS DE TELETRANSPORTE:
+🔹 [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
+
+💡 Usa: !tp [nombre] o escribe el nombre directamente
+[06:04:33] @baby__lax: !delpoint !addzone [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
+[06:04:33] BOT → ❌ Usa: !delpoint [nombre]
+[06:06:29] @baby__lax: !tplist
+[06:06:29] BOT → 📍 PUNTOS DE TELETRANSPORTE:
+🔹 [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
+
+💡 Usa: !tp [nombre] o escribe el nombre directamente
