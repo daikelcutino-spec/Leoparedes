@@ -1,6 +1,6 @@
 {
-  "room_id": "",
-  "api_token": "",
+  "room_id": "686c527e9668a3cb40e1f58d",
+  "api_token": "b0c7b29926c42a39987057723b8def359ce211d320ecd7f946401fdf9b14d56ah",
   "admin_ids": [
     "669da7b73867bac51391c757"
   ],
@@ -11,7 +11,7 @@
   "vip_zone": {
     "x": 16.0,
     "y": 17.0,
-    "z": 20.0
+    "z": 19.0
   },
   "dj_zone": {
     "x": 15.5,

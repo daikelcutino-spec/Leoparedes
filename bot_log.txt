@@ -5631,3 +5631,28 @@
 [2025-10-06 06:48:54] [CHAT] [PUBLIC] baby__lax: ghostfloat
 [2025-10-06 06:49:09] [CHAT] [PUBLIC] baby__lax: !setvipzone
 [2025-10-06 06:49:45] [CHAT] [PUBLIC] baby__lax: !heartall
+[2025-10-06 06:51:40] [CHAT] [PUBLIC] baby__lax: !myid
+[2025-10-06 06:53:13] [CHAT] [PUBLIC] baby__lax: !role
+[2025-10-06 06:53:23] [CHAT] [PUBLIC] baby__lax: !info
+[2025-10-06 06:54:00] [CHAT] [PUBLIC] baby__lax: !removevip @baby__lax
+[2025-10-06 06:54:21] [CHAT] [PUBLIC] baby__lax: !restart
+[2025-10-06 06:56:50] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-06 06:56:52] [BOT] Outfit NOCTURNO aplicado
+[2025-10-06 06:56:52] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-06 06:56:52] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-06 06:56:52] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-06 06:56:55] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-06 06:57:22] [CHAT] [PUBLIC] baby__lax: !role
+[2025-10-06 06:57:29] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 06:57:49] [CHAT] [PUBLIC] baby__lax: !tpvip
+[2025-10-06 06:57:59] [CHAT] [PUBLIC] baby__lax: !tp vip
+[2025-10-06 06:59:56] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-06 06:59:58] [BOT] Outfit NOCTURNO aplicado
+[2025-10-06 06:59:58] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-06 06:59:58] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-06 06:59:58] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-06 07:00:01] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-06 07:00:36] [CHAT] [PUBLIC] baby__lax: !setvipzone
+[2025-10-06 07:00:37] [CONFIG] Zona VIP actualizada: {'x': 16.0, 'y': 17.0, 'z': 19.0}
+[2025-10-06 07:00:43] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-06 07:00:53] [CHAT] [PUBLIC] baby__lax: !tp vip

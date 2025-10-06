@@ -1,4 +1,3 @@
-
 [00:00:00] 🤖 Bot NOCTURNO iniciado correctamente
 [00:00:00] ✅ Sistema de respuestas activo
 [00:00:00] 💡 Los comandos ejecutados aparecerán aquí
@@ -89,3 +88,13 @@
 [06:49:09] BOT → ❌ ¡Solo el propietario puede establecer la zona VIP!
 [06:49:45] @baby__lax: !heartall
 [06:49:45] BOT → ❌ ¡Solo el propietario puede enviar corazones a todos!
+[06:51:40] @baby__lax: !myid
+[06:51:40] BOT → 🆔 Tu ID de usuario es: 662aae9b602b4a897557ec18
+[06:54:21] @baby__lax: !restart
+[06:54:21] BOT → ❌ ¡Solo el propietario puede reiniciar el bot!
+[06:57:59] @baby__lax: !tp vip
+[06:57:59] BOT → ❌ Punto 'vip' no encontrado. Usa !tplist para ver los disponibles
+[07:00:36] @baby__lax: !setvipzone
+[07:00:36] BOT → 🎯 Zona VIP establecida en: X=16.0, Y=17.0, Z=19.0
+[07:00:53] @baby__lax: !tp vip
+[07:00:53] BOT → ❌ Punto 'vip' no encontrado. Usa !tplist para ver los disponibles
