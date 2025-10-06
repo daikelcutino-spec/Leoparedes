@@ -85,3 +85,7 @@
 [06:42:09] BOT → ❌ Usa: !delpoint [nombre]
 [06:42:21] @baby__lax: !delpoint vip
 [06:42:21] BOT → ✅ Punto 'vip' eliminado!
+[06:49:09] @baby__lax: !setvipzone
+[06:49:09] BOT → ❌ ¡Solo el propietario puede establecer la zona VIP!
+[06:49:45] @baby__lax: !heartall
+[06:49:45] BOT → ❌ ¡Solo el propietario puede enviar corazones a todos!
