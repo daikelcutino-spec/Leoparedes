@@ -423,6 +423,9 @@ class Bot(BaseBot):
         self.flashmode_cooldown = {}
         self.session_active = False
         self.reconnection_in_progress = False
+        self.copied_emotes = {}  # {número: {"emote_id": str, "name": str, "from_user": str}}
+        self.copied_emote_mode = False
+        self.current_copied_emote = None
 
     # ========================================================================
     # MÉTODOS DE INICIALIZACIÓN Y CONEXIÓN
@@ -1102,6 +1105,103 @@ class Bot(BaseBot):
         if msg == "!help leaderboard": await send_response("🏆 TABLA DE CLASIFICACIÓN:\n!leaderboard heart — top por corazones\n!leaderboard active — top por actividad")
         if msg == "!help heart": await send_response("❤️ COMANDO DE CORAZONES:\n!heart @usuario [cantidad] — enviar corazones\n💖 También puedes enviar corazones con reacciones!")
 
+        # Comando !copyemote @user
+        if msg.startswith("!copyemote "):
+            if not (self.is_admin(user_id) or user_id == OWNER_ID):
+                await send_response("❌ ¡Solo propietario y administradores pueden copiar emotes!")
+                return
+            
+            parts = msg.split()
+            if len(parts) < 2:
+                await send_response("❌ Usa: !copyemote @usuario")
+                return
+            
+            target_username = parts[1].replace("@", "")
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                return
+            
+            users = response.content
+            target_user = next((u for u, _ in users if u.username == target_username), None)
+            
+            if not target_user:
+                await send_response(f"❌ Usuario {target_username} no encontrado!")
+                return
+            
+            # Verificar si el usuario tiene un emote activo
+            if target_user.id not in ACTIVE_EMOTES or ACTIVE_EMOTES[target_user.id] is None:
+                await send_response(f"❌ {target_username} no está ejecutando ningún emote!")
+                return
+            
+            emote_id = ACTIVE_EMOTES[target_user.id]
+            emote_name = next((e["name"] for e in emotes.values() if e["id"] == emote_id), emote_id)
+            
+            # Guardar emote copiado con número incremental
+            emote_number = len(self.copied_emotes) + 1
+            self.copied_emotes[emote_number] = {
+                "emote_id": emote_id,
+                "name": emote_name,
+                "from_user": target_username
+            }
+            
+            await send_response(f"✅ Emote '{emote_name}' copiado de @{target_username}\n📋 Guardado como #{emote_number}\n💡 Usa: !emotecopy {emote_number}")
+            log_event("EMOTE", f"Emote '{emote_name}' copiado de {target_username} como #{emote_number}")
+            return
+
+        # Comando !listemotes - listar emotes copiados
+        if msg == "!listemotes":
+            if not self.copied_emotes:
+                await send_response("📋 No hay emotes copiados")
+                return
+            
+            emote_list = "📋 EMOTES COPIADOS:\n"
+            for num, data in self.copied_emotes.items():
+                emote_list += f"#{num} - {data['name']} (de @{data['from_user']})\n"
+            emote_list += "\n💡 Usa: !emotecopy [número]"
+            await send_response(emote_list)
+            return
+
+        # Comando !emotecopy [número]
+        if msg.startswith("!emotecopy "):
+            if not (self.is_admin(user_id) or user_id == OWNER_ID):
+                await send_response("❌ ¡Solo propietario y administradores pueden usar emotes copiados!")
+                return
+            
+            parts = msg.split()
+            if len(parts) < 2:
+                await send_response("❌ Usa: !emotecopy [número]")
+                return
+            
+            try:
+                emote_num = int(parts[1])
+            except ValueError:
+                await send_response("❌ Número inválido")
+                return
+            
+            if emote_num not in self.copied_emotes:
+                await send_response(f"❌ Emote #{emote_num} no existe. Usa !listemotes")
+                return
+            
+            # Detener ciclo automático si está activo
+            if self.current_emote_task and not self.current_emote_task.done():
+                self.current_emote_task.cancel()
+                await asyncio.sleep(0.5)
+            
+            # Activar modo de emote copiado
+            emote_data = self.copied_emotes[emote_num]
+            self.copied_emote_mode = True
+            self.current_copied_emote = emote_data["emote_id"]
+            self.bot_mode = "copied"
+            
+            # Iniciar bucle infinito del emote copiado
+            self.current_emote_task = asyncio.create_task(self.start_copied_emote_loop(emote_data["emote_id"]))
+            
+            await send_response(f"🎭 Emote '{emote_data['name']}' activado en bucle infinito\n💡 Para cambiar, usa !automode o !emotecopy con otro número")
+            await self.highrise.chat(f"🎭 Bot ejecutando emote '{emote_data['name']}' en bucle")
+            log_event("BOT", f"Modo emote copiado activado: '{emote_data['name']}'")
+            return
+
         # Comando !emote list
         if msg == "!emote list":
             total_emotes = len(emotes)
@@ -1721,9 +1821,18 @@ class Bot(BaseBot):
         if msg == "!automode":
             if not (user_id == OWNER_ID or self.is_admin(user_id)): await send_response("❌ ¡Solo propietario y administradores pueden cambiar el modo del bot!"); return
             try:
-                if self.current_emote_task and not self.current_emote_task.done(): self.current_emote_task.cancel(); await asyncio.sleep(0.5)
+                # Detener cualquier tarea activa
+                if self.current_emote_task and not self.current_emote_task.done(): 
+                    self.current_emote_task.cancel()
+                    await asyncio.sleep(0.5)
+                
+                # Desactivar modo de emote copiado
+                self.copied_emote_mode = False
+                self.current_copied_emote = None
+                
+                # Iniciar ciclo automático
                 self.current_emote_task = asyncio.create_task(self.start_auto_emote_cycle())
-                await send_response("🎭 ¡Modo AUTOMÁTICO activado!")
+                await send_response("🎭 ¡Modo AUTOMÁTICO activado!\n📊 Ejecutando 224 emotes en ciclo")
                 await self.highrise.chat("🎭 Modo AUTOMÁTICO activado por admin")
                 log_event("BOT", f"Modo automático activado por {user.username}")
             except Exception as e:
@@ -2794,9 +2903,39 @@ class Bot(BaseBot):
             await asyncio.sleep(300)
             await save_bot_inventory(self)
 
+    async def start_copied_emote_loop(self, emote_id: str):
+        """Bucle infinito de emote copiado"""
+        print(f"🎭 INICIANDO BUCLE INFINITO DE EMOTE COPIADO: {emote_id}")
+        log_event("BOT", f"Bucle infinito de emote copiado iniciado: {emote_id}")
+        
+        # Obtener duración del emote
+        emote_duration = 5.0
+        for e in emotes.values():
+            if e["id"] == emote_id:
+                emote_duration = e.get("duration", 5.0)
+                break
+        
+        try:
+            while self.bot_mode == "copied" and self.copied_emote_mode:
+                try:
+                    await self.highrise.send_emote(emote_id, self.bot_id)
+                    await asyncio.sleep(max(0.1, emote_duration - 0.3))
+                except Exception as e:
+                    print(f"❌ Error ejecutando emote copiado: {e}")
+                    await asyncio.sleep(1.0)
+                    continue
+        except Exception as e:
+            print(f"❌ ERROR en bucle de emote copiado: {e}")
+            log_event("ERROR", f"Error en bucle de emote copiado: {e}")
+
     async def start_auto_emote_cycle(self):
         """Ciclo automático de emotes"""
         await asyncio.sleep(3)
+        
+        # Desactivar modo de emote copiado si estaba activo
+        self.copied_emote_mode = False
+        self.current_copied_emote = None
+        self.bot_mode = "auto"
         
         # Filtrar solo emotes gratuitos
         free_emotes = {num: data for num, data in emotes.items() if data.get("is_free", True)}
