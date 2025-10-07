@@ -1,23 +1,3 @@
-[00:00:00] 🤖 Bot NOCTURNO iniciado correctamente
-[00:00:00] ✅ Sistema de respuestas activo
-[00:00:00] 💡 Los comandos ejecutados aparecerán aquí
-[00:52:49] @baby__lax: !myid
-[00:52:49] BOT → 🆔 Tu ID de usuario es: 662aae9b602b4a897557ec18
-[00:53:14] @baby__lax: !tome
-[00:53:14] BOT → ❌ ¡Solo el propietario puede usar este comando!
-[00:56:00] @baby__lax: !tome
-[00:56:00] BOT → 🤖 Bot teletransportado a @baby__lax
-[01:00:18] @baby__lax: !setvipzone
-[01:00:18] BOT → 🎯 Zona VIP establecida en: X=16.0, Y=17.0, Z=19.0
-[01:01:32] @baby__lax: !setdj
-[01:01:32] BOT → 🎵 Zona DJ establecida en: X=15.5, Y=16.0, Z=2.5
-[01:02:11] @baby__lax: !setdirectivo
-[01:02:11] BOT → 👑 Zona directiva establecida en: X=5.0, Y=17.5, Z=4.5
-[01:02:39] @baby__lax: !vip @baby__lax
-[01:02:39] BOT → ⭐ @baby__lax ahora es VIP!
-[01:37:08] @baby__lax: !tp dj
-[01:37:08] BOT → ❌ Punto 'dj' no encontrado. Usa !tplist para ver los disponibles
-[01:37:24] @baby__lax: !tplist
 [01:37:24] BOT → 📍 PUNTOS DE TELETRANSPORTE:
 🔹 pista
 🔹 piso2
@@ -98,3 +78,23 @@
 [07:00:36] BOT → 🎯 Zona VIP establecida en: X=16.0, Y=17.0, Z=19.0
 [07:00:53] @baby__lax: !tp vip
 [07:00:53] BOT → ❌ Punto 'vip' no encontrado. Usa !tplist para ver los disponibles
+[07:05:37] @baby__lax: !TPus pista
+[07:05:37] BOT → 📍 Punto de teletransporte 'pista' creado en posición: X=11.5, Y=4.25, Z=23.5
+[07:06:11] @baby__lax: !TPus bar
+[07:06:11] BOT → 📍 Punto de teletransporte 'bar' creado en posición: X=6.5, Y=7.0, Z=4.5
+[07:06:45] @baby__lax: !TPus p2
+[07:06:45] BOT → 📍 Punto de teletransporte 'p2' creado en posición: X=12.5, Y=12.0, Z=16.5
+[07:07:18] @baby__lax: !heartall
+[07:07:18] BOT → 💖 Enviaste ❤️ a todos los 1 jugadores en la sala!
+[07:07:18] @baby__lax: !heartall
+[07:07:18] BOT → ❌ Usa: !heart @username [cantidad]
+[07:09:16] @baby__lax: !tipall 1
+[07:09:16] BOT → ❌ ¡Formato de comando inválido! Usa: !tip all [1-5] o !tip only [X]
+[07:17:23] @baby__lax: !copyoutfit
+[07:17:23] BOT → 👔 Outfit copiado y guardado como #1
+[07:18:19] @baby__lax: !copyoutfit
+[07:18:19] BOT → 👔 Outfit copiado y guardado como #2
+[07:22:14] @baby__lax: !copyoutfit
+[07:22:14] BOT → 👔 Outfit copiado y guardado como #3
+[07:22:31] @baby__lax: !outfit 2
+[07:22:31] BOT → 👕 Outfit #2 aplicado

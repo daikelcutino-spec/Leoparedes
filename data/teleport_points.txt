@@ -1,1 +1,4 @@
 # Puntos de teletransporte (nombre|x|y|z)
+pista|11.5|4.25|23.5
+bar|6.5|7.0|4.5
+p2|12.5|12.0|16.5

@@ -208,5 +208,40 @@
     "type": "clothing",
     "id": "mouth-basic2018grin",
     "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "pants-n_starteritems2019mensshortswhite",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "sock-n_starteritems2020whitesocks",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "shirt-n_bastilleday2022lisashirt",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "hair_front-n_malenew04",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "shirt-n_starteritems2019maletshirtblack",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "pants-n_starteritems2019mensshortsblack",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "hat-n_scanengerhunt2020shinycrown_1",
+    "amount": 1
   }
 ]
