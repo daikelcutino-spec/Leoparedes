@@ -1105,7 +1105,7 @@ class Bot(BaseBot):
         if msg == "!help leaderboard": await send_response("🏆 TABLA DE CLASIFICACIÓN:\n!leaderboard heart — top por corazones\n!leaderboard active — top por actividad")
         if msg == "!help heart": await send_response("❤️ COMANDO DE CORAZONES:\n!heart @usuario [cantidad] — enviar corazones\n💖 También puedes enviar corazones con reacciones!")
 
-        # Comando !copyemote @user
+        # Comando !copyemote @user o !copyemote [user_id]
         if msg.startswith("!copyemote "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response("❌ ¡Solo propietario y administradores pueden copiar emotes!")
@@ -1113,40 +1113,42 @@ class Bot(BaseBot):
             
             parts = msg.split()
             if len(parts) < 2:
-                await send_response("❌ Usa: !copyemote @usuario")
+                await send_response("❌ Usa: !copyemote @usuario o !copyemote [user_id]")
                 return
             
-            target_username = parts[1].replace("@", "")
+            target_identifier = parts[1].replace("@", "")
             response = await self.highrise.get_room_users()
             if isinstance(response, Error):
                 await send_response("❌ Error obteniendo usuarios")
                 return
             
             users = response.content
-            target_user = next((u for u, _ in users if u.username == target_username), None)
+            # Buscar por username o user_id
+            target_user = next((u for u, _ in users if u.username == target_identifier or u.id == target_identifier), None)
             
             if not target_user:
-                await send_response(f"❌ Usuario {target_username} no encontrado!")
+                await send_response(f"❌ Usuario/Bot {target_identifier} no encontrado en la sala!")
                 return
             
             # Verificar si el usuario tiene un emote activo
             if target_user.id not in ACTIVE_EMOTES or ACTIVE_EMOTES[target_user.id] is None:
-                await send_response(f"❌ {target_username} no está ejecutando ningún emote!")
+                await send_response(f"❌ {target_user.username} no está ejecutando ningún emote!")
                 return
             
             emote_id = ACTIVE_EMOTES[target_user.id]
             emote_name = next((e["name"] for e in emotes.values() if e["id"] == emote_id), emote_id)
             
-            # Guardar emote copiado con número incremental
+            # Guardar emote copiado con número incremental (SIN outfit)
             emote_number = len(self.copied_emotes) + 1
             self.copied_emotes[emote_number] = {
                 "emote_id": emote_id,
                 "name": emote_name,
-                "from_user": target_username
+                "from_user": target_user.username,
+                "from_user_id": target_user.id
             }
             
-            await send_response(f"✅ Emote '{emote_name}' copiado de @{target_username}\n📋 Guardado como #{emote_number}\n💡 Usa: !emotecopy {emote_number}")
-            log_event("EMOTE", f"Emote '{emote_name}' copiado de {target_username} como #{emote_number}")
+            await send_response(f"✅ Emote '{emote_name}' copiado de @{target_user.username}\n📋 Guardado como #{emote_number}\n💡 Usa: !emotecopy {emote_number}")
+            log_event("EMOTE", f"Emote '{emote_name}' copiado de {target_user.username} (ID: {target_user.id[:8]}...) como #{emote_number}")
             return
 
         # Comando !listemotes - listar emotes copiados
