@@ -2196,15 +2196,6 @@ class Bot(BaseBot):
                 log_event("ERROR", f"Error en emote mutuo: {e}")
             return
 
-                ban_list = "🚫 USUARIOS BANEADOS:\n"
-                for i, (uid, ban_data) in enumerate(BANNED_USERS.items(), 1):
-                    username = USER_NAMES.get(uid, f"User_{uid[:8]}")
-                    ban_time = ban_data.get("time", "indefinido")
-                    ban_list += f"{i}. {username} (hasta {ban_time})\n"
-                await send_response( ban_list)
-            else: await send_response("✅ No hay usuarios baneados")
-            return
-
         # Comando !mutelist
         if msg == "!mutelist":
             if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden ver mutelist!"); return
@@ -2868,16 +2859,35 @@ class Bot(BaseBot):
         save_user_info()
 
     async def on_tip(self, sender: User, receiver: User, tip: CurrencyItem | Item) -> None:
-        """Manejador de propinas"""
+        """Manejador de propinas - Sistema VIP automático por donación"""
         global BOT_WALLET
-        if str(tip.type) == "currency" and tip.amount == 100 and receiver.id == self.bot_id:
-            VIP_USERS.add(sender.username)
-            self.save_data()
-            await self.highrise.send_whisper(sender.id, f"🎉 ¡Felicitaciones! Ahora eres VIP por donar 100 oro.")
-            await self.highrise.send_whisper(sender.id, f"🌟 ¡Bienvenido al club VIP!")
-        elif receiver.id == self.bot_id:
+        
+        if receiver.id == self.bot_id:
+            # Verificar si es donación de 100 oro para VIP
+            if str(tip.type) == "currency" and tip.amount == 100:
+                if sender.username not in VIP_USERS:
+                    VIP_USERS.add(sender.username)
+                    self.save_data()
+                    await self.highrise.send_whisper(sender.id, "🎉 ¡FELICITACIONES! 🎉")
+                    await self.highrise.send_whisper(sender.id, "⭐ Donaste 100 oro y ahora eres VIP ⭐")
+                    await self.highrise.send_whisper(sender.id, "💎 Beneficios VIP desbloqueados:")
+                    await self.highrise.send_whisper(sender.id, "• Acceso a zona VIP")
+                    await self.highrise.send_whisper(sender.id, "• Comandos de interacción social")
+                    await self.highrise.send_whisper(sender.id, "• Emotes mutuos con otros usuarios")
+                    await self.highrise.send_whisper(sender.id, "• Hasta 5 corazones por comando")
+                    await self.highrise.chat(f"🌟 ¡@{sender.username} se unió al club VIP! 🌟")
+                    log_event("VIP", f"{sender.username} obtuvo VIP por donación de 100 oro")
+                else:
+                    await self.highrise.send_whisper(sender.id, "💖 ¡Gracias por tu donación de 100 oro!")
+                    await self.highrise.send_whisper(sender.id, "⭐ Ya eres VIP, esta donación apoya al bot")
+            else:
+                # Cualquier otra donación
+                await self.highrise.send_whisper(sender.id, f"💰 ¡Gracias por donar {tip.amount} oro al bot!")
+                await self.highrise.send_whisper(sender.id, f"💡 Dona 100 oro para obtener VIP automáticamente")
+            
+            # Actualizar balance del bot
             BOT_WALLET += tip.amount
-            await self.highrise.send_whisper(sender.id, f"💰 Donaste {tip.amount} oro al bot!")
+            log_event("TIP", f"{sender.username} donó {tip.amount} oro al bot (Balance: {BOT_WALLET})")
 
     async def on_emote(self, user: User, emote_id: str, receiver: User | None) -> None:
         """Manejador de emotes"""
