@@ -243,5 +243,30 @@
     "type": "clothing",
     "id": "hat-n_scanengerhunt2020shinycrown_1",
     "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "pants-n_room32019baggytrackpantsred",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "shirt-n_room32019hoodiered",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "hat-n_room22019headphonesblack_1",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "eye-anime_05",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "shoes-n_room12019hightopsred",
+    "amount": 1
   }
 ]

@@ -1,100 +1,100 @@
-[01:37:24] BOT → 📍 PUNTOS DE TELETRANSPORTE:
-🔹 pista
-🔹 piso2
-🔹 p2
-🔹 pv
-🔹 bar
-🔹 puerta
-
-💡 Usa: !tp [nombre] o escribe el nombre directamente
-[01:38:41] @baby__lax: !restart
-[01:38:41] BOT → 🔄 Reiniciando bot...
-[01:38:41] @baby__lax: !restart
-[01:38:41] BOT → ⚠️ El bot se detendrá en 3 segundos!
-[01:38:41] @baby__lax: !restart
-[01:38:41] BOT → 💡 Usa restart_bot.bat para reinicio automático!
-[01:42:13] @baby__lax: !setvipzone
-[01:42:13] BOT → 🎯 Zona VIP establecida en: X=16.0, Y=17.0, Z=19.0
-[05:49:53] @baby__lax: !setspawn
-[05:49:53] BOT → 📍 Punto de inicio del bot establecido en: X=9.5, Y=4.25, Z=23.5
-[06:01:15] @baby__lax: !addzone [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
-[06:01:15] BOT → 🗺️ Zona '[nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto' creada en posición (0.5, 0.25, 2.5)
-[06:02:22] @baby__lax: !delpoint vip
-[06:02:22] BOT → ✅ Punto 'vip' eliminado!
-[06:02:30] @baby__lax: !delpoint pv
-[06:02:30] BOT → ✅ Punto 'pv' eliminado!
-[06:02:37] @baby__lax: !delpoint bar
-[06:02:37] BOT → ✅ Punto 'bar' eliminado!
-[06:02:46] @baby__lax: !delpoint privado
-[06:02:46] BOT → ❌ Punto 'privado' no encontrado!
-[06:03:00] @baby__lax: !delpoint p2
-[06:03:00] BOT → ✅ Punto 'p2' eliminado!
-[06:03:14] @baby__lax: !delpoint piso2
-[06:03:14] BOT → ✅ Punto 'piso2' eliminado!
-[06:03:23] @baby__lax: !delpoint puerta
-[06:03:23] BOT → ✅ Punto 'puerta' eliminado!
-[06:03:31] @baby__lax: !delpoint pista
-[06:03:31] BOT → ✅ Punto 'pista' eliminado!
-[06:03:43] @baby__lax: !tplist
-[06:03:43] BOT → 📍 PUNTOS DE TELETRANSPORTE:
-🔹 [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
-
-💡 Usa: !tp [nombre] o escribe el nombre directamente
-[06:04:33] @baby__lax: !delpoint !addzone [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
-[06:04:33] BOT → ❌ Usa: !delpoint [nombre]
-[06:06:29] @baby__lax: !tplist
-[06:06:29] BOT → 📍 PUNTOS DE TELETRANSPORTE:
-🔹 [nombre] - Crear zona!TPus [nombre] - Crear punto TP!delpoint [nombre] - Eliminar punto
-
-💡 Usa: !tp [nombre] o escribe el nombre directamente
-[06:40:04] @baby__lax: !setvipzone
-[06:40:04] BOT → 🎯 Zona VIP establecida en: X=16.0, Y=17.0, Z=20.0
-[06:40:27] @baby__lax: !tplist
-[06:40:27] BOT → 📍 No hay puntos de teletransporte creados
-[06:40:51] @baby__lax: !tp vip
-[06:40:51] BOT → ❌ Punto 'vip' no encontrado. Usa !tplist para ver los disponibles
-[06:41:14] @baby__lax: !TPus vip
-[06:41:14] BOT → 📍 Punto de teletransporte 'vip' creado en posición: X=15.5, Y=17.0, Z=19.5
-[06:41:46] @baby__lax: !tplist
-[06:41:46] BOT → 📍 PUNTOS DE TELETRANSPORTE:
-🔹 vip
-
-💡 Usa: !tp [nombre] o escribe el nombre directamente
-[06:42:09] @baby__lax: !delpoint
-[06:42:09] BOT → ❌ Usa: !delpoint [nombre]
-[06:42:21] @baby__lax: !delpoint vip
-[06:42:21] BOT → ✅ Punto 'vip' eliminado!
-[06:49:09] @baby__lax: !setvipzone
-[06:49:09] BOT → ❌ ¡Solo el propietario puede establecer la zona VIP!
-[06:49:45] @baby__lax: !heartall
-[06:49:45] BOT → ❌ ¡Solo el propietario puede enviar corazones a todos!
-[06:51:40] @baby__lax: !myid
-[06:51:40] BOT → 🆔 Tu ID de usuario es: 662aae9b602b4a897557ec18
-[06:54:21] @baby__lax: !restart
-[06:54:21] BOT → ❌ ¡Solo el propietario puede reiniciar el bot!
-[06:57:59] @baby__lax: !tp vip
-[06:57:59] BOT → ❌ Punto 'vip' no encontrado. Usa !tplist para ver los disponibles
-[07:00:36] @baby__lax: !setvipzone
-[07:00:36] BOT → 🎯 Zona VIP establecida en: X=16.0, Y=17.0, Z=19.0
-[07:00:53] @baby__lax: !tp vip
-[07:00:53] BOT → ❌ Punto 'vip' no encontrado. Usa !tplist para ver los disponibles
-[07:05:37] @baby__lax: !TPus pista
-[07:05:37] BOT → 📍 Punto de teletransporte 'pista' creado en posición: X=11.5, Y=4.25, Z=23.5
-[07:06:11] @baby__lax: !TPus bar
-[07:06:11] BOT → 📍 Punto de teletransporte 'bar' creado en posición: X=6.5, Y=7.0, Z=4.5
-[07:06:45] @baby__lax: !TPus p2
-[07:06:45] BOT → 📍 Punto de teletransporte 'p2' creado en posición: X=12.5, Y=12.0, Z=16.5
-[07:07:18] @baby__lax: !heartall
-[07:07:18] BOT → 💖 Enviaste ❤️ a todos los 1 jugadores en la sala!
-[07:07:18] @baby__lax: !heartall
-[07:07:18] BOT → ❌ Usa: !heart @username [cantidad]
-[07:09:16] @baby__lax: !tipall 1
-[07:09:16] BOT → ❌ ¡Formato de comando inválido! Usa: !tip all [1-5] o !tip only [X]
-[07:17:23] @baby__lax: !copyoutfit
-[07:17:23] BOT → 👔 Outfit copiado y guardado como #1
-[07:18:19] @baby__lax: !copyoutfit
-[07:18:19] BOT → 👔 Outfit copiado y guardado como #2
-[07:22:14] @baby__lax: !copyoutfit
-[07:22:14] BOT → 👔 Outfit copiado y guardado como #3
-[07:22:31] @baby__lax: !outfit 2
-[07:22:31] BOT → 👕 Outfit #2 aplicado
+[21:19:45] @baby__lax: !inventory
+[21:19:45] BOT → 11. clothing: shoes-n_room32019socksneakersgrey
+[21:19:46] @baby__lax: !inventory
+[21:19:46] BOT → 12. clothing: shirt-n_room32019longlineteesweatshirtgrey
+[21:19:46] @baby__lax: !inventory
+[21:19:46] BOT → 13. clothing: pants-n_room32019longshortswithsocksgrey
+[21:19:46] @baby__lax: !inventory
+[21:19:46] BOT → 14. clothing: hair_front-n_basic2018buzzcut
+[21:19:47] @baby__lax: !inventory
+[21:19:47] BOT → 15. clothing: eyebrow-n_basic2018newbrows14
+[21:19:47] @baby__lax: !inventory
+[21:19:47] BOT → 16. clothing: eye-n_basic2018squintynude
+[21:19:47] @baby__lax: !inventory
+[21:19:47] BOT → 17. clothing: nose-n_basic2018newnose09
+[21:19:48] @baby__lax: !inventory
+[21:19:48] BOT → 18. clothing: mouth-basic2018downturnedfullpeaked
+[21:19:48] @baby__lax: !inventory
+[21:19:48] BOT → 19. clothing: nose-n_01
+[21:19:48] @baby__lax: !inventory
+[21:19:48] BOT → 20. clothing: mouth-n_aprilfoolsinvisible2020mouth
+[21:19:48] @baby__lax: !inventory
+[21:19:48] BOT → 21. clothing: hair_front-n_malenew09
+[21:19:49] @baby__lax: !inventory
+[21:19:49] BOT → 22. clothing: hat-n_earthday2025hat
+[21:19:49] @baby__lax: !inventory
+[21:19:49] BOT → 23. clothing: shirt-n_earthday2025sweater
+[21:19:49] @baby__lax: !inventory
+[21:19:49] BOT → 24. clothing: shoes-n_room12019sneakersblack
+[21:19:50] @baby__lax: !inventory
+[21:19:50] BOT → 25. clothing: pants-n_gothanchorstore2022cargopants
+[21:19:50] @baby__lax: !inventory
+[21:19:50] BOT → 26. clothing: eye-n_animecollection2018bishoneneyes
+[21:19:50] @baby__lax: !inventory
+[21:19:50] BOT → 27. clothing: pants-n_room12019formalslacksblack
+[21:19:51] @baby__lax: !inventory
+[21:19:51] BOT → 28. clothing: shirt-n_room12019buttondownblack
+[21:19:51] @baby__lax: !inventory
+[21:19:51] BOT → 29. clothing: necklace-n_room32019locknecklace
+[21:19:51] @baby__lax: !inventory
+[21:19:51] BOT → 30. clothing: pants-n_room32019longshortswithsocksblack
+[21:19:52] @baby__lax: !inventory
+[21:19:52] BOT → 31. clothing: handbag-n_aprilscavengerhunt2021bobatea
+[21:19:52] @baby__lax: !inventory
+[21:19:52] BOT → 32. clothing: watch-n_room32019blackwatch
+[21:19:52] @baby__lax: !inventory
+[21:19:52] BOT → 33. clothing: glasses-n_registrationavatars2023billieglasses
+[21:19:53] @baby__lax: !inventory
+[21:19:53] BOT → 34. clothing: tattoo-n_authenticallyyouudc2024zimtopsurgetats
+[21:19:53] @baby__lax: !inventory
+[21:19:53] BOT → 35. clothing: freckle-n_basic2018freckle22
+[21:19:53] @baby__lax: !inventory
+[21:19:53] BOT → 36. clothing: freckle-n_registrationavatars2023contour
+[21:19:53] @baby__lax: !inventory
+[21:19:53] BOT → 37. clothing: shirt-n_animecollection2018gokushirt
+[21:19:55] @baby__lax: !inventory
+[21:19:55] BOT → 38. clothing: pants-n_animecollection2018gokupants
+[21:19:55] @baby__lax: !inventory
+[21:19:55] BOT → 39. clothing: hair_front-vipnew3_m_02
+[21:19:55] @baby__lax: !inventory
+[21:19:55] BOT → 40. clothing: eye-n_basic2018holloweyes
+[21:19:56] @baby__lax: !inventory
+[21:19:56] BOT → 41. clothing: eyebrow-n_basic2018newbrows01
+[21:19:56] @baby__lax: !inventory
+[21:19:56] BOT → 42. clothing: mouth-basic2018grin
+[21:19:56] @baby__lax: !inventory
+[21:19:56] BOT → 43. clothing: pants-n_starteritems2019mensshortswhite
+[21:19:57] @baby__lax: !inventory
+[21:19:57] BOT → 44. clothing: sock-n_starteritems2020whitesocks
+[21:19:57] @baby__lax: !inventory
+[21:19:57] BOT → 45. clothing: shirt-n_bastilleday2022lisashirt
+[21:19:57] @baby__lax: !inventory
+[21:19:57] BOT → 46. clothing: hair_front-n_malenew04
+[21:19:58] @baby__lax: !inventory
+[21:19:58] BOT → 47. clothing: shirt-n_starteritems2019maletshirtblack
+[21:19:58] @baby__lax: !inventory
+[21:19:58] BOT → 48. clothing: pants-n_starteritems2019mensshortsblack
+[21:19:58] @baby__lax: !inventory
+[21:19:58] BOT → 49. clothing: hat-n_scanengerhunt2020shinycrown_1
+[21:19:59] @baby__lax: !inventory
+[21:19:59] BOT → 50. clothing: pants-n_room32019baggytrackpantsred
+[21:19:59] @baby__lax: !inventory
+[21:19:59] BOT → 51. clothing: shirt-n_room32019hoodiered
+[21:19:59] @baby__lax: !inventory
+[21:19:59] BOT → 52. clothing: hat-n_room22019headphonesblack_1
+[21:19:59] @baby__lax: !inventory
+[21:19:59] BOT → 53. clothing: eye-anime_05
+[21:20:00] @baby__lax: !inventory
+[21:20:00] BOT → 54. clothing: shoes-n_room12019hightopsred
+[16:08:36] @baby__lax: !slap
+[16:08:36] BOT → ❌ Usa: !comando @usuario
+[16:10:01] @baby__lax: !heartall
+[16:10:01] BOT → 💖 Enviaste ❤️ a todos los 1 jugadores en la sala!
+[16:10:01] @baby__lax: !heartall
+[16:10:01] BOT → ❌ Usa: !heart @username [cantidad]
+[16:10:18] @baby__lax: !heart @baby__lax 3
+[16:10:18] BOT → 💖 baby__lax envió 3 ❤️ a baby__lax
+[16:10:30] @baby__lax: !heart @baby__lax 30
+[16:10:30] BOT → 💖 baby__lax envió 30 ❤️ a baby__lax
+[16:10:44] @baby__lax: !heart @baby__lax 100
+[16:10:44] BOT → 💖 baby__lax envió 100 ❤️ a baby__lax
