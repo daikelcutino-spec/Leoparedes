@@ -2127,7 +2127,15 @@ class Bot(BaseBot):
         if msg == "!banlist":
             if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden ver banlist!"); return
             if BANNED_USERS:
-
+                ban_list = "🚫 USUARIOS BANEADOS:\n"
+                for i, (uid, ban_data) in enumerate(BANNED_USERS.items(), 1):
+                    username = USER_NAMES.get(uid, f"User_{uid[:8]}")
+                    ban_time = ban_data.get("time", "indefinido")
+                    ban_list += f"{i}. {username} (hasta {ban_time})\n"
+                await send_response(ban_list)
+            else:
+                await send_response("✅ No hay usuarios baneados")
+            return
 
         # Sistema de emotes mutuos (VIP) - formato: (emote) @user
         if msg.startswith("(") and ")" in msg and "@" in msg:
