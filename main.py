@@ -1538,8 +1538,19 @@ class Bot(BaseBot):
                     for _ in range(min(hearts_count, 30)):
                         await self.highrise.react("heart", target_user_obj.id)
                         await asyncio.sleep(0.05)
+                elif is_vip:
+                    # VIP puede enviar máximo 5 corazones
+                    if hearts_count > 5:
+                        await send_response("❌ ¡Los VIP pueden enviar máximo 5 corazones por comando!")
+                        return
+                    self.add_user_hearts(target_user_obj.id, hearts_count, target_username)
+                    heart_message = f"💖 {username} envió {hearts_count} ❤️ a {target_username}"
+                    await send_response(heart_message)
+                    for _ in range(hearts_count):
+                        await self.highrise.react("heart", target_user_obj.id)
+                        await asyncio.sleep(0.05)
                 else:
-                     await send_response("❌ ¡Solo administradores y VIP pueden enviar más de 1 corazón!")
+                    await send_response("🔒 ¡Solo VIP, administradores y propietario pueden enviar corazones!")
             else:
                 await send_response( "❌ Usa: !heart @username [cantidad]")
             return
@@ -2116,6 +2127,67 @@ class Bot(BaseBot):
         if msg == "!banlist":
             if not (self.is_admin(user_id) or user_id == OWNER_ID): await send_response("❌ ¡Solo administradores y propietario pueden ver banlist!"); return
             if BANNED_USERS:
+
+
+        # Sistema de emotes mutuos (VIP) - formato: (emote) @user
+        if msg.startswith("(") and ")" in msg and "@" in msg:
+            # Verificar que sea VIP o superior
+            is_vip = self.is_vip_by_username(username)
+            is_admin_or_owner = self.is_admin(user_id) or user_id == OWNER_ID
+            
+            if not (is_vip or is_admin_or_owner):
+                await send_response("🔒 Solo usuarios VIP pueden usar emotes mutuos!")
+                return
+            
+            try:
+                # Extraer emote y usuario
+                emote_part = msg[msg.index("(")+1:msg.index(")")]
+                target_username = msg[msg.index("@")+1:].strip().split()[0]
+                
+                # Buscar el emote
+                emote = None
+                emote_key = emote_part.strip().lower()
+                
+                if emote_key.isdigit() and emote_key in emotes:
+                    emote = emotes[emote_key]
+                else:
+                    for e in emotes.values():
+                        if e["name"].lower() == emote_key or e["id"].lower() == emote_key:
+                            emote = e
+                            break
+                
+                if not emote:
+                    await send_response(f"❌ Emote '{emote_part}' no encontrado. Usa !emote list")
+                    return
+                
+                if not emote["is_free"]:
+                    await send_response(f"❌ El emote '{emote['name']}' no es gratuito")
+                    return
+                
+                # Buscar usuario objetivo
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    return
+                
+                users = response.content
+                target_user = next((u for u, _ in users if u.username == target_username), None)
+                
+                if not target_user:
+                    await send_response(f"❌ Usuario {target_username} no encontrado")
+                    return
+                
+                # Ejecutar emote en ambos usuarios
+                await self.highrise.send_emote(emote["id"], user.id)
+                await self.highrise.send_emote(emote["id"], target_user.id)
+                
+                await send_response(f"🎭 Emote mutuo '{emote['name']}' entre @{username} y @{target_username}")
+                
+            except Exception as e:
+                await send_response(f"❌ Error: Usa el formato: (nombre_emote) @usuario")
+                log_event("ERROR", f"Error en emote mutuo: {e}")
+            return
+
                 ban_list = "🚫 USUARIOS BANEADOS:\n"
                 for i, (uid, ban_data) in enumerate(BANNED_USERS.items(), 1):
                     username = USER_NAMES.get(uid, f"User_{uid[:8]}")
@@ -2478,8 +2550,16 @@ class Bot(BaseBot):
             else: await send_response("❌ Usa: !TPus [nombre]")
             return
 
-        # Comandos de interacción
+        # Comandos de interacción (Solo VIP+)
         if msg.startswith("!punch") or msg.startswith("!slap") or msg.startswith("!flirt") or msg.startswith("!scare") or msg.startswith("!electro") or msg.startswith("!hug") or msg.startswith("!ninja") or msg.startswith("!laugh") or msg.startswith("!boom"):
+            # Verificar permisos: Solo VIP, Admin y Owner pueden usar interacciones
+            is_vip = self.is_vip_by_username(username)
+            is_admin_or_owner = self.is_admin(user_id) or user_id == OWNER_ID
+            
+            if not (is_vip or is_admin_or_owner):
+                await send_response("🔒 Solo usuarios VIP, Admins y el Propietario pueden usar comandos de interacción!")
+                return
+            
             parts = msg.split()
             if len(parts) >= 2:
                 target_username = parts[1].replace("@", "")
