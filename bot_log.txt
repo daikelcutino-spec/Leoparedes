@@ -5828,3 +5828,10 @@
 [2025-10-09 21:14:07] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-09 21:14:07] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-09 21:14:10] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-09 22:10:01] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-09 22:10:01] [WHISPER] BOT_NOCTURNO: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-09 22:10:03] [BOT] Outfit NOCTURNO aplicado
+[2025-10-09 22:10:03] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-09 22:10:03] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-09 22:10:03] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-09 22:10:06] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
