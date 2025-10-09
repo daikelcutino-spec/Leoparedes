@@ -6,11 +6,239 @@ import json
 OWNER_ID = "662aae9b602b4a897557ec18"
 ADMIN_ID = "669da7b73867bac51391c757"
 
+# 224 emotes gratuitos
+emotes = {
+    1: {"id": "idle-loop-sitfloor", "name": "Sentado", "duration": 5, "is_free": True},
+    2: {"id": "emote-bow", "name": "Reverencia", "duration": 3, "is_free": True},
+    3: {"id": "emote-curtsy", "name": "Cortesía", "duration": 3, "is_free": True},
+    4: {"id": "emote-snowangel", "name": "Ángel de Nieve", "duration": 5, "is_free": True},
+    5: {"id": "emote-snowball", "name": "Bola de Nieve", "duration": 3, "is_free": True},
+    6: {"id": "emote-confused", "name": "Confundido", "duration": 3, "is_free": True},
+    7: {"id": "emote-wave", "name": "Saludar", "duration": 2, "is_free": True},
+    8: {"id": "emote-headnod-yes", "name": "Asentir Sí", "duration": 2, "is_free": True},
+    9: {"id": "emote-headnod-no", "name": "Negar No", "duration": 2, "is_free": True},
+    10: {"id": "emote-clap", "name": "Aplaudir", "duration": 2, "is_free": True},
+    11: {"id": "idle-dance-casual", "name": "Baile Casual", "duration": 5, "is_free": True},
+    12: {"id": "emote-laughing", "name": "Riendo", "duration": 3, "is_free": True},
+    13: {"id": "emote-hello", "name": "Hola", "duration": 2, "is_free": True},
+    14: {"id": "emote-happy", "name": "Feliz", "duration": 3, "is_free": True},
+    15: {"id": "emote-thumbsup", "name": "Pulgar Arriba", "duration": 2, "is_free": True},
+    16: {"id": "dance-tiktok2", "name": "TikTok Dance 2", "duration": 5, "is_free": True},
+    17: {"id": "emote-hot", "name": "Caliente", "duration": 3, "is_free": True},
+    18: {"id": "emote-model", "name": "Modelo", "duration": 4, "is_free": True},
+    19: {"id": "dance-blackpink", "name": "BlackPink", "duration": 6, "is_free": True},
+    20: {"id": "emote-superpose", "name": "Super Pose", "duration": 3, "is_free": True},
+    21: {"id": "emote-cute", "name": "Tierno", "duration": 3, "is_free": True},
+    22: {"id": "dance-tiktok10", "name": "TikTok 10", "duration": 5, "is_free": True},
+    23: {"id": "emote-pose7", "name": "Pose 7", "duration": 3, "is_free": True},
+    24: {"id": "emote-pose8", "name": "Pose 8", "duration": 3, "is_free": True},
+    25: {"id": "emote-pose1", "name": "Pose 1", "duration": 3, "is_free": True},
+    26: {"id": "emote-pose3", "name": "Pose 3", "duration": 3, "is_free": True},
+    27: {"id": "emote-pose5", "name": "Pose 5", "duration": 3, "is_free": True},
+    28: {"id": "emote-cutey", "name": "Dulce", "duration": 3, "is_free": True},
+    29: {"id": "dance-tiktok9", "name": "TikTok 9", "duration": 5, "is_free": True},
+    30: {"id": "emote-kiss", "name": "Beso", "duration": 2, "is_free": True},
+    31: {"id": "dance-tiktok8", "name": "TikTok 8", "duration": 5, "is_free": True},
+    32: {"id": "emote-shy2", "name": "Tímido 2", "duration": 3, "is_free": True},
+    33: {"id": "idle-enthusiastic", "name": "Entusiasta", "duration": 4, "is_free": True},
+    34: {"id": "idle-wild", "name": "Salvaje", "duration": 4, "is_free": True},
+    35: {"id": "idle-Loop-aerobics", "name": "Aeróbicos", "duration": 5, "is_free": True},
+    36: {"id": "idle-nervous", "name": "Nervioso", "duration": 4, "is_free": True},
+    37: {"id": "idle-toilet", "name": "Baño", "duration": 5, "is_free": True},
+    38: {"id": "emote-lust", "name": "Deseo", "duration": 3, "is_free": True},
+    39: {"id": "emote-greedy", "name": "Codicioso", "duration": 3, "is_free": True},
+    40: {"id": "idle-floorsleeping2", "name": "Durmiendo", "duration": 6, "is_free": True},
+    41: {"id": "idle-sad", "name": "Triste", "duration": 4, "is_free": True},
+    42: {"id": "emote-celebrate", "name": "Celebrar", "duration": 3, "is_free": True},
+    43: {"id": "emote-gagging", "name": "Náuseas", "duration": 3, "is_free": True},
+    44: {"id": "emote-pose9", "name": "Pose 9", "duration": 3, "is_free": True},
+    45: {"id": "emote-kpop_idle", "name": "KPop Idle", "duration": 4, "is_free": True},
+    46: {"id": "dance-tiktok4", "name": "TikTok 4", "duration": 5, "is_free": True},
+    47: {"id": "emote-shy", "name": "Tímido", "duration": 3, "is_free": True},
+    48: {"id": "emote-tired", "name": "Cansado", "duration": 3, "is_free": True},
+    49: {"id": "emote-pose10", "name": "Pose 10", "duration": 3, "is_free": True},
+    50: {"id": "emote-boxer", "name": "Boxeador", "duration": 3, "is_free": True},
+    51: {"id": "idle-sword", "name": "Espada", "duration": 4, "is_free": True},
+    52: {"id": "idle-lookup", "name": "Mirar Arriba", "duration": 4, "is_free": True},
+    53: {"id": "emote-punkguitar", "name": "Guitarra Punk", "duration": 4, "is_free": True},
+    54: {"id": "idle-guitar", "name": "Guitarra", "duration": 5, "is_free": True},
+    55: {"id": "idle-guitar-skill", "name": "Guitarra Pro", "duration": 5, "is_free": True},
+    56: {"id": "dance-punk", "name": "Punk Dance", "duration": 5, "is_free": True},
+    57: {"id": "idle-uwu", "name": "UwU", "duration": 3, "is_free": True},
+    58: {"id": "idle-loop-happy", "name": "Feliz Loop", "duration": 5, "is_free": True},
+    59: {"id": "emote-astronaut", "name": "Astronauta", "duration": 4, "is_free": True},
+    60: {"id": "emote-teleporting", "name": "Teletransporte", "duration": 3, "is_free": True},
+    61: {"id": "dance-wrong", "name": "Baile Equivocado", "duration": 5, "is_free": True},
+    62: {"id": "emote-swordfight", "name": "Pelea Espadas", "duration": 4, "is_free": True},
+    63: {"id": "emote-energyball", "name": "Bola Energía", "duration": 3, "is_free": True},
+    64: {"id": "emote-snake", "name": "Serpiente", "duration": 4, "is_free": True},
+    65: {"id": "emote-frog", "name": "Rana", "duration": 3, "is_free": True},
+    66: {"id": "emote-superrun", "name": "Super Correr", "duration": 4, "is_free": True},
+    67: {"id": "emote-superpunch", "name": "Super Golpe", "duration": 3, "is_free": True},
+    68: {"id": "emote-sweating", "name": "Sudando", "duration": 3, "is_free": True},
+    69: {"id": "dance-tiktok11", "name": "TikTok 11", "duration": 5, "is_free": True},
+    70: {"id": "emote-timejump", "name": "Salto Tiempo", "duration": 4, "is_free": True},
+    71: {"id": "emote-gift", "name": "Regalo", "duration": 3, "is_free": True},
+    72: {"id": "idle-loop-tapdance", "name": "Tap Dance", "duration": 5, "is_free": True},
+    73: {"id": "dance-tiktok13", "name": "TikTok 13", "duration": 5, "is_free": True},
+    74: {"id": "dance-tiktok12", "name": "TikTok 12", "duration": 5, "is_free": True},
+    75: {"id": "emote-viral", "name": "Viral", "duration": 4, "is_free": True},
+    76: {"id": "idle-loop-zombie", "name": "Zombie", "duration": 5, "is_free": True},
+    77: {"id": "emote-creepycute", "name": "Escalofriante", "duration": 3, "is_free": True},
+    78: {"id": "emote-zombierun", "name": "Correr Zombie", "duration": 4, "is_free": True},
+    79: {"id": "dance-russian", "name": "Ruso", "duration": 5, "is_free": True},
+    80: {"id": "emote-icecream", "name": "Helado", "duration": 3, "is_free": True},
+    81: {"id": "emote-relaxed", "name": "Relajado", "duration": 3, "is_free": True},
+    82: {"id": "idle-wild2", "name": "Salvaje 2", "duration": 4, "is_free": True},
+    83: {"id": "emote-telekinesis", "name": "Telequinesis", "duration": 4, "is_free": True},
+    84: {"id": "emote-float", "name": "Flotar", "duration": 4, "is_free": True},
+    85: {"id": "emote-spy", "name": "Espía", "duration": 3, "is_free": True},
+    86: {"id": "dance-icecream", "name": "Baile Helado", "duration": 5, "is_free": True},
+    87: {"id": "emote-iceskating", "name": "Patinar Hielo", "duration": 4, "is_free": True},
+    88: {"id": "emote-penguin", "name": "Pingüino", "duration": 3, "is_free": True},
+    89: {"id": "emote-sing", "name": "Cantar", "duration": 3, "is_free": True},
+    90: {"id": "emote-sleigh", "name": "Trineo", "duration": 4, "is_free": True},
+    91: {"id": "emote-hyped", "name": "Emocionado", "duration": 3, "is_free": True},
+    92: {"id": "emote-christmas", "name": "Navidad", "duration": 3, "is_free": True},
+    93: {"id": "emote-launch", "name": "Lanzar", "duration": 3, "is_free": True},
+    94: {"id": "emote-bomb", "name": "Bomba", "duration": 3, "is_free": True},
+    95: {"id": "emote-fishing", "name": "Pescar", "duration": 4, "is_free": True},
+    96: {"id": "idle-singing", "name": "Cantando", "duration": 5, "is_free": True},
+    97: {"id": "dance-aerobics", "name": "Aeróbicos", "duration": 5, "is_free": True},
+    98: {"id": "emote-shopping", "name": "Compras", "duration": 3, "is_free": True},
+    99: {"id": "emote-fashionista", "name": "Fashionista", "duration": 3, "is_free": True},
+    100: {"id": "emote-proposing", "name": "Proponer", "duration": 3, "is_free": True},
+    101: {"id": "emote-heartfingers", "name": "Corazón Dedos", "duration": 2, "is_free": True},
+    102: {"id": "emote-bunnyhop", "name": "Salto Conejo", "duration": 3, "is_free": True},
+    103: {"id": "emote-pushups", "name": "Flexiones", "duration": 4, "is_free": True},
+    104: {"id": "emote-maniac", "name": "Maníaco", "duration": 3, "is_free": True},
+    105: {"id": "emote-peace", "name": "Paz", "duration": 2, "is_free": True},
+    106: {"id": "emote-jinglebell", "name": "Campana", "duration": 3, "is_free": True},
+    107: {"id": "dance-tiktok3", "name": "TikTok 3", "duration": 5, "is_free": True},
+    108: {"id": "dance-pennywise", "name": "Pennywise", "duration": 5, "is_free": True},
+    109: {"id": "dance-tiktok7", "name": "TikTok 7", "duration": 5, "is_free": True},
+    110: {"id": "emote-monkey", "name": "Mono", "duration": 3, "is_free": True},
+    111: {"id": "dance-weird", "name": "Baile Raro", "duration": 5, "is_free": True},
+    112: {"id": "emote-headblowup", "name": "Cabeza Explotar", "duration": 3, "is_free": True},
+    113: {"id": "emote-theatrical", "name": "Teatral", "duration": 3, "is_free": True},
+    114: {"id": "emote-snowball-fight", "name": "Guerra Nieve", "duration": 4, "is_free": True},
+    115: {"id": "emote-pose6", "name": "Pose 6", "duration": 3, "is_free": True},
+    116: {"id": "emote-charging", "name": "Cargar", "duration": 3, "is_free": True},
+    117: {"id": "emote-think", "name": "Pensar", "duration": 3, "is_free": True},
+    118: {"id": "emote-ropepull", "name": "Jalar Cuerda", "duration": 4, "is_free": True},
+    119: {"id": "emote-sit1", "name": "Sentarse 1", "duration": 5, "is_free": True},
+    120: {"id": "emote-sit2", "name": "Sentarse 2", "duration": 5, "is_free": True},
+    121: {"id": "emote-sit3", "name": "Sentarse 3", "duration": 5, "is_free": True},
+    122: {"id": "emote-sit4", "name": "Sentarse 4", "duration": 5, "is_free": True},
+    123: {"id": "emote-sit5", "name": "Sentarse 5", "duration": 5, "is_free": True},
+    124: {"id": "emote-sit6", "name": "Sentarse 6", "duration": 5, "is_free": True},
+    125: {"id": "emote-sit7", "name": "Sentarse 7", "duration": 5, "is_free": True},
+    126: {"id": "emote-sit8", "name": "Sentarse 8", "duration": 5, "is_free": True},
+    127: {"id": "idle-loop-aerobics2", "name": "Aeróbicos 2", "duration": 5, "is_free": True},
+    128: {"id": "idle-loop-aerobics3", "name": "Aeróbicos 3", "duration": 5, "is_free": True},
+    129: {"id": "idle-loop-aerobics4", "name": "Aeróbicos 4", "duration": 5, "is_free": True},
+    130: {"id": "emote-angry", "name": "Enojado", "duration": 3, "is_free": True},
+    131: {"id": "emote-pose4", "name": "Pose 4", "duration": 3, "is_free": True},
+    132: {"id": "emote-sitting", "name": "Sentado", "duration": 5, "is_free": True},
+    133: {"id": "idle-sad2", "name": "Triste 2", "duration": 4, "is_free": True},
+    134: {"id": "emote-crying", "name": "Llorando", "duration": 3, "is_free": True},
+    135: {"id": "idle-loop-tired", "name": "Cansado Loop", "duration": 5, "is_free": True},
+    136: {"id": "emote-sad", "name": "Triste", "duration": 3, "is_free": True},
+    137: {"id": "emote-jump", "name": "Saltar", "duration": 2, "is_free": True},
+    138: {"id": "idle-loop-sad", "name": "Triste Loop", "duration": 5, "is_free": True},
+    139: {"id": "emote-embarrassed", "name": "Avergonzado", "duration": 3, "is_free": True},
+    140: {"id": "emote-gravity", "name": "Gravedad", "duration": 4, "is_free": True},
+    141: {"id": "emote-fashionweek", "name": "Semana Moda", "duration": 4, "is_free": True},
+    142: {"id": "emote-faint", "name": "Desmayar", "duration": 3, "is_free": True},
+    143: {"id": "emote-snowboard", "name": "Snowboard", "duration": 4, "is_free": True},
+    144: {"id": "emote-skiing", "name": "Esquiar", "duration": 4, "is_free": True},
+    145: {"id": "emote-holiday", "name": "Vacaciones", "duration": 3, "is_free": True},
+    146: {"id": "emote-smooch", "name": "Besar", "duration": 3, "is_free": True},
+    147: {"id": "dance-tiktok1", "name": "TikTok 1", "duration": 5, "is_free": True},
+    148: {"id": "dance-tiktok5", "name": "TikTok 5", "duration": 5, "is_free": True},
+    149: {"id": "dance-tiktok6", "name": "TikTok 6", "duration": 5, "is_free": True},
+    150: {"id": "emote-airguitar", "name": "Guitarra Aire", "duration": 3, "is_free": True},
+    151: {"id": "emote-splits", "name": "Split", "duration": 4, "is_free": True},
+    152: {"id": "emote-backflip", "name": "Backflip", "duration": 3, "is_free": True},
+    153: {"id": "emote-sayso", "name": "Say So", "duration": 4, "is_free": True},
+    154: {"id": "dance-shoppingcart", "name": "Carrito Compras", "duration": 5, "is_free": True},
+    155: {"id": "dance-weird2", "name": "Baile Raro 2", "duration": 5, "is_free": True},
+    156: {"id": "emote-fistpump", "name": "Puño Arriba", "duration": 2, "is_free": True},
+    157: {"id": "emote-shovel", "name": "Pala", "duration": 3, "is_free": True},
+    158: {"id": "emote-sick", "name": "Enfermo", "duration": 3, "is_free": True},
+    159: {"id": "emote-laughing2", "name": "Riendo 2", "duration": 3, "is_free": True},
+    160: {"id": "emote-dizzy", "name": "Mareado", "duration": 3, "is_free": True},
+    161: {"id": "emote-superrun2", "name": "Super Correr 2", "duration": 4, "is_free": True},
+    162: {"id": "idle-loop-breakdancing", "name": "Breakdance", "duration": 5, "is_free": True},
+    163: {"id": "emote-kawaii", "name": "Kawaii", "duration": 3, "is_free": True},
+    164: {"id": "emote-unicorn", "name": "Unicornio", "duration": 4, "is_free": True},
+    165: {"id": "emote-hero-entance", "name": "Entrada Héroe", "duration": 3, "is_free": True},
+    166: {"id": "emote-hero-idle", "name": "Héroe Idle", "duration": 4, "is_free": True},
+    167: {"id": "idle-loop-sitfloor2", "name": "Sentado Piso 2", "duration": 5, "is_free": True},
+    168: {"id": "emote-snake2", "name": "Serpiente 2", "duration": 4, "is_free": True},
+    169: {"id": "emote-froggy", "name": "Ranita", "duration": 3, "is_free": True},
+    170: {"id": "emote-superpose2", "name": "Super Pose 2", "duration": 3, "is_free": True},
+    171: {"id": "emote-cute2", "name": "Tierno 2", "duration": 3, "is_free": True},
+    172: {"id": "emote-model2", "name": "Modelo 2", "duration": 4, "is_free": True},
+    173: {"id": "emote-pose11", "name": "Pose 11", "duration": 3, "is_free": True},
+    174: {"id": "emote-pose12", "name": "Pose 12", "duration": 3, "is_free": True},
+    175: {"id": "emote-kiss2", "name": "Beso 2", "duration": 2, "is_free": True},
+    176: {"id": "emote-shy3", "name": "Tímido 3", "duration": 3, "is_free": True},
+    177: {"id": "emote-lust2", "name": "Deseo 2", "duration": 3, "is_free": True},
+    178: {"id": "emote-greedy2", "name": "Codicioso 2", "duration": 3, "is_free": True},
+    179: {"id": "emote-gagging2", "name": "Náuseas 2", "duration": 3, "is_free": True},
+    180: {"id": "emote-tired2", "name": "Cansado 2", "duration": 3, "is_free": True},
+    181: {"id": "emote-boxer2", "name": "Boxeador 2", "duration": 3, "is_free": True},
+    182: {"id": "emote-astronaut2", "name": "Astronauta 2", "duration": 4, "is_free": True},
+    183: {"id": "emote-teleporting2", "name": "Teletransporte 2", "duration": 3, "is_free": True},
+    184: {"id": "emote-swordfight2", "name": "Pelea Espadas 2", "duration": 4, "is_free": True},
+    185: {"id": "emote-energyball2", "name": "Bola Energía 2", "duration": 3, "is_free": True},
+    186: {"id": "emote-sweating2", "name": "Sudando 2", "duration": 3, "is_free": True},
+    187: {"id": "emote-timejump2", "name": "Salto Tiempo 2", "duration": 4, "is_free": True},
+    188: {"id": "emote-gift2", "name": "Regalo 2", "duration": 3, "is_free": True},
+    189: {"id": "emote-zombierun2", "name": "Correr Zombie 2", "duration": 4, "is_free": True},
+    190: {"id": "emote-icecream2", "name": "Helado 2", "duration": 3, "is_free": True},
+    191: {"id": "emote-relaxed2", "name": "Relajado 2", "duration": 3, "is_free": True},
+    192: {"id": "emote-telekinesis2", "name": "Telequinesis 2", "duration": 4, "is_free": True},
+    193: {"id": "emote-float2", "name": "Flotar 2", "duration": 4, "is_free": True},
+    194: {"id": "emote-spy2", "name": "Espía 2", "duration": 3, "is_free": True},
+    195: {"id": "emote-iceskating2", "name": "Patinar Hielo 2", "duration": 4, "is_free": True},
+    196: {"id": "emote-penguin2", "name": "Pingüino 2", "duration": 3, "is_free": True},
+    197: {"id": "emote-sing2", "name": "Cantar 2", "duration": 3, "is_free": True},
+    198: {"id": "emote-sleigh2", "name": "Trineo 2", "duration": 4, "is_free": True},
+    199: {"id": "emote-hyped2", "name": "Emocionado 2", "duration": 3, "is_free": True},
+    200: {"id": "emote-christmas2", "name": "Navidad 2", "duration": 3, "is_free": True},
+    201: {"id": "emote-launch2", "name": "Lanzar 2", "duration": 3, "is_free": True},
+    202: {"id": "emote-bomb2", "name": "Bomba 2", "duration": 3, "is_free": True},
+    203: {"id": "emote-fishing2", "name": "Pescar 2", "duration": 4, "is_free": True},
+    204: {"id": "emote-shopping2", "name": "Compras 2", "duration": 3, "is_free": True},
+    205: {"id": "emote-fashionista2", "name": "Fashionista 2", "duration": 3, "is_free": True},
+    206: {"id": "emote-proposing2", "name": "Proponer 2", "duration": 3, "is_free": True},
+    207: {"id": "emote-heartfingers2", "name": "Corazón Dedos 2", "duration": 2, "is_free": True},
+    208: {"id": "emote-bunnyhop2", "name": "Salto Conejo 2", "duration": 3, "is_free": True},
+    209: {"id": "emote-pushups2", "name": "Flexiones 2", "duration": 4, "is_free": True},
+    210: {"id": "emote-maniac2", "name": "Maníaco 2", "duration": 3, "is_free": True},
+    211: {"id": "emote-peace2", "name": "Paz 2", "duration": 2, "is_free": True},
+    212: {"id": "emote-jinglebell2", "name": "Campana 2", "duration": 3, "is_free": True},
+    213: {"id": "emote-monkey2", "name": "Mono 2", "duration": 3, "is_free": True},
+    214: {"id": "emote-headblowup2", "name": "Cabeza Explotar 2", "duration": 3, "is_free": True},
+    215: {"id": "emote-theatrical2", "name": "Teatral 2", "duration": 3, "is_free": True},
+    216: {"id": "emote-snowball-fight2", "name": "Guerra Nieve 2", "duration": 4, "is_free": True},
+    217: {"id": "emote-charging2", "name": "Cargar 2", "duration": 3, "is_free": True},
+    218: {"id": "emote-think2", "name": "Pensar 2", "duration": 3, "is_free": True},
+    219: {"id": "emote-ropepull2", "name": "Jalar Cuerda 2", "duration": 4, "is_free": True},
+    220: {"id": "emote-angry2", "name": "Enojado 2", "duration": 3, "is_free": True},
+    221: {"id": "emote-gravity2", "name": "Gravedad 2", "duration": 4, "is_free": True},
+    222: {"id": "emote-fashionweek2", "name": "Semana Moda 2", "duration": 4, "is_free": True},
+    223: {"id": "emote-faint2", "name": "Desmayar 2", "duration": 3, "is_free": True},
+    224: {"id": "emote-snowboard2", "name": "Snowboard 2", "duration": 4, "is_free": True}
+}
+
 class CantineroBot(BaseBot):
     def __init__(self):
         super().__init__()
         self.bot_id = None
-        self.floss_task = None
+        self.emote_task = None
         self.mensaje_task = None
         self.punto_inicio = {"x": 9.5, "y": 0.0, "z": 9.5}
         self.load_config()
@@ -74,28 +302,43 @@ class CantineroBot(BaseBot):
             print(f"❌ Error al teletransportar: {e}")
             print(f"   Punto de inicio configurado: {self.punto_inicio}")
         
-        print("🕺 Iniciando emote floss continuo...")
-        self.floss_task = asyncio.create_task(self.floss_continuo())
+        print("🎭 Iniciando ciclo automático de 224 emotes...")
+        self.emote_task = asyncio.create_task(self.ciclo_automatico_emotes())
         
         print("📢 Iniciando mensajes automáticos...")
         self.mensaje_task = asyncio.create_task(self.mensajes_automaticos())
         
         print("🍷 ¡Bot Cantinero listo para servir!")
     
-    async def floss_continuo(self):
-        """Ejecuta el emote dance-floss continuamente sin parar"""
+    async def ciclo_automatico_emotes(self):
+        """Ejecuta un ciclo automático de 224 emotes gratuitos"""
+        # Filtrar solo emotes gratuitos
+        free_emotes = {num: data for num, data in emotes.items() if data.get("is_free", True)}
+        
+        print(f"🎭 INICIANDO CICLO AUTOMÁTICO DE {len(free_emotes)} EMOTES GRATUITOS...")
+        
+        ciclo = 0
         while True:
             try:
-                await self.highrise.send_emote("dance-floss", self.bot_id)
-                await asyncio.sleep(4)
+                ciclo += 1
+                print(f"🔄 Ciclo #{ciclo} - Iniciando secuencia de {len(free_emotes)} emotes")
+                
+                for emote_num, emote_data in free_emotes.items():
+                    try:
+                        await self.highrise.send_emote(emote_data["id"], self.bot_id)
+                        duration = emote_data.get("duration", 5)
+                        await asyncio.sleep(max(0.1, duration - 0.3))
+                    except Exception as e:
+                        print(f"⚠️ Error en emote {emote_data['name']}: {e}")
+                        await asyncio.sleep(1.0)
+                        continue
+                
+                print(f"✅ Ciclo #{ciclo} completado - Reiniciando...")
+                await asyncio.sleep(2)
+                
             except Exception as e:
-                print(f"⚠️ Error en emote dance-floss: {e}")
-                # Si falla dance-floss, intentar con emotes alternativos
-                try:
-                    await self.highrise.send_emote("idle-dance-casual", self.bot_id)
-                    await asyncio.sleep(4)
-                except:
-                    await asyncio.sleep(5)
+                print(f"❌ ERROR en ciclo automático: {e}")
+                await asyncio.sleep(5)
     
     async def mensajes_automaticos(self):
         """Envía 1 mensaje automático cada 3 minutos, alternando entre los 3 mensajes"""
@@ -328,7 +571,7 @@ if __name__ == "__main__":
     import sys
     
     print("🍷 Iniciando Bot Cantinero NOCTURNO...")
-    print("🕺 Emote floss continuo activado")
+    print("🎭 Ciclo automático de 224 emotes activado")
     print("📢 Mensajes automáticos cada 3 minutos")
     print("🕷️ Listo para servir en la oscuridad...")
     print("=" * 50)
