@@ -49,28 +49,58 @@ class CantineroBot(BaseBot):
         
         if msg == "!menu" or msg == "!carta":
             await self.mostrar_menu(user)
+            return
         elif msg.startswith("!servir"):
             await self.servir_bebida(user, message)
+            return
         elif msg == "!cantinero":
             await self.highrise.chat(f"🍷 A tus órdenes @{user.username}. Usa !menu para ver la carta")
+            return
+        
+        await self.detectar_bebida(user, msg)
+    
+    async def detectar_bebida(self, user: User, msg: str):
+        """Detecta si el mensaje contiene el nombre de una bebida y la sirve automáticamente"""
+        bebidas_respuestas = {
+            "cerveza": "🍺 Aquí tienes una cerveza bien fría, @{user}! Salud! 🍻",
+            "vino": "🍷 Un excelente vino tinto para ti, @{user}. ¡Buen provecho!",
+            "whisky": "🥃 Whisky en las rocas para @{user}. Con clase! 🎩",
+            "coctel": "🍹 Un cóctel especial de la casa para @{user}! 🌟",
+            "cóctel": "🍹 Un cóctel especial de la casa para @{user}! 🌟",
+            "champagne": "🍾 Champagne! Algo que celebrar, @{user}? 🎉",
+            "cafe": "☕ Café recién hecho para @{user}. ¡Energía pura! ⚡",
+            "café": "☕ Café recién hecho para @{user}. ¡Energía pura! ⚡",
+            "refresco": "🥤 Refresco bien frío para @{user}! 🧊",
+            "sombra": "🖤 Sombra Líquida... la especialidad NOCTURNO para @{user}. Oscuro y misterioso... 🕷️",
+            "sangre": "🦇 Sangre de Murciélago para @{user}... dulce con un toque salvaje 🌙",
+            "eclipse": "🌑 Eclipse Negro... la bebida más oscura para @{user}. Solo para los más valientes 🕸️"
+        }
+        
+        for bebida, respuesta in bebidas_respuestas.items():
+            if bebida in msg:
+                respuesta_final = respuesta.replace("{user}", user.username)
+                await self.highrise.chat(respuesta_final)
+                return
     
     async def mostrar_menu(self, user: User):
         """Muestra el menú de bebidas"""
         menu = [
             "🍷 === CARTA DEL CANTINERO === 🍷",
             "",
-            "🍺 Cerveza - !servir cerveza",
-            "🍷 Vino - !servir vino",
-            "🥃 Whisky - !servir whisky",
-            "🍹 Cóctel - !servir coctel",
-            "🍾 Champagne - !servir champagne",
-            "☕ Café - !servir cafe",
-            "🥤 Refresco - !servir refresco",
+            "🍺 Cerveza",
+            "🍷 Vino",
+            "🥃 Whisky",
+            "🍹 Cóctel",
+            "🍾 Champagne",
+            "☕ Café",
+            "🥤 Refresco",
             "",
             "🕷️ Bebidas especiales NOCTURNO:",
-            "🖤 Sombra Líquida - !servir sombra",
-            "🦇 Sangre de Murciélago - !servir sangre",
-            "🌑 Eclipse Negro - !servir eclipse"
+            "🖤 Sombra Líquida",
+            "🦇 Sangre de Murciélago",
+            "🌑 Eclipse Negro",
+            "",
+            "💡 Solo di el nombre de la bebida o usa !servir [bebida]"
         ]
         
         for linea in menu:
