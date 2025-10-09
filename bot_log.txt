@@ -5904,3 +5904,12 @@
 [2025-10-09 22:33:54] [FLASHMODE] Auto-flashmode baby__lax: Y:4.4→7.0
 [2025-10-09 22:34:11] [CHAT] [PUBLIC] baby__lax: !bring @BOT_NOCTURNO [BOT_MENTION]
 [2025-10-09 22:35:49] [WHISPER] BOT_NOCTURNO: ‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️
+[2025-10-09 22:36:42] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-09 22:36:45] [BOT] Outfit NOCTURNO aplicado
+[2025-10-09 22:36:45] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-09 22:36:45] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-09 22:36:45] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-09 22:36:48] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-09 22:37:55] [CHAT] [PUBLIC] baby__lax: !tele @BOT_NOCTURNO [BOT_MENTION]
+[2025-10-09 22:38:04] [CHAT] [PUBLIC] baby__lax: pista
+[2025-10-09 22:38:04] [TELEPORT] baby__lax accedió a 'pista' - X:11.5, Y:4.25, Z:23.5
