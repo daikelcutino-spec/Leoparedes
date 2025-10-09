@@ -5835,3 +5835,26 @@
 [2025-10-09 22:10:03] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-09 22:10:03] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-09 22:10:06] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-09 22:11:17] [WHISPER] BOT_NOCTURNO: ‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️
+[2025-10-09 22:12:34] [FLASHMODE] Auto-flashmode baby__lax: Y:4.0→7.0
+[2025-10-09 22:12:48] [CHAT] [PUBLIC] baby__lax: !inicio
+[2025-10-09 22:13:36] [CHAT] [PUBLIC] baby__lax: pista
+[2025-10-09 22:13:36] [TELEPORT] baby__lax accedió a 'pista' - X:11.5, Y:4.25, Z:23.5
+[2025-10-09 22:14:01] [CHAT] [PUBLIC] baby__lax: tekila
+[2025-10-09 22:14:07] [CHAT] [PUBLIC] baby__lax: !menu
+[2025-10-09 22:14:17] [WHISPER] BOT_NOCTURNO: ¡Consigue tu VIP Permanente!💎 Para ser un miembro eterno de 🕷️ NOCTURNO 🕷️, Mándale 100 de oro al bot: @NOCTURNO_BOT. ¡Gracias por apoyar la oscuridad!
+[2025-10-09 22:14:20] [CHAT] [PUBLIC] baby__lax: refresco
+[2025-10-09 22:15:20] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-09 22:15:22] [BOT] Outfit NOCTURNO aplicado
+[2025-10-09 22:15:23] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-09 22:15:23] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-09 22:15:23] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-09 22:15:26] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-09 22:17:22] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-09 22:17:22] [WHISPER] BOT_NOCTURNO: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-09 22:17:24] [BOT] Outfit NOCTURNO aplicado
+[2025-10-09 22:17:24] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-09 22:17:24] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-09 22:17:25] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-09 22:17:28] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-09 22:20:40] [WHISPER] BOT_NOCTURNO: ‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️
