@@ -374,12 +374,11 @@ class CantineroBot(BaseBot):
     async def on_user_join(self, user: User, position: Position | AnchorPosition) -> None:
         """Mensaje de bienvenida personalizado"""
         try:
-            mensaje_bienvenida = (
-                "Bienvenido a🕷️NOCTURNO 🕷️. "
-                "El velo se ha abierto solo para ti. "
-                "Tu presencia es una nueva sombra en nuestra oscuridad."
-            )
-            await self.highrise.send_whisper(user.id, mensaje_bienvenida)
+            await self.highrise.send_whisper(user.id, "🕷️ Bienvenido a NOCTURNO 🕷️")
+            await self.highrise.send_whisper(user.id, "El velo se ha abierto solo para ti...")
+            await asyncio.sleep(0.5)
+            await self.highrise.send_whisper(user.id, "🍷 Soy tu cantinero. Usa !menu para la carta")
+            await self.highrise.send_whisper(user.id, "💡 Comandos: !cantinero !receta !especiales !eventos")
             print(f"👤 {user.username} entró a la sala")
         except Exception as e:
             print(f"Error al enviar bienvenida: {e}")
@@ -397,8 +396,41 @@ class CantineroBot(BaseBot):
             await self.servir_bebida(user, message)
             return
         
-        if msg == "!cantinero":
+        if msg == "!cantinero" or msg == "!bar":
             await self.highrise.send_whisper(user_id, "🍷 A tus órdenes. Usa !menu para ver la carta")
+            await self.highrise.send_whisper(user_id, "💡 Comandos: !receta, !recomendacion, !especial, !eventos")
+            return
+        
+        if msg == "!receta" or msg.startswith("!receta "):
+            await self.mostrar_receta(user, msg)
+            return
+        
+        if msg == "!recomendacion" or msg == "!recomendar":
+            await self.dar_recomendacion(user)
+            return
+        
+        if msg == "!especial" or msg == "!especiales":
+            await self.mostrar_especiales(user)
+            return
+        
+        if msg == "!eventos" or msg == "!evento":
+            await self.mostrar_eventos(user)
+            return
+        
+        if msg == "!historia" or msg == "!story":
+            await self.contar_historia(user)
+            return
+        
+        if msg.startswith("!pedido "):
+            await self.tomar_pedido(user, message)
+            return
+        
+        if msg == "!happy" or msg == "!happyhour":
+            await self.mostrar_happy_hour(user)
+            return
+        
+        if msg == "!mixologia" or msg == "!mix":
+            await self.mostrar_mixologia(user)
             return
         
         if msg == "!copy":
@@ -566,6 +598,124 @@ class CantineroBot(BaseBot):
             await self.highrise.send_whisper(user.id, "¿Qué bebida deseas? Usa !menu para ver la carta")
         else:
             await self.highrise.send_whisper(user.id, f"No tengo '{bebida}' en la carta. Usa !menu para ver opciones")
+    
+    async def mostrar_receta(self, user: User, mensaje: str):
+        """Muestra recetas de cócteles"""
+        recetas = {
+            "sombra": {
+                "nombre": "🖤 Sombra Líquida",
+                "ingredientes": "• Vodka negro\n• Carbón activado\n• Jarabe de regaliz\n• Hielo oscuro",
+                "preparacion": "Mezclar todo en coctelera con hielo. Servir en copa oscura."
+            },
+            "sangre": {
+                "nombre": "🦇 Sangre de Murciélago",
+                "ingredientes": "• Ron oscuro\n• Granadina\n• Jugo de granada\n• Esencia de vainilla",
+                "preparacion": "Mezclar suavemente. Servir con hielo y decorar con cereza negra."
+            },
+            "eclipse": {
+                "nombre": "🌑 Eclipse Negro",
+                "ingredientes": "• Tequila reposado\n• Licor de café\n• Chocolate amargo\n• Crema de coco negra",
+                "preparacion": "Batir con hielo. Decorar con polvo de cacao oscuro."
+            }
+        }
+        
+        if "sombra" in mensaje:
+            receta = recetas["sombra"]
+        elif "sangre" in mensaje:
+            receta = recetas["sangre"]
+        elif "eclipse" in mensaje:
+            receta = recetas["eclipse"]
+        else:
+            await self.highrise.send_whisper(user.id, "📖 RECETAS DISPONIBLES:")
+            await self.highrise.send_whisper(user.id, "!receta sombra\n!receta sangre\n!receta eclipse")
+            return
+        
+        await self.highrise.send_whisper(user.id, f"📖 {receta['nombre']}")
+        await self.highrise.send_whisper(user.id, f"🥃 Ingredientes:\n{receta['ingredientes']}")
+        await self.highrise.send_whisper(user.id, f"👨‍🍳 Preparación:\n{receta['preparacion']}")
+    
+    async def dar_recomendacion(self, user: User):
+        """Da recomendaciones personalizadas"""
+        import random
+        recomendaciones = [
+            "🍷 Te recomiendo un vino tinto añejo... perfecto para la noche oscura",
+            "🥃 Un whisky escocés de 18 años te vendría bien... sofisticado y fuerte",
+            "🍹 Prueba nuestro cóctel Sombra Líquida... una experiencia única NOCTURNO",
+            "🦇 La Sangre de Murciélago es ideal para ti... dulce pero salvaje",
+            "🌑 El Eclipse Negro te espera... solo para los valientes",
+            "☕ Un café expreso doble te dará la energía de la medianoche",
+            "🍾 Champagne francés... porque esta noche merece celebrarse"
+        ]
+        recomendacion = random.choice(recomendaciones)
+        await self.highrise.send_whisper(user.id, f"💡 RECOMENDACIÓN DEL CANTINERO:\n{recomendacion}")
+    
+    async def mostrar_especiales(self, user: User):
+        """Muestra bebidas especiales del día"""
+        await self.highrise.send_whisper(user.id, "⭐ ESPECIALES DE HOY:")
+        await self.highrise.send_whisper(user.id, "🌙 Noche de Luna Nueva:")
+        await self.highrise.send_whisper(user.id, "• Eclipse Negro (2x1)")
+        await self.highrise.send_whisper(user.id, "• Sombra Líquida Premium")
+        await self.highrise.send_whisper(user.id, "• Shot de Medianoche GRATIS")
+        await self.highrise.send_whisper(user.id, "\n💫 Promoción válida hasta las 3 AM")
+    
+    async def mostrar_eventos(self, user: User):
+        """Muestra eventos del bar"""
+        await self.highrise.send_whisper(user.id, "🎉 EVENTOS NOCTURNO:")
+        await self.highrise.send_whisper(user.id, "🕐 22:00 - Happy Hour Oscuro")
+        await self.highrise.send_whisper(user.id, "🕑 23:00 - Concurso de Cócteles")
+        await self.highrise.send_whisper(user.id, "🕒 00:00 - DJ Set + Bebidas Especiales")
+        await self.highrise.send_whisper(user.id, "🕓 01:00 - Trivia del Bar (premios)")
+        await self.highrise.send_whisper(user.id, "🕔 02:00 - Cierre con Shot de Despedida")
+    
+    async def contar_historia(self, user: User):
+        """Cuenta la historia del bar"""
+        historia = [
+            "🕷️ LA LEYENDA DE NOCTURNO 🕷️",
+            "",
+            "Hace décadas, este bar era una cripta abandonada...",
+            "Un misterioso cantinero la transformó en el refugio",
+            "más exclusivo de la noche.",
+            "",
+            "Se dice que cada bebida tiene un toque de magia oscura,",
+            "y que quien prueba el Eclipse Negro nunca olvida la noche.",
+            "",
+            "🌑 Bienvenido a la leyenda... bienvenido a NOCTURNO."
+        ]
+        for linea in historia:
+            await self.highrise.send_whisper(user.id, linea)
+            await asyncio.sleep(0.5)
+    
+    async def tomar_pedido(self, user: User, mensaje: str):
+        """Toma pedidos personalizados"""
+        pedido = mensaje[8:].strip()
+        await self.highrise.send_whisper(user.id, f"📝 Pedido anotado: {pedido}")
+        await self.highrise.send_whisper(user.id, "👨‍🍳 Preparando tu bebida especial...")
+        await asyncio.sleep(2)
+        await self.highrise.send_whisper(user.id, f"🍸 ¡Tu {pedido} está listo! Disfrútalo.")
+    
+    async def mostrar_happy_hour(self, user: User):
+        """Muestra promociones de happy hour"""
+        await self.highrise.send_whisper(user.id, "🎊 HAPPY HOUR NOCTURNO:")
+        await self.highrise.send_whisper(user.id, "⏰ 22:00 - 23:00")
+        await self.highrise.send_whisper(user.id, "🍺 Todas las cervezas: 50% OFF")
+        await self.highrise.send_whisper(user.id, "🍷 Vinos premium: 2x1")
+        await self.highrise.send_whisper(user.id, "🍹 Cócteles NOCTURNO: Precio especial")
+        await self.highrise.send_whisper(user.id, "🎁 Shot de cortesía al primer pedido")
+    
+    async def mostrar_mixologia(self, user: User):
+        """Muestra tips de mixología"""
+        tips = [
+            "🍸 TIP DE MIXOLOGÍA:",
+            "• Siempre usa hielo de calidad",
+            "• Los cócteles oscuros llevan más sabor",
+            "• La temperatura perfecta es clave",
+            "• Mezcla con pasión, no con prisa",
+            "• El equilibrio de sabores es un arte",
+            "",
+            "💡 ¿Quieres aprender más? Pregunta al cantinero"
+        ]
+        for tip in tips:
+            await self.highrise.send_whisper(user.id, tip)
 
 if __name__ == "__main__":
     import sys
