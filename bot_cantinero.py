@@ -78,7 +78,7 @@ class CantineroBot(BaseBot):
                     await asyncio.sleep(5)
     
     async def mensajes_automaticos(self):
-        """Envía mensajes automáticos cada 3 minutos a todos los usuarios"""
+        """Envía 1 mensaje automático cada 3 minutos, alternando entre los 3 mensajes"""
         mensajes = [
             "‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️",
             "¡Consigue tu VIP Permanente!💎 Para ser un miembro eterno de 🕷️ NOCTURNO 🕷️, Mándale 100 de oro al bot: @NOCTURNO_BOT. ¡Gracias por apoyar la oscuridad!",
@@ -90,17 +90,19 @@ class CantineroBot(BaseBot):
             try:
                 await asyncio.sleep(180)
                 
+                mensaje_actual = mensajes[indice]
+                
                 response = await self.highrise.get_room_users()
                 if not isinstance(response, Error):
                     for user, _ in response.content:
                         if user.id != self.bot_id:
                             try:
-                                await self.highrise.send_whisper(user.id, mensajes[indice])
+                                await self.highrise.send_whisper(user.id, mensaje_actual)
                             except Exception as e:
                                 print(f"Error enviando mensaje a {user.username}: {e}")
                 
+                print(f"📢 Mensaje automático #{indice + 1} enviado: {mensaje_actual[:50]}...")
                 indice = (indice + 1) % len(mensajes)
-                print(f"📢 Mensaje automático enviado: #{indice}")
                 
             except Exception as e:
                 print(f"Error en mensajes automáticos: {e}")
@@ -119,8 +121,8 @@ class CantineroBot(BaseBot):
         except Exception as e:
             print(f"Error al enviar bienvenida: {e}")
     
-    async def on_chat(self, user: User, message: str) -> None:
-        """Comandos del cantinero"""
+    async def procesar_comando(self, user: User, message: str) -> None:
+        """Procesa comandos del usuario (desde chat o whisper)"""
         msg = message.lower().strip()
         user_id = user.id
         
@@ -133,7 +135,7 @@ class CantineroBot(BaseBot):
             return
         
         if msg == "!cantinero":
-            await self.highrise.send_whisper(user_id, f"🍷 A tus órdenes @{user.username}. Usa !menu para ver la carta")
+            await self.highrise.send_whisper(user_id, "🍷 A tus órdenes. Usa !menu para ver la carta")
             return
         
         if msg == "!copy":
@@ -184,6 +186,14 @@ class CantineroBot(BaseBot):
             return
         
         await self.detectar_bebida(user, msg)
+    
+    async def on_chat(self, user: User, message: str) -> None:
+        """Maneja mensajes del chat público"""
+        await self.procesar_comando(user, message)
+    
+    async def on_whisper(self, user: User, message: str) -> None:
+        """Maneja mensajes whisper (privados)"""
+        await self.procesar_comando(user, message)
     
     async def detectar_bebida(self, user: User, msg: str):
         """Detecta si el mensaje contiene el nombre de una bebida y la sirve automáticamente"""
