@@ -44,16 +44,22 @@ class CantineroBot(BaseBot):
         print("🍷 Bot Cantinero iniciando...")
         self.bot_id = session_metadata.user_id
         
+        # Recargar configuración para asegurar que tenemos la última posición guardada
+        self.load_config()
+        
         await asyncio.sleep(2)
         
         try:
-            await self.highrise.teleport(
-                self.bot_id, 
-                Position(self.punto_inicio["x"], self.punto_inicio["y"], self.punto_inicio["z"])
+            position = Position(
+                float(self.punto_inicio["x"]), 
+                float(self.punto_inicio["y"]), 
+                float(self.punto_inicio["z"])
             )
-            print(f"📍 Bot teletransportado a punto de inicio")
+            await self.highrise.teleport(self.bot_id, position)
+            print(f"📍 Bot teletransportado a punto de inicio: X={self.punto_inicio['x']}, Y={self.punto_inicio['y']}, Z={self.punto_inicio['z']}")
         except Exception as e:
-            print(f"Error al teletransportar: {e}")
+            print(f"❌ Error al teletransportar: {e}")
+            print(f"   Punto de inicio configurado: {self.punto_inicio}")
         
         print("🕺 Iniciando emote floss continuo...")
         self.floss_task = asyncio.create_task(self.floss_continuo())
@@ -171,18 +177,25 @@ class CantineroBot(BaseBot):
                 
                 if bot_position and isinstance(bot_position, Position):
                     self.punto_inicio = {
-                        "x": bot_position.x,
-                        "y": bot_position.y,
-                        "z": bot_position.z
+                        "x": float(bot_position.x),
+                        "y": float(bot_position.y),
+                        "z": float(bot_position.z)
                     }
                     self.save_config()
-                    await self.highrise.send_whisper(user_id, f"✅ Punto de inicio establecido en: X={bot_position.x:.2f}, Y={bot_position.y:.2f}, Z={bot_position.z:.2f}")
-                    print(f"📍 Nuevo punto de inicio: {self.punto_inicio}")
+                    
+                    # Verificar que se guardó correctamente
+                    self.load_config()
+                    
+                    await self.highrise.send_whisper(user_id, f"✅ Punto de inicio establecido y guardado")
+                    await self.highrise.send_whisper(user_id, f"📍 Coordenadas: X={self.punto_inicio['x']:.2f}, Y={self.punto_inicio['y']:.2f}, Z={self.punto_inicio['z']:.2f}")
+                    await self.highrise.send_whisper(user_id, "🔄 Al reiniciar el bot, aparecerá en esta posición")
+                    print(f"📍 Nuevo punto de inicio guardado: {self.punto_inicio}")
                 else:
                     await self.highrise.send_whisper(user_id, "❌ No se pudo obtener la posición del bot")
+                    print(f"❌ Bot position: {bot_position}, type: {type(bot_position)}")
             except Exception as e:
                 await self.highrise.send_whisper(user_id, f"❌ Error al establecer punto de inicio: {e}")
-                print(f"Error en !inicio: {e}")
+                print(f"❌ Error en !inicio: {e}")
             return
         
         await self.detectar_bebida(user, msg)
