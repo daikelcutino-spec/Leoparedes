@@ -83,17 +83,18 @@ class CantineroBot(BaseBot):
         print("🍷 ¡Bot Cantinero listo para servir!")
     
     async def floss_continuo(self):
-        """Ejecuta el emote floss continuamente sin parar"""
-        emotes_disponibles = ["emote-float", "emote-gravity", "idle-dance-casual", "dance-tiktok8"]
-        emote_actual = 0
-        
+        """Ejecuta el emote dance-floss continuamente sin parar"""
         while True:
             try:
-                await self.highrise.send_emote(emotes_disponibles[emote_actual], self.bot_id)
+                await self.highrise.send_emote("dance-floss", self.bot_id)
                 await asyncio.sleep(4)
             except Exception as e:
-                emote_actual = (emote_actual + 1) % len(emotes_disponibles)
-                if emote_actual == 0:
+                print(f"⚠️ Error en emote dance-floss: {e}")
+                # Si falla dance-floss, intentar con emotes alternativos
+                try:
+                    await self.highrise.send_emote("idle-dance-casual", self.bot_id)
+                    await asyncio.sleep(4)
+                except:
                     await asyncio.sleep(5)
     
     async def mensajes_automaticos(self):
