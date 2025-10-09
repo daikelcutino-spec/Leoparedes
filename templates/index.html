@@ -308,6 +308,33 @@
             </div>
         </div>
 
+        <!-- Panel Bot Cantinero -->
+        <div class="panel">
+            <h2>🍷 Bot Cantinero NOCTURNO</h2>
+            <div style="padding: 15px; background: #2a2a2a; border-radius: 8px;">
+                <p style="color: #888; margin-bottom: 15px;">Estado del Bot Cantinero</p>
+                <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                    <div class="stat-card">
+                        <div class="label">📍 Posición X</div>
+                        <div class="value" style="font-size: 1.3em;">{{ cantinero_config.punto_inicio.x }}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">📍 Posición Y</div>
+                        <div class="value" style="font-size: 1.3em;">{{ cantinero_config.punto_inicio.y }}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="label">📍 Posición Z</div>
+                        <div class="value" style="font-size: 1.3em;">{{ cantinero_config.punto_inicio.z }}</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; padding: 10px; background: #1a1a1a; border-radius: 6px;">
+                    <p style="color: #aaa; font-size: 0.9em;">🎭 Emote: dance-floss continuo</p>
+                    <p style="color: #aaa; font-size: 0.9em;">📢 Mensajes automáticos cada 3 minutos</p>
+                    <p style="color: #aaa; font-size: 0.9em;">🍺 Menú de bebidas especiales NOCTURNO</p>
+                </div>
+            </div>
+        </div>
+
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="value">{{ vip_count }}</div>

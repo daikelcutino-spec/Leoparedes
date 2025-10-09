@@ -66,6 +66,14 @@ def load_bot_inventory():
             return []
     return []
 
+def load_cantinero_config():
+    """Carga la configuración del bot cantinero"""
+    try:
+        with open("cantinero_config.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    except:
+        return {"punto_inicio": {"x": 0, "y": 0, "z": 0}}
+
 
 def write_console_command(command):
     """Escribe un comando para que el bot lo ejecute"""
@@ -81,6 +89,7 @@ def write_console_command(command):
 def index():
     config = load_config()
     user_data = load_user_data()
+    cantinero_config = load_cantinero_config()
 
     # Top 10 por corazones
     top_hearts = sorted(user_data["hearts"].items(),
@@ -103,6 +112,7 @@ def index():
 
     return render_template('index.html',
                            config=config,
+                           cantinero_config=cantinero_config,
                            vip_count=len(user_data["vip_users"]),
                            total_hearts=sum(user_data["hearts"].values()),
                            total_users=total_users,
