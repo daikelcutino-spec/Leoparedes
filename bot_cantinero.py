@@ -327,6 +327,11 @@ class CantineroBot(BaseBot):
                     try:
                         await self.highrise.send_emote(emote_data["id"], self.bot_id)
                         duration = emote_data.get("duration", 5)
+                        
+                        # Log cada 20 emotes
+                        if emote_num % 20 == 0:
+                            print(f"🎭 Emote #{emote_num}/{len(free_emotes)}: {emote_data['name']}")
+                        
                         await asyncio.sleep(max(0.1, duration - 0.3))
                     except Exception as e:
                         print(f"⚠️ Error en emote {emote_data['name']}: {e}")
@@ -431,6 +436,10 @@ class CantineroBot(BaseBot):
         
         if msg == "!mixologia" or msg == "!mix":
             await self.mostrar_mixologia(user)
+            return
+        
+        if msg.startswith("!heart"):
+            await self.dar_corazones(user, message)
             return
         
         if msg == "!copy":
@@ -716,6 +725,60 @@ class CantineroBot(BaseBot):
         ]
         for tip in tips:
             await self.highrise.send_whisper(user.id, tip)
+    
+    async def dar_corazones(self, user: User, message: str):
+        """Da corazones a un usuario (solo admin/owner)"""
+        if not self.is_admin_or_owner(user.id):
+            await self.highrise.send_whisper(user.id, "❌ Solo admin y propietario pueden dar corazones")
+            return
+        
+        parts = message.split()
+        if len(parts) < 3:
+            await self.highrise.send_whisper(user.id, "❌ Uso: !heart @usuario cantidad")
+            return
+        
+        target_username = parts[1].replace("@", "")
+        try:
+            cantidad = int(parts[2])
+        except ValueError:
+            await self.highrise.send_whisper(user.id, "❌ La cantidad debe ser un número")
+            return
+        
+        if cantidad <= 0:
+            await self.highrise.send_whisper(user.id, "❌ La cantidad debe ser mayor a 0")
+            return
+        
+        if cantidad > 100:
+            await self.highrise.send_whisper(user.id, "❌ Máximo 100 corazones por comando")
+            return
+        
+        # Buscar al usuario en la sala
+        response = await self.highrise.get_room_users()
+        if isinstance(response, Error):
+            await self.highrise.send_whisper(user.id, "❌ Error obteniendo usuarios")
+            return
+        
+        target_user = None
+        for u, _ in response.content:
+            if u.username == target_username:
+                target_user = u
+                break
+        
+        if not target_user:
+            await self.highrise.send_whisper(user.id, f"❌ Usuario {target_username} no encontrado")
+            return
+        
+        # Enviar corazones
+        for _ in range(min(cantidad, 30)):
+            try:
+                await self.highrise.react("heart", target_user.id)
+                await asyncio.sleep(0.05)
+            except Exception as e:
+                await self.highrise.send_whisper(user.id, f"⚠️ Error enviando corazones: {e}")
+                break
+        
+        await self.highrise.send_whisper(user.id, f"💖 Enviaste {cantidad} corazones a @{target_username}")
+        await self.highrise.send_whisper(target_user.id, f"💖 {user.username} te envió {cantidad} corazones 🍷")
 
 if __name__ == "__main__":
     import sys
