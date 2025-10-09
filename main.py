@@ -2868,18 +2868,12 @@ class Bot(BaseBot):
                 if sender.username not in VIP_USERS:
                     VIP_USERS.add(sender.username)
                     self.save_data()
-                    await self.highrise.send_whisper(sender.id, "🎉 ¡FELICITACIONES! 🎉")
-                    await self.highrise.send_whisper(sender.id, "⭐ Donaste 100 oro y ahora eres VIP ⭐")
-                    await self.highrise.send_whisper(sender.id, "💎 Beneficios VIP desbloqueados:")
-                    await self.highrise.send_whisper(sender.id, "• Acceso a zona VIP")
-                    await self.highrise.send_whisper(sender.id, "• Comandos de interacción social")
-                    await self.highrise.send_whisper(sender.id, "• Emotes mutuos con otros usuarios")
-                    await self.highrise.send_whisper(sender.id, "• Hasta 5 corazones por comando")
+                    await self.highrise.send_whisper(sender.id, "Ahora eres VIP permanente en la sala 🕷️NOCTURNO🕷️")
                     await self.highrise.chat(f"🌟 ¡@{sender.username} se unió al club VIP! 🌟")
                     log_event("VIP", f"{sender.username} obtuvo VIP por donación de 100 oro")
                 else:
                     await self.highrise.send_whisper(sender.id, "💖 ¡Gracias por tu donación de 100 oro!")
-                    await self.highrise.send_whisper(sender.id, "⭐ Ya eres VIP, esta donación apoya al bot")
+                    await self.highrise.send_whisper(sender.id, "⭐ Ya eres VIP en la sala, esta donación apoya al bot")
             else:
                 # Cualquier otra donación
                 await self.highrise.send_whisper(sender.id, f"💰 ¡Gracias por donar {tip.amount} oro al bot!")
