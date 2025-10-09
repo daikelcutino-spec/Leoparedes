@@ -5951,3 +5951,4 @@
 [2025-10-09 22:49:21] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-09 22:49:21] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-09 22:49:24] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-09 22:52:20] [WHISPER] BOT_NOCTURNO: ‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️
