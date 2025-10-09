@@ -6,7 +6,7 @@ expertMode = true
 channel = "stable-25_05"
 
 [workflows]
-runButton = "Highrise Bot"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Project"
@@ -16,6 +16,10 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "Highrise Bot"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Bot Cantinero"
 
 [[workflows.workflow]]
 name = "Highrise Bot"
@@ -40,6 +44,17 @@ args = "python -m highrise main:Bot 686c527e9668a3cb40e1f58d b0c7b29926c42a39987
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python web_panel.py"
+
+[[workflows.workflow]]
+name = "Bot Cantinero"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python -m highrise bot_cantinero:CantineroBot 686c527e9668a3cb40e1f58d e85f532a8d3060b6e6bc2ebafdf9a657d052c51897524926f4e6b226edd7d68d"
 
 [[ports]]
 localPort = 5000
