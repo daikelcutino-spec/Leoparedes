@@ -5927,3 +5927,10 @@
 [2025-10-09 22:41:45] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-09 22:41:45] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-09 22:41:48] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-09 22:44:46] [WHISPER] BOT_NOCTURNO: ‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️
+[2025-10-09 22:45:20] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-09 22:45:22] [BOT] Outfit NOCTURNO aplicado
+[2025-10-09 22:45:22] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-09 22:45:22] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-09 22:45:22] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-09 22:45:25] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
