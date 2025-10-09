@@ -5803,3 +5803,22 @@
 [2025-10-08 16:10:17] [CHAT] [PUBLIC] baby__lax: !heart @baby__lax 3
 [2025-10-08 16:10:30] [CHAT] [PUBLIC] baby__lax: !heart @baby__lax 30
 [2025-10-08 16:10:44] [CHAT] [PUBLIC] baby__lax: !heart @baby__lax 100
+[2025-10-08 19:06:55] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-08 19:06:57] [BOT] Outfit NOCTURNO aplicado
+[2025-10-08 19:06:57] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-08 19:06:57] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-08 19:06:58] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-08 19:07:01] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-08 19:08:12] [CHAT] [PUBLIC] baby__lax: !wallet
+[2025-10-08 19:08:24] [TIP] baby__lax donó 100 oro al bot (Balance: 1100)
+[2025-10-08 19:08:35] [CHAT] [PUBLIC] baby__lax: wallet
+[2025-10-08 19:08:41] [CHAT] [PUBLIC] baby__lax: !wallet
+[2025-10-08 19:08:56] [TIP] baby__lax donó 10 oro al bot (Balance: 1110)
+[2025-10-08 19:09:06] [TIP] baby__lax donó 5 oro al bot (Balance: 1115)
+[2025-10-08 19:09:49] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-08 19:09:49] [TELEPORT] baby__lax accedió a zona VIP - X:16.0, Y:17.0, Z:19.0
+[2025-10-08 19:09:57] [CHAT] [PUBLIC] baby__lax: !role
+[2025-10-08 19:10:03] [CHAT] [PUBLIC] baby__lax: !info
+[2025-10-08 19:10:14] [CHAT] [PUBLIC] baby__lax: ghostfloat
+[2025-10-08 19:10:23] [CHAT] [PUBLIC] baby__lax: pista
+[2025-10-08 19:10:23] [TELEPORT] baby__lax accedió a 'pista' - X:11.5, Y:4.25, Z:23.5
