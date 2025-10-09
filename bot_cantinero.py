@@ -442,6 +442,10 @@ class CantineroBot(BaseBot):
             await self.dar_corazones(user, message)
             return
         
+        if msg == "!help" or msg == "!comandos":
+            await self.mostrar_ayuda(user)
+            return
+        
         if msg == "!copy":
             if not self.is_admin_or_owner(user_id):
                 await self.highrise.send_whisper(user_id, "❌ Solo admin y propietario pueden usar este comando")
@@ -726,8 +730,48 @@ class CantineroBot(BaseBot):
         for tip in tips:
             await self.highrise.send_whisper(user.id, tip)
     
+    async def mostrar_ayuda(self, user: User):
+        """Muestra todos los comandos disponibles del bot cantinero"""
+        comandos = [
+            "🍷 === COMANDOS BOT CANTINERO === 🍷",
+            "",
+            "📋 MENÚ & BEBIDAS:",
+            "!menu / !carta - Ver carta de bebidas",
+            "!servir [bebida] - Servir una bebida",
+            "[nombre_bebida] - Pedir bebida directamente",
+            "",
+            "📖 RECETAS & INFO:",
+            "!receta [bebida] - Ver receta de cóctel",
+            "!recomendacion - Obtener recomendación",
+            "!especial / !especiales - Ver especiales del día",
+            "",
+            "🎉 EVENTOS & PROMOCIONES:",
+            "!eventos / !evento - Ver eventos del bar",
+            "!happy / !happyhour - Ver Happy Hour",
+            "!historia / !story - Escuchar la historia",
+            "",
+            "🍸 MIXOLOGÍA:",
+            "!mixologia / !mix - Tips de mixología",
+            "!pedido [texto] - Hacer pedido personalizado",
+            "",
+            "👑 ADMIN/OWNER:",
+            "!heart @user cantidad - Enviar corazones (1-100)",
+            "!copy - Copiar outfit del usuario",
+            "!inicio - Guardar punto de inicio",
+            "",
+            "🕷️ BEBIDAS NOCTURNO:",
+            "🖤 Sombra Líquida",
+            "🦇 Sangre de Murciélago", 
+            "🌑 Eclipse Negro",
+            "",
+            "💡 Solo escribe el nombre de la bebida para pedirla"
+        ]
+        
+        for linea in comandos:
+            await self.highrise.send_whisper(user.id, linea)
+    
     async def dar_corazones(self, user: User, message: str):
-        """Da corazones a un usuario (solo admin/owner)"""
+        """Da corazones a un usuario (solo admin/owner) - hasta 100 corazones visuales"""
         if not self.is_admin_or_owner(user.id):
             await self.highrise.send_whisper(user.id, "❌ Solo admin y propietario pueden dar corazones")
             return
@@ -768,17 +812,26 @@ class CantineroBot(BaseBot):
             await self.highrise.send_whisper(user.id, f"❌ Usuario {target_username} no encontrado")
             return
         
-        # Enviar corazones
-        for _ in range(min(cantidad, 30)):
+        # Enviar corazones con animación (hasta 100 visuales)
+        await self.highrise.send_whisper(user.id, f"💖 Enviando {cantidad} corazones a @{target_username}...")
+        
+        enviados = 0
+        for i in range(cantidad):
             try:
                 await self.highrise.react("heart", target_user.id)
-                await asyncio.sleep(0.05)
+                enviados += 1
+                await asyncio.sleep(0.05)  # Animación fluida
+                
+                # Notificar progreso cada 25 corazones
+                if (i + 1) % 25 == 0:
+                    await self.highrise.send_whisper(user.id, f"💖 {i + 1}/{cantidad} corazones enviados...")
+                    
             except Exception as e:
-                await self.highrise.send_whisper(user.id, f"⚠️ Error enviando corazones: {e}")
+                await self.highrise.send_whisper(user.id, f"⚠️ Error en corazón #{i + 1}: {str(e)[:50]}")
                 break
         
-        await self.highrise.send_whisper(user.id, f"💖 Enviaste {cantidad} corazones a @{target_username}")
-        await self.highrise.send_whisper(target_user.id, f"💖 {user.username} te envió {cantidad} corazones 🍷")
+        await self.highrise.send_whisper(user.id, f"✅ Enviaste {enviados} corazones a @{target_username}")
+        await self.highrise.send_whisper(target_user.id, f"💖 {user.username} te envió {enviados} corazones 🍷")
 
 if __name__ == "__main__":
     import sys
