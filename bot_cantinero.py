@@ -21,17 +21,30 @@ class CantineroBot(BaseBot):
             with open("cantinero_config.json", "r") as f:
                 config = json.load(f)
                 self.punto_inicio = config.get("punto_inicio", self.punto_inicio)
-                print(f"✅ Configuración cargada: {self.punto_inicio}")
+                print(f"✅ Configuración cargada desde archivo:")
+                print(f"   📍 X={self.punto_inicio['x']}, Y={self.punto_inicio['y']}, Z={self.punto_inicio['z']}")
         except FileNotFoundError:
-            print("⚠️ No se encontró configuración, usando valores por defecto")
+            print("⚠️ No se encontró cantinero_config.json, creando con valores por defecto")
+            self.save_config()
+        except Exception as e:
+            print(f"❌ Error leyendo configuración: {e}")
             self.save_config()
     
     def save_config(self):
         """Guarda la configuración del bot"""
         try:
+            config_data = {"punto_inicio": self.punto_inicio}
             with open("cantinero_config.json", "w") as f:
-                json.dump({"punto_inicio": self.punto_inicio}, f, indent=2)
-            print("✅ Configuración guardada")
+                json.dump(config_data, f, indent=2)
+            print(f"✅ Configuración guardada en cantinero_config.json:")
+            print(f"   📍 X={self.punto_inicio['x']}, Y={self.punto_inicio['y']}, Z={self.punto_inicio['z']}")
+            # Verificar que se guardó correctamente
+            with open("cantinero_config.json", "r") as f:
+                verificacion = json.load(f)
+                if verificacion == config_data:
+                    print("   ✓ Verificación exitosa: archivo guardado correctamente")
+                else:
+                    print("   ⚠️ Advertencia: el archivo guardado no coincide")
         except Exception as e:
             print(f"❌ Error guardando configuración: {e}")
     
@@ -176,26 +189,56 @@ class CantineroBot(BaseBot):
                             break
                 
                 if bot_position and isinstance(bot_position, Position):
+                    # Guardar coordenadas actuales
                     self.punto_inicio = {
                         "x": float(bot_position.x),
                         "y": float(bot_position.y),
                         "z": float(bot_position.z)
                     }
+                    
+                    # Guardar en archivo
                     self.save_config()
                     
-                    # Verificar que se guardó correctamente
+                    # Esperar un momento y recargar para verificar
+                    await asyncio.sleep(0.5)
                     self.load_config()
                     
-                    await self.highrise.send_whisper(user_id, f"✅ Punto de inicio establecido y guardado")
-                    await self.highrise.send_whisper(user_id, f"📍 Coordenadas: X={self.punto_inicio['x']:.2f}, Y={self.punto_inicio['y']:.2f}, Z={self.punto_inicio['z']:.2f}")
-                    await self.highrise.send_whisper(user_id, "🔄 Al reiniciar el bot, aparecerá en esta posición")
-                    print(f"📍 Nuevo punto de inicio guardado: {self.punto_inicio}")
+                    # Confirmar al usuario
+                    await self.highrise.send_whisper(user_id, "✅ PUNTO DE INICIO GUARDADO")
+                    await self.highrise.send_whisper(user_id, f"📍 X={self.punto_inicio['x']:.2f}")
+                    await self.highrise.send_whisper(user_id, f"📍 Y={self.punto_inicio['y']:.2f}")
+                    await self.highrise.send_whisper(user_id, f"📍 Z={self.punto_inicio['z']:.2f}")
+                    await self.highrise.send_whisper(user_id, "")
+                    await self.highrise.send_whisper(user_id, "🔄 Reinicia el bot para verificar")
+                    await self.highrise.send_whisper(user_id, "💡 Usa el workflow 'Bot Cantinero'")
+                    
+                    print(f"📍 PUNTO DE INICIO ACTUALIZADO:")
+                    print(f"   X={self.punto_inicio['x']}, Y={self.punto_inicio['y']}, Z={self.punto_inicio['z']}")
+                    
+                elif bot_position and isinstance(bot_position, AnchorPosition):
+                    await self.highrise.send_whisper(user_id, "⚠️ Posición tipo AnchorPosition detectada")
+                    if bot_position.anchor:
+                        await self.highrise.send_whisper(user_id, f"📍 Anchor: {bot_position.anchor}")
+                    if bot_position.offset:
+                        self.punto_inicio = {
+                            "x": float(bot_position.offset.x),
+                            "y": float(bot_position.offset.y),
+                            "z": float(bot_position.offset.z)
+                        }
+                        self.save_config()
+                        await asyncio.sleep(0.5)
+                        self.load_config()
+                        await self.highrise.send_whisper(user_id, "✅ Punto guardado usando offset")
+                        await self.highrise.send_whisper(user_id, f"📍 X={self.punto_inicio['x']:.2f}, Y={self.punto_inicio['y']:.2f}, Z={self.punto_inicio['z']:.2f}")
                 else:
                     await self.highrise.send_whisper(user_id, "❌ No se pudo obtener la posición del bot")
+                    await self.highrise.send_whisper(user_id, f"Tipo de posición: {type(bot_position).__name__}")
                     print(f"❌ Bot position: {bot_position}, type: {type(bot_position)}")
             except Exception as e:
-                await self.highrise.send_whisper(user_id, f"❌ Error al establecer punto de inicio: {e}")
+                await self.highrise.send_whisper(user_id, f"❌ Error: {str(e)[:100]}")
                 print(f"❌ Error en !inicio: {e}")
+                import traceback
+                traceback.print_exc()
             return
         
         await self.detectar_bebida(user, msg)
