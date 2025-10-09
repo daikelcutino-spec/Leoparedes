@@ -5873,3 +5873,4 @@
 [2025-10-09 22:24:51] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
 [2025-10-09 22:24:51] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-09 22:24:51] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-09 22:24:54] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
