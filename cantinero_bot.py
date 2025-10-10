@@ -152,6 +152,36 @@ class BartenderBot(BaseBot):
         
         elif command == "!inicio":
             await self.set_bot_position(user)
+        
+        elif command == "!ambiente" or command == "!vibe":
+            await self.describe_ambience(user)
+        
+        elif command == "!recomendacion" or command == "!recomienda":
+            await self.recommend_drink(user)
+        
+        elif command == "!especial":
+            await self.daily_special(user)
+        
+        elif command == "!historia" or command == "!story":
+            await self.tell_story(user)
+        
+        elif command == "!brindis" or command == "!toast":
+            await self.make_toast(user)
+        
+        elif command == "!trivia":
+            await self.bar_trivia(user)
+        
+        elif command == "!cantina" or command == "!bar":
+            await self.bar_info(user)
+        
+        elif command == "!musica" or command == "!music":
+            await self.music_suggestion(user)
+        
+        elif command == "!consejo" or command == "!advice":
+            await self.give_advice(user)
+        
+        elif command == "!hora" or command == "!time":
+            await self.bartender_time(user)
 
     async def show_menu(self, user: User) -> None:
         """Muestra el menú de bebidas en whisper"""
@@ -170,16 +200,35 @@ class BartenderBot(BaseBot):
     async def show_help(self, user: User) -> None:
         """Muestra la ayuda del bot en whisper"""
         help_text = """🕷️ === COMANDOS DEL CANTINERO NOCTURNO === 🕷️
-        
-!menu - Ver todas las bebidas disponibles
-!bebida [nombre] - Pedir una bebida
-!broma - Escuchar un chiste del cantinero
+
+🍺 BEBIDAS:
+!menu - Ver todas las bebidas
+!bebida [nombre] - Pedir bebida
+!recomendacion - Sugerencia de bebida
+!especial - Ver especial del día
+
+🎭 ENTRETENIMIENTO:
+!broma - Chiste del cantinero
+!historia - Historias del bar
+!trivia - Datos curiosos
+!consejo - Sabiduría del cantinero
+
+🌙 AMBIENTE:
+!ambiente - Describir el ambiente
+!brindis - Hacer un brindis
+!musica - Sugerencias musicales
+!cantina - Info del bar
+!hora - Tiempo de cantinero
+
+🎉 SOCIAL:
 !salud - Hacer un brindis
 !ayuda - Mostrar esta ayuda
-!copy - (Admin/Owner) Copiar tu outfit
-!inicio - (Admin/Owner) Establecer posición inicial del bot
 
-También puedes pedir directamente diciendo el nombre de la bebida!
+🔧 ADMIN:
+!copy - (Admin/Owner) Copiar outfit
+!inicio - (Admin/Owner) Posición inicial
+
+💡 También puedes pedir bebidas directamente:
 Ejemplo: "quiero una cerveza" """
         await self.highrise.send_whisper(user.id, help_text)
 
@@ -256,3 +305,124 @@ Ejemplo: "quiero una cerveza" """
         except Exception as e:
             await self.highrise.send_whisper(user.id, f"❌ Error al establecer posición: {e}")
             print(f"Error estableciendo posición: {e}")
+    
+    async def describe_ambience(self, user: User) -> None:
+        """Describe el ambiente del bar NOCTURNO"""
+        ambiences = [
+            "🕷️ Las sombras bailan en las paredes mientras la música resuena en la oscuridad...",
+            "🌙 La luna ilumina débilmente el bar, creando un ambiente místico y acogedor.",
+            "🎭 Entre la penumbra y las risas, el bar cobra vida con cada alma que entra.",
+            "🕯️ Las velas parpadean, revelando rostros conocidos y otros por descubrir...",
+            "🦇 El eco de conversaciones se mezcla con el tintineo de los vasos, música para los oídos.",
+            "🌑 En la oscuridad del NOCTURNO, todos somos iguales, unidos por la noche."
+        ]
+        await self.highrise.send_whisper(user.id, random.choice(ambiences))
+    
+    async def recommend_drink(self, user: User) -> None:
+        """Recomienda una bebida al azar"""
+        all_drinks = list(self.menu["alcoholic"].keys()) + list(self.menu["non_alcoholic"].keys())
+        drink = random.choice(all_drinks)
+        description = self.menu["alcoholic"].get(drink) or self.menu["non_alcoholic"].get(drink)
+        recommendation = f"🍸 Te recomiendo {drink}\n{description}\n\n¿Te la sirvo?"
+        await self.highrise.send_whisper(user.id, recommendation)
+    
+    async def daily_special(self, user: User) -> None:
+        """Muestra el especial del día"""
+        specials = [
+            "🍷 HOY: Sangría NOCTURNA - Vino tinto con frutas de la oscuridad 🌙",
+            "🍹 ESPECIAL: Cóctel Eclipse - Mezcla misteriosa de licores exóticos 🌑",
+            "🥃 DEL DÍA: Whisky Sombra - Añejado en barriles de roble negro 🕷️",
+            "🍸 PROMOCIÓN: Martini Lunático - Con un toque de misterio 🌒",
+            "🍺 OFERTA: Cerveza de la Medianoche - Oscura y refrescante 🦇"
+        ]
+        await self.highrise.send_whisper(user.id, random.choice(specials))
+    
+    async def tell_story(self, user: User) -> None:
+        """Cuenta una historia del bar"""
+        stories = [
+            "🕷️ Cuenta la leyenda que en este bar, hace años, un viajero llegó buscando refugio de la tormenta. Le serví un whisky y me contó historias de mundos lejanos... Nunca más lo volví a ver.",
+            "🌙 Una noche de luna llena, dos extraños se conocieron en esta barra. Compartieron un vino en silencio... dicen que fue amor a primera vista en la oscuridad.",
+            "🎭 En los días antiguos del NOCTURNO, un músico tocaba el piano hasta el amanecer. Su melodía aún resuena en estas paredes...",
+            "🦇 Se dice que si cierras los ojos y escuchas con atención, puedes oír los susurros de todos los que han pasado por este bar.",
+            "🕯️ Hubo una vez un concurso de bebidas. El ganador podía pedir cualquier cosa del menú... nadie recuerda quién ganó, pero todos dicen que fue épico."
+        ]
+        await self.highrise.send_whisper(user.id, random.choice(stories))
+    
+    async def make_toast(self, user: User) -> None:
+        """Hace un brindis especial"""
+        toasts = [
+            "🥂 ¡Por las noches eternas y las amistades que nacen en la oscuridad!",
+            "🍷 ¡Brindemos por los misterios sin resolver y las aventuras por vivir!",
+            "🍺 ¡Salud por los que están y los que vendrán al NOCTURNO!",
+            "🍸 ¡Por las sombras que nos protegen y la luna que nos guía!",
+            "🥃 ¡Por cada alma valiente que se adentra en la oscuridad del bar!",
+            "🍾 ¡Brindis por la noche, nuestra eterna compañera!"
+        ]
+        toast = random.choice(toasts)
+        await self.highrise.send_whisper(user.id, f"{toast} 🎉")
+        await self.highrise.chat(f"🥂 Brindis NOCTURNO: {toast}")
+    
+    async def bar_trivia(self, user: User) -> None:
+        """Comparte datos curiosos sobre bebidas"""
+        trivias = [
+            "💡 ¿Sabías que? El cóctel más antiguo registrado es el 'Sazerac', de Nueva Orleans (1838)",
+            "💡 Dato curioso: El champagne tiene aproximadamente 49 millones de burbujas por botella 🍾",
+            "💡 Curiosidad: El whisky más caro del mundo se vendió por $1.9 millones 🥃",
+            "💡 ¿Sabías que? La palabra 'cocktail' apareció por primera vez en 1806 🍸",
+            "💡 Dato interesante: El café es la segunda bebida más consumida después del agua ☕",
+            "💡 Trivia: En la Edad Media, el agua era peligrosa, así que todos bebían cerveza... ¡hasta los niños! 🍺"
+        ]
+        await self.highrise.send_whisper(user.id, random.choice(trivias))
+    
+    async def bar_info(self, user: User) -> None:
+        """Información sobre el bar NOCTURNO"""
+        info = """🕷️ === BAR NOCTURNO === 🕷️
+
+📍 Ubicación: En el corazón de la oscuridad
+🕐 Horario: Siempre abierto (24/7)
+🎭 Ambiente: Místico y acogedor
+👔 Código de vestimenta: La oscuridad te acepta tal como eres
+
+🍺 Especialidad: Bebidas con alma
+🎵 Música: Ecos de la medianoche
+✨ Magia: En cada trago servido
+
+¡Bienvenido a tu refugio en las sombras!"""
+        await self.highrise.send_whisper(user.id, info)
+    
+    async def music_suggestion(self, user: User) -> None:
+        """Sugiere música para el ambiente"""
+        suggestions = [
+            "🎵 Ahora suena: 'Nocturne in E-flat major' - Chopin (Perfecta para el ambiente)",
+            "🎶 Recomendado: 'In the Hall of the Mountain King' - Grieg (Misteriosa y épica)",
+            "🎵 Ambiente: 'Moonlight Sonata' - Beethoven (Melancolía nocturna)",
+            "🎶 Sonando: 'The Night' - Franck (Sinfonía de las sombras)",
+            "🎵 Playlist: Dark Jazz & Noir Lounge (Para noches eternas)",
+            "🎶 Sugerencia: 'Clair de Lune' - Debussy (Luna brillante en la oscuridad)"
+        ]
+        await self.highrise.send_whisper(user.id, random.choice(suggestions))
+    
+    async def give_advice(self, user: User) -> None:
+        """Da consejos de cantinero sabio"""
+        advices = [
+            "🧙 Consejo del cantinero: En la oscuridad, todos somos iguales. Trata a todos con respeto.",
+            "🧙 Sabiduría del bar: Una buena conversación vale más que mil tragos.",
+            "🧙 Consejo NOCTURNO: Escucha más, habla menos. Las sombras tienen secretos que contar.",
+            "🧙 Palabra de sabio: No juzgues a nadie por su apariencia. La oscuridad oculta muchas historias.",
+            "🧙 Consejo del día: Brinda por los pequeños momentos, son los que más importan.",
+            "🧙 Filosofía del cantinero: El mejor trago es el compartido con amigos.",
+            "🧙 Sabiduría antigua: En tiempos difíciles, encuentra refugio en la comunidad del NOCTURNO."
+        ]
+        await self.highrise.send_whisper(user.id, random.choice(advices))
+    
+    async def bartender_time(self, user: User) -> None:
+        """Responde con una frase sobre el tiempo en el bar"""
+        time_phrases = [
+            "⏰ En el NOCTURNO, el tiempo no existe. Solo hay 'ahora' y 'otro trago'.",
+            "⏰ ¿La hora? Es hora de disfrutar del momento presente 🕷️",
+            "⏰ En las sombras, cada segundo es eterno y cada eternidad es un segundo.",
+            "⏰ El reloj marcó la medianoche hace tiempo... o tal vez nunca lo hizo 🌙",
+            "⏰ No preguntes la hora. Pregunta: ¿qué bebida sigue?",
+            "⏰ Tiempo de cantinero: Siempre es momento para una buena historia y un buen trago."
+        ]
+        await self.highrise.send_whisper(user.id, random.choice(time_phrases))
