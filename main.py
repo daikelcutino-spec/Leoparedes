@@ -2963,7 +2963,7 @@ class Bot(BaseBot):
         while True:
             try:
                 current_time = time.time()
-                if current_time - self.last_announcement >= 300:
+                if current_time - self.last_announcement >= 240:
                     await self.highrise.chat(announcements[announcement_index])
                     announcement_index = (announcement_index + 1) % len(announcements)
 

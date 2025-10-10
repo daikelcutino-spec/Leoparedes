@@ -75,8 +75,9 @@ class BartenderBot(BaseBot):
             await asyncio.sleep(22)
     
     async def auto_message_loop(self) -> None:
-        """Loop que envía mensajes automáticos cada 1.5 minutos"""
-        await asyncio.sleep(10)
+        """Loop que envía mensajes automáticos cada 4 minutos (alternando con bot NOCTURNO cada 2 min)"""
+        # Esperar 2 minutos (120 segundos) para alternar con el bot NOCTURNO
+        await asyncio.sleep(120)
         
         while True:
             try:
@@ -98,7 +99,8 @@ class BartenderBot(BaseBot):
             except Exception as e:
                 print(f"Error en auto_message_loop: {e}")
             
-            await asyncio.sleep(90)
+            # Esperar 4 minutos (240 segundos) para el siguiente mensaje
+            await asyncio.sleep(240)
 
     async def on_user_join(self, user: User, position: Union[Position, AnchorPosition]) -> None:
         """Saluda a los usuarios cuando entran a la sala"""
