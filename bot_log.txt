@@ -6000,3 +6000,9 @@ Escribe /menu para ver las bebidas disponibles
 [2025-10-10 15:28:40] [CHAT] [PUBLIC] baby__lax: !ghostfloat @CANTINERO_BOT
 [2025-10-10 15:28:45] [CHAT] [PUBLIC] baby__lax: ghostfloat
 [2025-10-10 15:29:14] [CHAT] [PUBLIC] baby__lax: stop
+[2025-10-10 20:49:47] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-10 20:49:49] [BOT] Outfit NOCTURNO aplicado
+[2025-10-10 20:49:49] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-10 20:49:49] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-10 20:49:49] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-10 20:49:52] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
