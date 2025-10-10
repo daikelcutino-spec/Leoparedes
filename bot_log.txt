@@ -5980,3 +5980,23 @@
 [2025-10-10 15:01:20] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-10 15:01:21] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-10 15:01:24] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-10 15:20:17] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-10 15:20:19] [BOT] Outfit NOCTURNO aplicado
+[2025-10-10 15:20:20] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-10 15:20:20] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-10 15:20:20] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-10 15:20:23] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-10 15:20:36] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Hola a todos! Soy el cantinero del bar 🍺
+Escribe /menu para ver las bebidas disponibles
+[2025-10-10 15:23:56] [CHAT] [PUBLIC] CANTINERO_BOT: ¡baby__lax! ¡Bienvenido al bar! ¿Qué te sirvo hoy? 🍸
+[2025-10-10 15:24:38] [CHAT] [PUBLIC] CANTINERO_BOT: ¡baby__lax! ¡Hola! Siéntate y pide lo que quieras 🍺
+[2025-10-10 15:25:36] [CHAT] [PUBLIC] baby__lax: !heartall
+[2025-10-10 15:26:37] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Hola a todos! Soy el cantinero del bar 🍺
+Escribe /menu para ver las bebidas disponibles
+[2025-10-10 15:27:21] [CHAT] [PUBLIC] baby__lax: !menu
+[2025-10-10 15:27:26] [CHAT] [PUBLIC] baby__lax: menu
+[2025-10-10 15:27:46] [CHAT] [PUBLIC] CANTINERO_BOT: ¡baby__lax! ¡Bienvenido al bar! ¿Qué te sirvo hoy? 🍸
+[2025-10-10 15:28:27] [CHAT] [PUBLIC] baby__lax: ghostfloat @CANTINERO_BOT
+[2025-10-10 15:28:40] [CHAT] [PUBLIC] baby__lax: !ghostfloat @CANTINERO_BOT
+[2025-10-10 15:28:45] [CHAT] [PUBLIC] baby__lax: ghostfloat
+[2025-10-10 15:29:14] [CHAT] [PUBLIC] baby__lax: stop

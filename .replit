@@ -50,10 +50,6 @@ mode = "parallel"
 task = "shell.exec"
 args = "python -m highrise main:Bot 686c527e9668a3cb40e1f58d b0c7b29926c42a39987057723b8def359ce211d320ecd7f946401fdf9b14d56a"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python -m highrise bot_cantinero:CantineroBot 686c527e9668a3cb40e1f58d e85f532a8d3060b6e6bc2ebafdf9a657d052c51897524926f4e6b226edd7d68d"
-
 [[workflows.workflow]]
 name = "Bots + Panel Web"
 author = 48486318
@@ -62,10 +58,6 @@ mode = "parallel"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python -m highrise main:Bot 686c527e9668a3cb40e1f58d b0c7b29926c42a39987057723b8def359ce211d320ecd7f946401fdf9b14d56a"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python -m highrise bot_cantinero:CantineroBot 686c527e9668a3cb40e1f58d e85f532a8d3060b6e6bc2ebafdf9a657d052c51897524926f4e6b226edd7d68d"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

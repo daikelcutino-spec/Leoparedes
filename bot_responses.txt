@@ -1,7 +1,3 @@
-[21:19:48] @baby__lax: !inventory
-[21:19:48] BOT → 20. clothing: mouth-n_aprilfoolsinvisible2020mouth
-[21:19:48] @baby__lax: !inventory
-[21:19:48] BOT → 21. clothing: hair_front-n_malenew09
 [21:19:49] @baby__lax: !inventory
 [21:19:49] BOT → 22. clothing: hat-n_earthday2025hat
 [21:19:49] @baby__lax: !inventory
@@ -98,3 +94,7 @@
 [22:59:50] BOT → 💖 baby__lax envió 100 ❤️ a baby__lax
 [23:01:51] @baby__lax: !copyoutfit
 [23:01:51] BOT → 👔 Outfit copiado y guardado como #1
+[15:25:36] @baby__lax: !heartall
+[15:25:36] BOT → 💖 Enviaste ❤️ a todos los 1 jugadores en la sala!
+[15:25:37] @baby__lax: !heartall
+[15:25:37] BOT → ❌ Usa: !heart @username [cantidad]
