@@ -283,5 +283,15 @@
     "type": "clothing",
     "id": "mouth-basic2018downturnedthinround",
     "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "shirt-n_hmjacketblue",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "mouth-basic2018thinround",
+    "amount": 1
   }
 ]
