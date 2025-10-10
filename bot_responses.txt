@@ -1,8 +1,4 @@
 [21:19:49] @baby__lax: !inventory
-[21:19:49] BOT → 22. clothing: hat-n_earthday2025hat
-[21:19:49] @baby__lax: !inventory
-[21:19:49] BOT → 23. clothing: shirt-n_earthday2025sweater
-[21:19:49] @baby__lax: !inventory
 [21:19:49] BOT → 24. clothing: shoes-n_room12019sneakersblack
 [21:19:50] @baby__lax: !inventory
 [21:19:50] BOT → 25. clothing: pants-n_gothanchorstore2022cargopants
@@ -98,3 +94,7 @@
 [15:25:36] BOT → 💖 Enviaste ❤️ a todos los 1 jugadores en la sala!
 [15:25:37] @baby__lax: !heartall
 [15:25:37] BOT → ❌ Usa: !heart @username [cantidad]
+[21:04:39] @baby__lax: !copyemote @CANTINERO_BOT
+[21:04:39] BOT → ❌ CANTINERO_BOT no está ejecutando ningún emote!
+[21:05:35] @baby__lax: !copyoutfit
+[21:05:35] BOT → 👔 Outfit copiado y guardado como #1

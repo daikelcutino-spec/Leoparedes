@@ -6012,3 +6012,27 @@ Escribe /menu para ver las bebidas disponibles
 [2025-10-10 20:57:19] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-10 20:57:19] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-10 20:57:22] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-10 20:59:49] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-10 20:59:51] [BOT] Outfit NOCTURNO aplicado
+[2025-10-10 20:59:51] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-10 20:59:51] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-10 20:59:51] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-10 20:59:54] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-10 21:00:57] [FLASHMODE] Auto-flashmode baby__lax: Y:4.0→7.0
+[2025-10-10 21:01:09] [CHAT] [PUBLIC] baby__lax: !inicio
+[2025-10-10 21:01:28] [CHAT] [PUBLIC] baby__lax: !inicio
+[2025-10-10 21:02:39] [CHAT] [PUBLIC] baby__lax: !help
+[2025-10-10 21:02:52] [CHAT] [PUBLIC] baby__lax: refresco
+[2025-10-10 21:03:05] [CHAT] [PUBLIC] baby__lax: refresco
+[2025-10-10 21:03:12] [CHAT] [PUBLIC] baby__lax: !help
+[2025-10-10 21:03:35] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-10 21:03:35] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-10 21:03:37] [BOT] Outfit NOCTURNO aplicado
+[2025-10-10 21:03:37] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-10 21:03:37] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-10 21:03:37] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-10 21:03:40] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-10 21:04:11] [CHAT] [PUBLIC] baby__lax: refresco
+[2025-10-10 21:04:39] [CHAT] [PUBLIC] baby__lax: !copyemote @CANTINERO_BOT
+[2025-10-10 21:05:35] [CHAT] [PUBLIC] baby__lax: !copyoutfit
+[2025-10-10 21:06:00] [CHAT] [PUBLIC] baby__lax: agua
