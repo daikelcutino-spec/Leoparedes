@@ -228,9 +228,7 @@ class BartenderBot(BaseBot):
 !propina - Dar propina al cantinero
 !barinfo - Info sobre el bar
 
-🔧 ADMIN:
-!copy - (Admin/Owner) Copiar outfit
-!inicio - (Admin/Owner) Posición inicial
+🔧 UTILIDAD:
 !ayuda - Mostrar esta ayuda
 
 💡 También puedes pedir bebidas directamente:
