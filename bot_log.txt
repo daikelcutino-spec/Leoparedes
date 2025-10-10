@@ -5958,3 +5958,19 @@
 [2025-10-09 22:54:45] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-09 22:54:45] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-09 22:54:48] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-09 22:57:01] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-09 22:57:04] [BOT] Outfit NOCTURNO aplicado
+[2025-10-09 22:57:04] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-09 22:57:04] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-09 22:57:04] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-09 22:57:07] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-09 22:58:53] [CHAT] [PUBLIC] baby__lax: !heart @baby__lax 100
+[2025-10-09 22:59:21] [CHAT] [PUBLIC] baby__lax: !heartall
+[2025-10-09 22:59:50] [CHAT] [PUBLIC] baby__lax: !heart @baby__lax 100
+[2025-10-09 23:00:04] [WHISPER] BOT_NOCTURNO: ‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️
+[2025-10-09 23:00:32] [CHAT] [PUBLIC] baby__lax: !copy
+[2025-10-09 23:00:40] [FLASHMODE] Auto-flashmode baby__lax: Y:7.4→4.4
+[2025-10-09 23:01:51] [CHAT] [PUBLIC] baby__lax: !copyoutfit
+[2025-10-09 23:02:06] [CHAT] [PUBLIC] baby__lax: !help
+[2025-10-09 23:03:04] [WHISPER] BOT_NOCTURNO: ¡Consigue tu VIP Permanente!💎 Para ser un miembro eterno de 🕷️ NOCTURNO 🕷️, Mándale 100 de oro al bot: @NOCTURNO_BOT. ¡Gracias por apoyar la oscuridad!
+[2025-10-09 23:06:04] [WHISPER] BOT_NOCTURNO: Acércate a la barra.🥃 Estoy para servirle. ¿Qué deseas hoy?🍻

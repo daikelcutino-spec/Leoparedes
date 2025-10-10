@@ -1,13 +1,3 @@
-[21:19:47] @baby__lax: !inventory
-[21:19:47] BOT → 15. clothing: eyebrow-n_basic2018newbrows14
-[21:19:47] @baby__lax: !inventory
-[21:19:47] BOT → 16. clothing: eye-n_basic2018squintynude
-[21:19:47] @baby__lax: !inventory
-[21:19:47] BOT → 17. clothing: nose-n_basic2018newnose09
-[21:19:48] @baby__lax: !inventory
-[21:19:48] BOT → 18. clothing: mouth-basic2018downturnedfullpeaked
-[21:19:48] @baby__lax: !inventory
-[21:19:48] BOT → 19. clothing: nose-n_01
 [21:19:48] @baby__lax: !inventory
 [21:19:48] BOT → 20. clothing: mouth-n_aprilfoolsinvisible2020mouth
 [21:19:48] @baby__lax: !inventory
@@ -98,3 +88,13 @@
 [22:34:12] BOT → 🎯 @baby__lax movió a BOT_NOCTURNO hacia sí mismo!
 [22:37:55] @baby__lax: !tele @BOT_NOCTURNO
 [22:37:55] BOT → 🎯 Te has teletransportado a @BOT_NOCTURNO!
+[22:58:53] @baby__lax: !heart @baby__lax 100
+[22:58:53] BOT → 💖 baby__lax envió 100 ❤️ a baby__lax
+[22:59:21] @baby__lax: !heartall
+[22:59:21] BOT → 💖 Enviaste ❤️ a todos los 1 jugadores en la sala!
+[22:59:21] @baby__lax: !heartall
+[22:59:21] BOT → ❌ Usa: !heart @username [cantidad]
+[22:59:50] @baby__lax: !heart @baby__lax 100
+[22:59:50] BOT → 💖 baby__lax envió 100 ❤️ a baby__lax
+[23:01:51] @baby__lax: !copyoutfit
+[23:01:51] BOT → 👔 Outfit copiado y guardado como #1

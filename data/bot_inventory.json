@@ -268,5 +268,20 @@
     "type": "clothing",
     "id": "shoes-n_room12019hightopsred",
     "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "shoes-n_marchscavengerhunt2021knifeboots",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "shirt-n_hmjacketred",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "mouth-basic2018downturnedthinround",
+    "amount": 1
   }
 ]
