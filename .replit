@@ -50,6 +50,10 @@ mode = "parallel"
 task = "shell.exec"
 args = "python -m highrise main:Bot 686c527e9668a3cb40e1f58d b0c7b29926c42a39987057723b8def359ce211d320ecd7f946401fdf9b14d56a"
 
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python -m highrise cantinero_bot:BartenderBot [ROOM_ID_CANTINERO] [API_TOKEN_CANTINERO]"
+
 [[workflows.workflow]]
 name = "Bots + Panel Web"
 author = 48486318
