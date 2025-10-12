@@ -6089,3 +6089,5 @@ Escribe /menu para ver las bebidas disponibles
 [2025-10-12 06:37:39] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-12 06:37:40] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-12 06:37:43] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-12 06:49:39] [WHISPER] CANTINERO_BOT: ¡La casa invita! 🎁 🍵 té
+Té caliente con miel
