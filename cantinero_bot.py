@@ -1,5 +1,3 @@
-from keep_alive import keep_alive
-keep_alive()
 from highrise import BaseBot, User, Position, AnchorPosition
 from highrise.models import SessionMetadata
 import random
