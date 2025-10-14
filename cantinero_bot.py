@@ -38,6 +38,21 @@ class BartenderBot(BaseBot):
     async def on_start(self, session_metadata: SessionMetadata) -> None:
         """Se ejecuta cuando el bot se conecta a la sala"""
         print("🕷️ Bot Cantinero NOCTURNO iniciado!")
+        
+        # Teletransportar al punto de inicio si está configurado
+        try:
+            import json
+            with open("cantinero_config.json", "r", encoding="utf-8") as f:
+                config = json.load(f)
+            
+            punto_inicio = config.get("punto_inicio")
+            if punto_inicio:
+                from highrise import Position
+                spawn_position = Position(punto_inicio["x"], punto_inicio["y"], punto_inicio["z"])
+                await self.highrise.teleport(session_metadata.user_id, spawn_position)
+                print(f"📍 Bot cantinero teletransportado al punto de inicio: X={punto_inicio['x']}, Y={punto_inicio['y']}, Z={punto_inicio['z']}")
+        except Exception as e:
+            print(f"⚠️ No se pudo teletransportar al punto de inicio: {e}")
 
         asyncio.create_task(self.floss_loop())
         asyncio.create_task(self.auto_message_loop())
