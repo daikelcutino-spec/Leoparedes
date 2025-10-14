@@ -6357,3 +6357,30 @@ Té caliente con miel
 [2025-10-14 16:29:20] [BOT] Intento de reconexión 2/5
 [2025-10-14 16:29:24] [ERROR] Fallo en intento 2: Cannot write to closing transport
 [2025-10-14 16:29:24] [BOT] Intento de reconexión 3/5
+[2025-10-14 16:29:30] [ERROR] Fallo en intento 3: Cannot write to closing transport
+[2025-10-14 16:29:30] [BOT] Intento de reconexión 4/5
+[2025-10-14 16:29:35] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 16:29:37] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 16:29:38] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 16:29:38] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 16:29:38] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 16:29:38] [ERROR] Fallo en intento 4: Cannot write to closing transport
+[2025-10-14 16:29:38] [BOT] Intento de reconexión 5/5
+[2025-10-14 16:29:41] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 16:29:48] [ERROR] Fallo en intento 5: Cannot write to closing transport
+[2025-10-14 16:29:48] [ERROR] Reconexión fallida después de múltiples intentos
+[2025-10-14 16:29:48] [ERROR] Error verificando presencia del bot: Cannot write to closing transport
+[2025-10-14 16:29:48] [BOT] Intento de reconexión 1/5
+[2025-10-14 16:29:52] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 16:29:52] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 16:29:52] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 16:29:52] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 16:29:54] [ERROR] Error cambiando outfit: Cannot write to closing transport
+[2025-10-14 16:29:54] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 16:29:54] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 16:29:54] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 16:29:54] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 16:29:54] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 16:29:54] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 16:29:57] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 16:31:52] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Que pasen un feliz Martes! 🌙
