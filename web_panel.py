@@ -367,8 +367,8 @@ def start_main_bot():
     """Inicia el bot principal (main.py)"""
     try:
         config = load_config()
-        api_token = os.getenv("HIGHRISE_API_TOKEN", config.get("api_token", ""))
-        room_id = os.getenv("HIGHRISE_ROOM_ID", config.get("room_id", ""))
+        api_token = config.get("api_token", "")
+        room_id = config.get("room_id", "")
         
         if not api_token or not room_id:
             print("❌ Error: Faltan credenciales para el bot principal")
@@ -376,9 +376,15 @@ def start_main_bot():
         
         print("🤖 Iniciando Bot Principal (main.py)...")
         print(f"   Room ID: {room_id}")
+        print(f"   Token: {api_token[:20]}...")
+        
+        # Establecer variables de entorno para el proceso
+        env = os.environ.copy()
+        env["HIGHRISE_API_TOKEN"] = api_token
+        env["HIGHRISE_ROOM_ID"] = room_id
         
         cmd = ["python", "-m", "highrise", "main:Bot", room_id, api_token]
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        process = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         
         for line in iter(process.stdout.readline, ''):
             if line:
@@ -389,9 +395,17 @@ def start_main_bot():
 def start_cantinero_bot():
     """Inicia el bot cantinero (cantinero_bot.py)"""
     try:
-        config = load_config()
-        api_token = os.getenv("HIGHRISE_API_TOKEN", config.get("api_token", ""))
-        room_id = os.getenv("HIGHRISE_ROOM_ID", config.get("room_id", ""))
+        # Cargar config del bot cantinero
+        cantinero_config = {}
+        try:
+            with open("cantinero_config.json", "r", encoding="utf-8") as f:
+                cantinero_config = json.load(f)
+        except:
+            print("⚠️ No se encontró cantinero_config.json, usando config.json")
+            cantinero_config = load_config()
+        
+        api_token = cantinero_config.get("api_token", "")
+        room_id = cantinero_config.get("room_id", "")
         
         if not api_token or not room_id:
             print("❌ Error: Faltan credenciales para el bot cantinero")
@@ -399,9 +413,15 @@ def start_cantinero_bot():
         
         print("🍺 Iniciando Bot Cantinero (cantinero_bot.py)...")
         print(f"   Room ID: {room_id}")
+        print(f"   Token: {api_token[:20]}...")
+        
+        # Establecer variables de entorno para el proceso
+        env = os.environ.copy()
+        env["HIGHRISE_API_TOKEN"] = api_token
+        env["HIGHRISE_ROOM_ID"] = room_id
         
         cmd = ["python", "-m", "highrise", "cantinero_bot:BartenderBot", room_id, api_token]
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        process = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         
         for line in iter(process.stdout.readline, ''):
             if line:
