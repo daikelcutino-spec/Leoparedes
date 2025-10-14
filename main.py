@@ -2944,7 +2944,7 @@ class Bot(BaseBot):
     # ========================================================================
 
     async def start_announcements(self):
-        """Sistema de anuncios automáticos"""
+        """Sistema de anuncios automáticos públicos"""
         welcome_message_1 = "🌌 BIENVENIDO A NOCTURNO ⛈️💙\nUna sala donde lo oculto brilla más que la luz...\n💬 Vive la noche, haz nuevos amigos y deja tu huella👣."
         welcome_message_2 = "✨ Sumérgete en la oscuridad... y descubre lo más brillante de ti💯\n‼️(Cualquier incomodidad o sugerencia comuniqué con @Alber_JG_69 o @Xx__Daikel__xX)‼️"
         await self.highrise.chat(welcome_message_1)
@@ -2960,21 +2960,26 @@ class Bot(BaseBot):
         announcement_index = 0
         vip_counter = 0
 
+        # Esperar 60 segundos para alternar con bot cantinero
+        await asyncio.sleep(60)
+
         while True:
             try:
-                current_time = time.time()
-                if current_time - self.last_announcement >= 240:
-                    await self.highrise.chat(announcements[announcement_index])
-                    announcement_index = (announcement_index + 1) % len(announcements)
+                await self.highrise.chat(announcements[announcement_index])
+                print(f"📢 Anuncio público enviado: {announcements[announcement_index][:50]}...")
+                announcement_index = (announcement_index + 1) % len(announcements)
 
-                    vip_counter += 1
-                    if vip_counter == 4:
-                        await self.highrise.chat("💎 ¡Conviértete en VIP por 100 oro y obtén capacidades exclusivas!")
-                        vip_counter = 0
-                    self.last_announcement = current_time
+                vip_counter += 1
+                if vip_counter == 4:
+                    await self.highrise.chat("💎 ¡Conviértete en VIP por 100 oro y obtén capacidades exclusivas!")
+                    vip_counter = 0
+                
+                self.last_announcement = time.time()
             except Exception as e:
                 print(f"Error en anuncios: {e}")
-            await asyncio.sleep(60)
+            
+            # Esperar 2 minutos (120 segundos) para el siguiente mensaje
+            await asyncio.sleep(120)
 
     async def check_console_messages(self):
         """Verifica mensajes desde consola"""

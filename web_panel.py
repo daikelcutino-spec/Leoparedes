@@ -366,7 +366,6 @@ def get_bot_responses():
 def start_main_bot():
     """Inicia el bot principal (main.py)"""
     try:
-        # Leer directamente desde config.json
         with open("config.json", "r", encoding="utf-8") as f:
             config = json.load(f)
         
@@ -381,9 +380,8 @@ def start_main_bot():
         print(f"   Room ID: {room_id}")
         print(f"   Token: {api_token[:20]}...")
         
-        # Ejecutar directamente con python en lugar de python -m highrise
-        cmd = ["python", "-m", "highrise", "main:Bot", room_id, api_token]
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        cmd = ["python3", "-m", "highrise", "main:Bot", room_id, api_token]
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
         
         for line in iter(process.stdout.readline, ''):
             if line:
@@ -394,7 +392,6 @@ def start_main_bot():
 def start_cantinero_bot():
     """Inicia el bot cantinero (cantinero_bot.py)"""
     try:
-        # Leer directamente desde cantinero_config.json
         with open("cantinero_config.json", "r", encoding="utf-8") as f:
             cantinero_config = json.load(f)
         
@@ -409,8 +406,8 @@ def start_cantinero_bot():
         print(f"   Room ID: {room_id}")
         print(f"   Token: {api_token[:20]}...")
         
-        cmd = ["python", "-m", "highrise", "cantinero_bot:BartenderBot", room_id, api_token]
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        cmd = ["python3", "-m", "highrise", "cantinero_bot:BartenderBot", room_id, api_token]
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
         
         for line in iter(process.stdout.readline, ''):
             if line:

@@ -1,20 +1,39 @@
+
 from highrise import BaseBot, User, Position, AnchorPosition
 from highrise.models import SessionMetadata
 import asyncio
 from typing import Union
+from datetime import datetime
 
 class BartenderBot(BaseBot):
-    """Bot Cantinero NOCTURNO - Solo mensajes automáticos"""
+    """Bot Cantinero NOCTURNO - Floss continuo y mensajes automáticos"""
 
     def __init__(self):
         super().__init__()
+        self.current_message_index = 0
 
-        self.auto_messages = [
+    def get_day_message(self):
+        """Obtiene el mensaje según el día de la semana"""
+        days = {
+            0: "¡Que pasen un feliz Lunes! 🌙",
+            1: "¡Que pasen un feliz Martes! 🌙",
+            2: "¡Que pasen un feliz Miércoles! 🌙",
+            3: "¡Que pasen un feliz Jueves! 🌙",
+            4: "¡Que pasen un feliz Viernes! 🌙",
+            5: "¡Que pasen un feliz Sábado! 🌙",
+            6: "¡Que pasen un feliz Domingo! 🌙"
+        }
+        weekday = datetime.now().weekday()
+        return days[weekday]
+
+    def get_auto_messages(self):
+        """Lista de mensajes automáticos incluyendo el día de la semana"""
+        return [
+            self.get_day_message(),
             "‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️",
             "¡Consigue tu VIP Permanente!💎 Para ser un miembro eterno de 🕷️ NOCTURNO 🕷️, Mándale 100 de oro al bot: @NOCTURNO_BOT. ¡Gracias por apoyar la oscuridad!",
             "Acércate a la barra.🥃 Estoy para servirle. ¿Qué deseas hoy?🍻"
         ]
-        self.current_message_index = 0
 
     async def on_start(self, session_metadata: SessionMetadata) -> None:
         """Se ejecuta cuando el bot se conecta a la sala"""
@@ -24,45 +43,38 @@ class BartenderBot(BaseBot):
         asyncio.create_task(self.auto_message_loop())
 
     async def floss_loop(self) -> None:
-        """Loop infinito que ejecuta el emote floss de forma continua"""
+        """Loop infinito que ejecuta el emote floss de forma continua sin pausas"""
         await asyncio.sleep(2)
 
         while True:
             try:
                 await self.highrise.send_emote("dance-floss")
                 print("💃 Ejecutando emote floss continuo")
+                # Sin pausa - el emote dura aproximadamente 9 segundos
+                await asyncio.sleep(8.5)
             except Exception as e:
                 print(f"Error al enviar emote floss: {e}")
-
-            await asyncio.sleep(22)
+                await asyncio.sleep(1)
 
     async def auto_message_loop(self) -> None:
-        """Loop que envía mensajes automáticos cada 4 minutos (alternando con bot NOCTURNO cada 2 min)"""
-        # Esperar 2 minutos (120 segundos) para alternar con el bot NOCTURNO
-        await asyncio.sleep(120)
+        """Loop que envía mensajes automáticos públicos cada 3 minutos"""
+        await asyncio.sleep(180)
 
         while True:
             try:
-                response = await self.highrise.get_room_users()
+                auto_messages = self.get_auto_messages()
+                message = auto_messages[self.current_message_index]
 
-                message = self.auto_messages[self.current_message_index]
-
-                for room_user, _ in response.content:
-                    if room_user.username.lower() == "cantinero_bot" or room_user.username.lower() == "nocturno_bot":
-                        continue
-                    try:
-                        await self.highrise.send_whisper(room_user.id, message)
-                    except Exception as e:
-                        print(f"Error enviando whisper a {room_user.username}: {e}")
-
-                self.current_message_index = (self.current_message_index + 1) % len(self.auto_messages)
-
-                print(f"📢 Mensaje automático enviado a todos los usuarios")
+                # Enviar mensaje público en el chat
+                await self.highrise.chat(message)
+                
+                self.current_message_index = (self.current_message_index + 1) % len(auto_messages)
+                print(f"📢 Mensaje automático público enviado: {message[:50]}...")
             except Exception as e:
                 print(f"Error en auto_message_loop: {e}")
 
-            # Esperar 4 minutos (240 segundos) para el siguiente mensaje
-            await asyncio.sleep(240)
+            # Esperar 3 minutos (180 segundos) para el siguiente mensaje
+            await asyncio.sleep(180)
 
     async def on_user_join(self, user: User, position: Union[Position, AnchorPosition]) -> None:
         """Saluda a los usuarios cuando entran a la sala"""
