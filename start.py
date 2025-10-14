@@ -7,13 +7,18 @@ import time
 import threading
 
 def load_config():
-    """Carga la configuración desde config.json"""
+    """Carga la configuración desde config.json y secrets (prioridad a secrets)"""
     try:
         with open("config.json", "r", encoding="utf-8") as f:
             config = json.load(f)
         
-        config["api_token"] = os.getenv("HIGHRISE_API_TOKEN", config.get("api_token", ""))
-        config["room_id"] = os.getenv("HIGHRISE_ROOM_ID", config.get("room_id", ""))
+        api_token_env = os.getenv("HIGHRISE_API_TOKEN", "")
+        room_id_env = os.getenv("HIGHRISE_ROOM_ID", "")
+        
+        if api_token_env:
+            config["api_token"] = api_token_env
+        if room_id_env:
+            config["room_id"] = room_id_env
         
         return config
     except Exception as e:
