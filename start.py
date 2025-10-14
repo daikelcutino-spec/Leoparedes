@@ -42,7 +42,7 @@ def start_bot():
     os.environ["HIGHRISE_API_TOKEN"] = api_token
     os.environ["HIGHRISE_ROOM_ID"] = room_id
     
-    cmd = ["python", "-m", "highrise", "main:Bot", room_id, api_token]
+    cmd = ["highrise", "main:Bot", room_id, api_token]
     bot_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     
     for line in iter(bot_process.stdout.readline, ''):
