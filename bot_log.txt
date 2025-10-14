@@ -6105,3 +6105,138 @@ Té caliente con miel
 Té caliente con miel
 [2025-10-12 08:41:43] [WHISPER] CANTINERO_BOT: ¡Salud! 🥂 🍵 té
 Té caliente con miel
+[2025-10-12 08:57:43] [WHISPER] CANTINERO_BOT: ¡Servido con cariño! ❤️ 🍵 té
+Té caliente con miel
+[2025-10-13 16:13:01] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-13 16:13:03] [BOT] Outfit NOCTURNO aplicado
+[2025-10-13 16:13:03] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-13 16:13:03] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-13 16:13:03] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-13 16:13:06] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-13 16:13:46] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-13 16:13:46] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-13 16:13:48] [BOT] Outfit NOCTURNO aplicado
+[2025-10-13 16:13:48] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-13 16:13:48] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-13 16:13:48] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-13 16:13:51] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 02:20:55] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 02:20:57] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 02:20:57] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 02:20:57] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 02:20:57] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 02:21:00] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 02:21:10] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 02:21:10] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 02:21:12] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 02:21:12] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 02:21:12] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 02:21:12] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 02:21:15] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 02:23:06] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 02:23:06] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 02:23:08] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 02:23:08] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 02:23:08] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 02:23:08] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 02:23:11] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 02:23:36] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 02:23:36] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 02:23:38] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 02:23:38] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 02:23:38] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 02:23:39] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 02:23:42] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 02:23:56] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 02:23:56] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 02:23:58] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 02:23:58] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 02:23:58] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 02:23:58] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 02:24:01] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 02:24:01] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 02:24:03] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 02:24:03] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 02:24:03] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 02:24:03] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 02:24:06] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 02:32:57] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 02:32:57] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 02:32:59] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 02:32:59] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 02:32:59] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 02:33:00] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 02:33:03] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 02:34:52] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 02:34:53] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 02:34:55] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 02:34:55] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 02:34:55] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 02:34:55] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 02:34:58] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 02:35:02] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 02:35:02] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 02:35:04] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 02:35:04] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 02:35:04] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 02:35:04] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 02:35:07] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 02:38:03] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 02:38:05] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 02:38:05] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 02:38:05] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 02:38:05] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 02:38:08] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 02:40:52] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 02:40:54] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 02:40:54] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 02:40:54] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 02:40:54] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 02:40:57] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 02:53:24] [CHAT] [PUBLIC] baby__lax: vip
+[2025-10-14 02:53:24] [TELEPORT] baby__lax accedió a zona VIP - X:16.0, Y:17.0, Z:19.0
+[2025-10-14 02:53:34] [CHAT] [PUBLIC] baby__lax: !wallet
+[2025-10-14 02:55:08] [CHAT] [PUBLIC] baby__lax: pista
+[2025-10-14 02:55:08] [TELEPORT] baby__lax accedió a 'pista' - X:11.5, Y:4.25, Z:23.5
+[2025-10-14 06:35:38] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 06:35:40] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 06:35:40] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 06:35:40] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 06:35:40] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 06:35:43] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 06:37:11] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 06:37:11] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 06:37:13] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 06:37:13] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 06:37:13] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 06:37:14] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 06:37:17] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 06:49:14] [WHISPER] CANTINERO_BOT: ¡La casa invita! 🎁 🍵 té
+Té caliente con miel
+[2025-10-14 07:04:40] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 07:04:48] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 07:05:18] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 07:11:20] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 07:11:22] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 07:11:22] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 07:11:22] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 07:11:22] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 07:11:25] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 07:13:44] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 07:13:46] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 07:13:46] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 07:13:46] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 07:13:46] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 07:13:49] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 07:13:54] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 07:13:56] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 07:13:56] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 07:13:56] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 07:13:56] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 07:13:59] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 15:33:59] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 15:34:01] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 15:34:01] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 15:34:01] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 15:34:01] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 15:34:04] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
