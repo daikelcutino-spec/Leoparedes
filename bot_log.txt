@@ -6240,3 +6240,9 @@ Té caliente con miel
 [2025-10-14 15:34:01] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-14 15:34:01] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-14 15:34:04] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 15:50:44] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 15:50:47] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 15:50:47] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 15:50:47] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 15:50:47] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 15:50:50] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
