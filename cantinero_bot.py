@@ -43,22 +43,22 @@ class BartenderBot(BaseBot):
         asyncio.create_task(self.auto_message_loop())
 
     async def floss_loop(self) -> None:
-        """Loop infinito que ejecuta el emote floss de forma continua sin pausas"""
+        """Loop infinito que ejecuta el emote floss cada 9.3 segundos sin pausas"""
         await asyncio.sleep(2)
 
         while True:
             try:
                 await self.highrise.send_emote("dance-floss")
-                print("💃 Ejecutando emote floss continuo")
-                # Sin pausa - el emote dura aproximadamente 9 segundos
-                await asyncio.sleep(8.5)
+                print("💃 Ejecutando emote floss (cada 9.3s)")
+                # Esperar 9.3 segundos exactos para el siguiente floss
+                await asyncio.sleep(9.3)
             except Exception as e:
                 print(f"Error al enviar emote floss: {e}")
                 await asyncio.sleep(1)
 
     async def auto_message_loop(self) -> None:
-        """Loop que envía mensajes automáticos públicos cada 3 minutos"""
-        await asyncio.sleep(180)
+        """Loop que envía mensajes automáticos públicos cada 2 minutos"""
+        await asyncio.sleep(120)
 
         while True:
             try:
@@ -73,8 +73,8 @@ class BartenderBot(BaseBot):
             except Exception as e:
                 print(f"Error en auto_message_loop: {e}")
 
-            # Esperar 3 minutos (180 segundos) para el siguiente mensaje
-            await asyncio.sleep(180)
+            # Esperar 2 minutos (120 segundos) para el siguiente mensaje
+            await asyncio.sleep(120)
 
     async def on_user_join(self, user: User, position: Union[Position, AnchorPosition]) -> None:
         """Saluda a los usuarios cuando entran a la sala"""
