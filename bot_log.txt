@@ -6252,3 +6252,74 @@ Té caliente con miel
 [2025-10-14 15:56:38] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
 [2025-10-14 15:56:38] [BOT] Ciclo automático de 224 emotes iniciado
 [2025-10-14 15:56:41] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 16:23:37] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 16:23:39] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 16:23:39] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 16:23:39] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 16:23:40] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 16:23:43] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 16:23:52] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 16:23:52] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 16:23:53] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 16:23:53] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 16:23:54] [ERROR] Error cambiando outfit: Cannot write to closing transport
+[2025-10-14 16:23:54] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 16:23:54] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 16:23:55] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 16:23:55] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 16:23:55] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 16:23:55] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 16:23:57] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 16:23:58] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 16:24:22] [ERROR] Error verificando presencia del bot: Cannot write to closing transport
+[2025-10-14 16:24:22] [BOT] Intento de reconexión 1/5
+[2025-10-14 16:24:24] [ERROR] Fallo en intento 1: Cannot write to closing transport
+[2025-10-14 16:24:24] [BOT] Intento de reconexión 2/5
+[2025-10-14 16:24:28] [ERROR] Fallo en intento 2: Cannot write to closing transport
+[2025-10-14 16:24:28] [BOT] Intento de reconexión 3/5
+[2025-10-14 16:24:34] [ERROR] Fallo en intento 3: Cannot write to closing transport
+[2025-10-14 16:24:34] [BOT] Intento de reconexión 4/5
+[2025-10-14 16:24:42] [ERROR] Fallo en intento 4: Cannot write to closing transport
+[2025-10-14 16:24:42] [BOT] Intento de reconexión 5/5
+[2025-10-14 16:24:52] [ERROR] Fallo en intento 5: Cannot write to closing transport
+[2025-10-14 16:24:52] [ERROR] Reconexión fallida después de múltiples intentos
+[2025-10-14 16:25:17] [FLASHMODE] Auto-flashmode baby__lax: Y:4.0→7.0
+[2025-10-14 16:25:22] [ERROR] Error verificando presencia del bot: Cannot write to closing transport
+[2025-10-14 16:25:22] [BOT] Intento de reconexión 1/5
+[2025-10-14 16:25:24] [ERROR] Fallo en intento 1: Cannot write to closing transport
+[2025-10-14 16:25:24] [BOT] Intento de reconexión 2/5
+[2025-10-14 16:25:28] [ERROR] Fallo en intento 2: Cannot write to closing transport
+[2025-10-14 16:25:28] [BOT] Intento de reconexión 3/5
+[2025-10-14 16:25:34] [ERROR] Fallo en intento 3: Cannot write to closing transport
+[2025-10-14 16:25:34] [BOT] Intento de reconexión 4/5
+[2025-10-14 16:25:42] [ERROR] Fallo en intento 4: Cannot write to closing transport
+[2025-10-14 16:25:42] [BOT] Intento de reconexión 5/5
+[2025-10-14 16:25:47] [CHAT] [PUBLIC] baby__lax: !TPus loop
+[2025-10-14 16:25:52] [ERROR] Fallo en intento 5: Cannot write to closing transport
+[2025-10-14 16:25:52] [ERROR] Reconexión fallida después de múltiples intentos
+[2025-10-14 16:25:53] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Que pasen un feliz Martes! 🌙
+[2025-10-14 16:26:18] [CHAT] [PUBLIC] baby__lax: !delpoint loop
+[2025-10-14 16:26:22] [ERROR] Error verificando presencia del bot: Cannot write to closing transport
+[2025-10-14 16:26:22] [BOT] Intento de reconexión 1/5
+[2025-10-14 16:26:24] [ERROR] Fallo en intento 1: Cannot write to closing transport
+[2025-10-14 16:26:24] [BOT] Intento de reconexión 2/5
+[2025-10-14 16:26:28] [ERROR] Fallo en intento 2: Cannot write to closing transport
+[2025-10-14 16:26:28] [BOT] Intento de reconexión 3/5
+[2025-10-14 16:26:34] [ERROR] Fallo en intento 3: Cannot write to closing transport
+[2025-10-14 16:26:34] [BOT] Intento de reconexión 4/5
+[2025-10-14 16:26:42] [ERROR] Fallo en intento 4: Cannot write to closing transport
+[2025-10-14 16:26:42] [BOT] Intento de reconexión 5/5
+[2025-10-14 16:26:52] [ERROR] Fallo en intento 5: Cannot write to closing transport
+[2025-10-14 16:26:52] [ERROR] Reconexión fallida después de múltiples intentos
+[2025-10-14 16:27:22] [ERROR] Error verificando presencia del bot: Cannot write to closing transport
+[2025-10-14 16:27:22] [BOT] Intento de reconexión 1/5
+[2025-10-14 16:27:24] [ERROR] Fallo en intento 1: Cannot write to closing transport
+[2025-10-14 16:27:24] [BOT] Intento de reconexión 2/5
+[2025-10-14 16:27:28] [ERROR] Fallo en intento 2: Cannot write to closing transport
+[2025-10-14 16:27:28] [BOT] Intento de reconexión 3/5
+[2025-10-14 16:27:34] [ERROR] Fallo en intento 3: Cannot write to closing transport
+[2025-10-14 16:27:34] [BOT] Intento de reconexión 4/5
+[2025-10-14 16:27:42] [ERROR] Fallo en intento 4: Cannot write to closing transport
+[2025-10-14 16:27:42] [BOT] Intento de reconexión 5/5
+[2025-10-14 16:27:52] [ERROR] Fallo en intento 5: Cannot write to closing transport
+[2025-10-14 16:27:52] [ERROR] Reconexión fallida después de múltiples intentos

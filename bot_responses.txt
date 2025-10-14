@@ -1,7 +1,3 @@
-[21:19:49] @baby__lax: !inventory
-[21:19:49] BOT → 24. clothing: shoes-n_room12019sneakersblack
-[21:19:50] @baby__lax: !inventory
-[21:19:50] BOT → 25. clothing: pants-n_gothanchorstore2022cargopants
 [21:19:50] @baby__lax: !inventory
 [21:19:50] BOT → 26. clothing: eye-n_animecollection2018bishoneneyes
 [21:19:50] @baby__lax: !inventory
@@ -98,3 +94,7 @@
 [21:04:39] BOT → ❌ CANTINERO_BOT no está ejecutando ningún emote!
 [21:05:35] @baby__lax: !copyoutfit
 [21:05:35] BOT → 👔 Outfit copiado y guardado como #1
+[16:25:47] @baby__lax: !TPus loop
+[16:25:47] BOT → 📍 Punto de teletransporte 'loop' creado en posición: X=8.5, Y=7.0, Z=1.5
+[16:26:18] @baby__lax: !delpoint loop
+[16:26:18] BOT → ✅ Punto 'loop' eliminado!

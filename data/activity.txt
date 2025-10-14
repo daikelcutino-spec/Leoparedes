@@ -1,1 +1,3 @@
 # Actividad de usuarios (user_id:messages:last_activity:username)
+68bc8edd6eceda8985f80e9c:2:2025-10-14T16:25:53.296317:CANTINERO_BOT
+662aae9b602b4a897557ec18:2:2025-10-14T16:26:18.130893:baby__lax
