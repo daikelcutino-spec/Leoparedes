@@ -290,7 +290,7 @@ def remove_vip():
 def send_command():
     """Envía un comando al bot a través de console_message.txt"""
     try:
-        data = request.json
+        data = request.json or {}
         command = data.get('command', '').strip()
 
         if not command:
@@ -366,4 +366,5 @@ if __name__ == '__main__':
     os.makedirs("data", exist_ok=True)
     
     # Inicia la app, '0.0.0.0' es vital para Replit
-    app.run(host='0.0.0.0', port=os.environ.get('PORT', 5000), debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)

@@ -6,7 +6,7 @@ expertMode = true
 channel = "stable-25_05"
 
 [workflows]
-runButton = "Bots + Panel Web"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Project"
@@ -15,18 +15,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Highrise Bot"
-
-[[workflows.workflow]]
-name = "Highrise Bot"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python -m highrise main:Bot 686c527e9668a3cb40e1f58d b0c7b29926c42a39987057723b8def359ce211d320ecd7f946401fdf9b14d56a"
-
-[workflows.workflow.metadata]
-outputType = "console"
+args = "Panel Web"
 
 [[workflows.workflow]]
 name = "Bot + Web Panel"
@@ -67,10 +56,22 @@ args = "python -m highrise main:Bot 686c527e9668a3cb40e1f58d b0c7b29926c42a39987
 task = "shell.exec"
 args = "python web_panel.py"
 
+[[workflows.workflow]]
+name = "Panel Web"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python web_panel.py"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
 [[ports]]
 localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 8080
-externalPort = 8080
+localPort = 44173
+externalPort = 3000
