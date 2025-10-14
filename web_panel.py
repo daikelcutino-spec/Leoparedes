@@ -381,6 +381,7 @@ def start_main_bot():
         print(f"   Room ID: {room_id}")
         print(f"   Token: {api_token[:20]}...")
         
+        # Ejecutar directamente con python en lugar de python -m highrise
         cmd = ["python", "-m", "highrise", "main:Bot", room_id, api_token]
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         
@@ -394,13 +395,8 @@ def start_cantinero_bot():
     """Inicia el bot cantinero (cantinero_bot.py)"""
     try:
         # Leer directamente desde cantinero_config.json
-        try:
-            with open("cantinero_config.json", "r", encoding="utf-8") as f:
-                cantinero_config = json.load(f)
-        except:
-            print("⚠️ No se encontró cantinero_config.json, usando config.json")
-            with open("config.json", "r", encoding="utf-8") as f:
-                cantinero_config = json.load(f)
+        with open("cantinero_config.json", "r", encoding="utf-8") as f:
+            cantinero_config = json.load(f)
         
         api_token = cantinero_config.get("api_token", "")
         room_id = cantinero_config.get("room_id", "")
