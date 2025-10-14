@@ -377,7 +377,7 @@ def start_main_bot():
         print("🤖 Iniciando Bot Principal (main.py)...")
         print(f"   Room ID: {room_id}")
         
-        cmd = ["highrise", "main:Bot", room_id, api_token]
+        cmd = ["python", "-m", "highrise", "main:Bot", room_id, api_token]
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         
         for line in iter(process.stdout.readline, ''):
@@ -400,7 +400,7 @@ def start_cantinero_bot():
         print("🍺 Iniciando Bot Cantinero (cantinero_bot.py)...")
         print(f"   Room ID: {room_id}")
         
-        cmd = ["highrise", "cantinero_bot:BartenderBot", room_id, api_token]
+        cmd = ["python", "-m", "highrise", "cantinero_bot:BartenderBot", room_id, api_token]
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         
         for line in iter(process.stdout.readline, ''):
