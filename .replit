@@ -65,7 +65,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python start.py"
+args = "python web_panel.py"
 waitForPort = 5000
 
 [[ports]]

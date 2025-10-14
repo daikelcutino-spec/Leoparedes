@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for
 import json
 import os
 from datetime import datetime
+import threading
+import subprocess
+import sys
 
 app = Flask(__name__)
 
@@ -360,11 +363,71 @@ def get_bot_responses():
         return jsonify({"success": True, "responses": []})
 
 
+def start_main_bot():
+    """Inicia el bot principal (main.py)"""
+    try:
+        config = load_config()
+        api_token = os.getenv("HIGHRISE_API_TOKEN", config.get("api_token", ""))
+        room_id = os.getenv("HIGHRISE_ROOM_ID", config.get("room_id", ""))
+        
+        if not api_token or not room_id:
+            print("❌ Error: Faltan credenciales para el bot principal")
+            return
+        
+        print("🤖 Iniciando Bot Principal (main.py)...")
+        print(f"   Room ID: {room_id}")
+        
+        cmd = ["highrise", "main:Bot", room_id, api_token]
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        
+        for line in iter(process.stdout.readline, ''):
+            if line:
+                print(f"[BOT-MAIN] {line.rstrip()}")
+    except Exception as e:
+        print(f"❌ Error iniciando bot principal: {e}")
+
+def start_cantinero_bot():
+    """Inicia el bot cantinero (cantinero_bot.py)"""
+    try:
+        config = load_config()
+        api_token = os.getenv("HIGHRISE_API_TOKEN", config.get("api_token", ""))
+        room_id = os.getenv("HIGHRISE_ROOM_ID", config.get("room_id", ""))
+        
+        if not api_token or not room_id:
+            print("❌ Error: Faltan credenciales para el bot cantinero")
+            return
+        
+        print("🍺 Iniciando Bot Cantinero (cantinero_bot.py)...")
+        print(f"   Room ID: {room_id}")
+        
+        cmd = ["highrise", "cantinero_bot:BartenderBot", room_id, api_token]
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        
+        for line in iter(process.stdout.readline, ''):
+            if line:
+                print(f"[BOT-CANTINERO] {line.rstrip()}")
+    except Exception as e:
+        print(f"❌ Error iniciando bot cantinero: {e}")
+
 if __name__ == '__main__':
     # Asegura que los directorios necesarios existan
     os.makedirs("templates", exist_ok=True)
     os.makedirs("data", exist_ok=True)
     
-    # Inicia la app, '0.0.0.0' es vital para Replit
+    print("=" * 60)
+    print("🚀 INICIANDO SISTEMA COMPLETO - NOCTURNO BOT")
+    print("=" * 60)
+    
+    # Iniciar ambos bots en hilos separados
+    bot_main_thread = threading.Thread(target=start_main_bot, daemon=True)
+    bot_cantinero_thread = threading.Thread(target=start_cantinero_bot, daemon=True)
+    
+    bot_main_thread.start()
+    bot_cantinero_thread.start()
+    
+    print("🌐 Iniciando Panel Web en http://0.0.0.0:5000")
+    print("=" * 60)
+    
+    # Inicia la app Flask en el hilo principal
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
