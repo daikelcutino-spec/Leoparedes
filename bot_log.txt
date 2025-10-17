@@ -6498,3 +6498,19 @@ Té caliente con miel
 [2025-10-17 17:20:10] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Que pasen un feliz Viernes! 🌙
 [2025-10-17 17:22:11] [CHAT] [PUBLIC] CANTINERO_BOT: ‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️
 [2025-10-17 17:24:11] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Consigue tu VIP Permanente!💎 Para ser un miembro eterno de 🕷️ NOCTURNO 🕷️, Mándale 100 de oro al bot: @NOCTURNO_BOT. ¡Gracias por apoyar la oscuridad! [BOT_MENTION]
+[2025-10-17 21:22:44] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-17 21:22:45] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-17 21:22:47] [BOT] Outfit NOCTURNO aplicado
+[2025-10-17 21:22:47] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-17 21:22:47] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-17 21:22:47] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-17 21:22:50] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-17 21:23:42] [CHAT] [PUBLIC] _Kmi.77: !help
+[2025-10-17 21:23:59] [CHAT] [PUBLIC] _Kmi.77: vip
+[2025-10-17 21:23:59] [TELEPORT] _Kmi.77 accedió a zona VIP - X:16.0, Y:17.0, Z:19.0
+[2025-10-17 21:24:20] [FLASHMODE] Auto-flashmode _Kmi.77: Y:4.4→17.0
+[2025-10-17 21:24:32] [CHAT] [PUBLIC] _Kmi.77: bar
+[2025-10-17 21:24:32] [TELEPORT] _Kmi.77 accedió a 'bar' - X:6.5, Y:7.0, Z:4.5
+[2025-10-17 21:24:37] [FLASHMODE] Auto-flashmode _Kmi.77: Y:17.0→4.4
+[2025-10-17 21:24:42] [FLASHMODE] Auto-flashmode _Kmi.77: Y:4.4→7.0
+[2025-10-17 21:24:45] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Que pasen un feliz Viernes! 🌙
