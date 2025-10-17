@@ -1,71 +1,65 @@
 #!/usr/bin/env python3
-import subprocess
-import json
-import sys
 import os
+import subprocess
+import threading
+from flask import Flask
 
-def load_config():
-    """Carga la configuración desde config.json y secrets (prioridad a secrets)"""
-    try:
-        with open("config.json", "r", encoding="utf-8") as f:
-            config = json.load(f)
-        
-        api_token_env = os.getenv("HIGHRISE_API_TOKEN", "")
-        room_id_env = os.getenv("HIGHRISE_ROOM_ID", "")
-        
-        if api_token_env:
-            config["api_token"] = api_token_env
-        if room_id_env:
-            config["room_id"] = room_id_env
-        
-        return config
-    except Exception as e:
-        print(f"Error cargando configuración: {e}")
-        return {}
+app = Flask(__name__)
 
-def start_bot():
-    """Inicia el bot de Highrise usando subprocess"""
-    config = load_config()
-    room_id = config.get("room_id", "")
-    api_token = config.get("api_token", "")
+@app.route('/')
+def home():
+    return '¡Bots vivos!'
+
+def start_main_bot():
+    """Inicia el bot principal (main.py)"""
+    api_token = os.getenv("HIGHRISE_API_TOKEN", "")
+    room_id = os.getenv("HIGHRISE_ROOM_ID", "")
     
-    if not room_id or not api_token:
-        print("❌ Error: Faltan credenciales del bot")
+    if not api_token or not room_id:
+        print("❌ Error: Faltan credenciales (HIGHRISE_API_TOKEN o HIGHRISE_ROOM_ID)")
         return
     
-    print("🤖 Iniciando bot de Highrise...")
-    print(f"   Room ID: {room_id}")
-    print(f"   Token: {api_token[:10]}...{api_token[-10:]}")
-    
-    os.environ["HIGHRISE_API_TOKEN"] = api_token
-    os.environ["HIGHRISE_ROOM_ID"] = room_id
-    
+    print("🤖 Iniciando bot principal...")
     cmd = ["highrise", "main:Bot", room_id, api_token]
-    bot_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     
-    if bot_process.stdout:
-        for line in iter(bot_process.stdout.readline, ''):
+    if process.stdout:
+        for line in iter(process.stdout.readline, ''):
             if line:
-                print(f"[BOT] {line.rstrip()}")
+                print(f"[MAIN BOT] {line.rstrip()}")
+
+def start_cantinero_bot():
+    """Inicia el bot cantinero (cantinero_bot.py)"""
+    api_token = os.getenv("HIGHRISE_API_TOKEN", "")
+    room_id = os.getenv("HIGHRISE_ROOM_ID", "")
+    
+    if not api_token or not room_id:
+        print("❌ Error: Faltan credenciales (HIGHRISE_API_TOKEN o HIGHRISE_ROOM_ID)")
+        return
+    
+    print("🍻 Iniciando bot cantinero...")
+    cmd = ["highrise", "cantinero_bot:BartenderBot", room_id, api_token]
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    
+    if process.stdout:
+        for line in iter(process.stdout.readline, ''):
+            if line:
+                print(f"[CANTINERO BOT] {line.rstrip()}")
+
+def run_flask():
+    """Ejecuta el servidor Flask en puerto 8080"""
+    print("🌐 Iniciando servidor Flask en puerto 8080...")
+    app.run(host='0.0.0.0', port=8080)
 
 if __name__ == "__main__":
-    config = load_config()
-    
-    if not config.get("api_token"):
-        print("❌ Error: No se encontró api_token")
-        sys.exit(1)
-    if not config.get("room_id"):
-        print("❌ Error: No se encontró room_id")
-        sys.exit(1)
-    
     print("=" * 60)
-    print("🚀 INICIANDO BOT DE HIGHRISE")
-    print("=" * 60)
-    print(f"🏠 Room ID: {config['room_id']}")
+    print("🚀 INICIANDO SISTEMA DUAL DE BOTS")
     print("=" * 60)
     
-    try:
-        start_bot()
-    except KeyboardInterrupt:
-        print("\n🛑 Deteniendo bot...")
-        sys.exit(0)
+    main_bot_thread = threading.Thread(target=start_main_bot, daemon=True)
+    cantinero_bot_thread = threading.Thread(target=start_cantinero_bot, daemon=True)
+    
+    main_bot_thread.start()
+    cantinero_bot_thread.start()
+    
+    run_flask()
