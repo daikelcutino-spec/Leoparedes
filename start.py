@@ -43,9 +43,10 @@ def start_bot():
     cmd = ["highrise", "main:Bot", room_id, api_token]
     bot_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     
-    for line in iter(bot_process.stdout.readline, ''):
-        if line:
-            print(f"[BOT] {line.rstrip()}")
+    if bot_process.stdout:
+        for line in iter(bot_process.stdout.readline, ''):
+            if line:
+                print(f"[BOT] {line.rstrip()}")
 
 if __name__ == "__main__":
     config = load_config()

@@ -6,16 +6,7 @@ expertMode = true
 channel = "stable-25_05"
 
 [workflows]
-runButton = "Ambos Bots NOCTURNO"
-
-[[workflows.workflow]]
-name = "Project"
-mode = "parallel"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Panel Web"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Bot + Web Panel"
@@ -57,16 +48,24 @@ task = "shell.exec"
 args = "python web_panel.py"
 
 [[workflows.workflow]]
-name = "Panel Web"
+name = "Project"
+mode = "parallel"
 author = "agent"
 
-[workflows.workflow.metadata]
-outputType = "webview"
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Bot Principal"
+
+[[workflows.workflow]]
+name = "Bot Principal"
+author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python web_panel.py"
-waitForPort = 5000
+args = "python start.py"
+
+[workflows.workflow.metadata]
+outputType = "console"
 
 [[ports]]
 localPort = 5000
