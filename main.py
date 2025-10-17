@@ -760,6 +760,7 @@ class Bot(BaseBot):
                     "⚡ TELETRANSPORTE:\n"
                     "!flash [x] [y] [z] - Flash entre pisos\n"
                     "!bring @user - Traer usuario\n"
+                    "!goto @user [punto] - Enviar usuario a punto\n"
                     "!tplist - Puntos de teleporte\n"
                     "!tp [nombre] - Ir a punto\n"
                     "[nombre_punto] - Ir a punto\n"
@@ -2592,6 +2593,48 @@ class Bot(BaseBot):
             else: await send_response("❌ Usa: !comando @usuario")
             return
 
+        # Comando !goto @user [punto] - Teletransportar usuario a punto guardado (Admin/Owner)
+        if msg.startswith("!goto "):
+            if not (self.is_admin(user_id) or user_id == OWNER_ID):
+                await send_response("❌ ¡Solo admins y propietario pueden usar !goto!")
+                return
+            
+            parts = msg.split()
+            if len(parts) < 3:
+                await send_response("❌ Usa: !goto @usuario [punto]")
+                return
+            
+            target_username = parts[1].replace("@", "")
+            point_name = parts[2].lower()
+            
+            if point_name not in TELEPORT_POINTS:
+                await send_response(f"❌ Punto '{point_name}' no encontrado. Usa !tplist")
+                return
+            
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                return
+            
+            users = response.content
+            target_user = next((u for u, _ in users if u.username == target_username), None)
+            
+            if not target_user:
+                await send_response(f"❌ Usuario {target_username} no encontrado!")
+                return
+            
+            point = TELEPORT_POINTS[point_name]
+            try:
+                teleport_position = Position(point["x"], point["y"], point["z"])
+                await self.highrise.teleport(target_user.id, teleport_position)
+                await send_response(f"🚁 Teletransportaste a @{target_username} a '{point_name}'!")
+                await self.highrise.send_whisper(target_user.id, f"📍 Fuiste teletransportado a '{point_name}' por @{username}")
+                log_event("TELEPORT", f"{username} envió a {target_username} a '{point_name}' - X:{point['x']}, Y:{point['y']}, Z:{point['z']}")
+            except Exception as e:
+                await send_response(f"❌ Error: {e}")
+                log_event("ERROR", f"Error en !goto: {e}")
+            return
+
         # Comando !tp [punto]
         if msg.startswith("!tp "):
             point_name = msg[4:].strip().lower()
@@ -2607,7 +2650,7 @@ class Bot(BaseBot):
                         await send_response(f"🔒 '{point_name}' es zona VIP. ¡Solo VIP, admins y el propietario pueden acceder!")
                         return
                 
-                elif point_name in ["directivo", "dj"]:
+                elif point_name in ["directivo", "dj", "carcel"]:
                     has_permission = (
                         user_id == OWNER_ID or 
                         self.is_admin(user_id)
@@ -2689,6 +2732,26 @@ class Bot(BaseBot):
                     await send_response(f"❌ Error de teletransporte: {e}")
             else:
                 await send_response("❌ Zona directivo no configurada. Usa !setdirectivo para establecerla")
+            return
+
+        # Comando carcel (teletransporte a carcel - solo admin/owner)
+        if msg == "carcel" or msg == "!carcel":
+            has_permission = (user_id == OWNER_ID or self.is_admin(user_id))
+            if not has_permission:
+                await send_response("🔒 La cárcel es solo para admins y propietario!")
+                return
+            
+            if "carcel" in TELEPORT_POINTS:
+                point = TELEPORT_POINTS["carcel"]
+                try:
+                    carcel_position = Position(point["x"], point["y"], point["z"])
+                    await self.highrise.teleport(user_id, carcel_position)
+                    await send_response(f"⛓️ Fuiste enviado a la cárcel!")
+                    log_event("TELEPORT", f"{username} fue a la cárcel - X:{point['x']}, Y:{point['y']}, Z:{point['z']}")
+                except Exception as e:
+                    await send_response(f"❌ Error de teletransporte: {e}")
+            else:
+                await send_response("❌ La cárcel no está configurada")
             return
 
         # Teletransporte a puntos (escribiendo el nombre directamente)
