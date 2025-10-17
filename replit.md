@@ -6,6 +6,27 @@ This is a Highrise bot application built with Python that manages automated inte
 
 ## Recent Changes
 
+**October 17, 2025 - Security Enhancement**
+- ✅ **Removed Web Panel**: Eliminated Flask web interface for improved security and simplicity
+  - Deleted `web_panel.py` and all HTML templates
+  - Removed Flask dependency from `pyproject.toml`
+  - Updated `start.py` to only run the bot (no web server)
+- ✅ **Migrated to Secrets Management**: All sensitive data now loaded via environment variables
+  - Removed hardcoded API tokens, Room IDs, and user IDs from config files
+  - `config.json` now only contains non-sensitive configuration (zones, settings)
+  - `cantinero_config.json` now only contains non-sensitive settings
+- ✅ **Created Separate Cantinero Launcher**: Added `start_cantinero.py` for bartender bot
+  - Bot cantinero uses same credentials as main bot (except API token)
+  - Loads configuration from environment secrets: `CANTINERO_API_TOKEN`, `HIGHRISE_ROOM_ID`, etc.
+
+**Secrets Configuration**:
+- `HIGHRISE_API_TOKEN`: Main bot API token
+- `HIGHRISE_ROOM_ID`: Room ID for both bots
+- `OWNER_ID`: Owner user ID
+- `ADMIN_IDS`: Comma-separated admin user IDs
+- `MODERATOR_IDS`: Comma-separated moderator user IDs
+- `CANTINERO_API_TOKEN`: Cantinero bot API token
+
 **October 4, 2025 - Session 3**
 - ✅ **Fixed Auto Emote Cycle Startup**: Resolved issue where 224-emote cycle wasn't starting
   - Simplified on_start method by removing blocking chat messages
@@ -77,7 +98,8 @@ Preferred communication style: Simple, everyday language.
 
 **Key Design Decisions**:
 - Async event handlers for chat messages, user joins/leaves, and position changes
-- Centralized configuration via `config.json` for room settings, API credentials, and zone definitions
+- Centralized configuration via `config.json` for room settings and zone definitions
+- **Secrets-based credential management** via environment variables (no hardcoded tokens/IDs)
 - File-based persistence for user data (hearts, activity, user info, bans, mutes)
 - Logging system that writes to `bot_log.txt` for debugging and audit trails
 
@@ -94,7 +116,8 @@ Preferred communication style: Simple, everyday language.
 - VIP Users (access to restricted zones)
 
 **Implementation**:
-- User IDs stored in `config.json` for admins, moderators, and owner
+- User IDs loaded from environment secrets (`OWNER_ID`, `ADMIN_IDS`, `MODERATOR_IDS`)
+- Fallback to `config.json` if secrets not available (for backwards compatibility)
 - VIP status tracked in runtime set `VIP_USERS` and persisted to file
 - Banned/muted users stored in dictionaries with expiration timestamps
 
@@ -200,12 +223,27 @@ Preferred communication style: Simple, everyday language.
 
 **Design Pattern**: Centralized command pattern with context-aware response routing and role-based access checks.
 
+### Cantinero Bot (Bartender)
+
+**Problem**: Need a separate bot that acts as a bartender with automated messages and emotes.
+
+**Solution**: Standalone bot (`cantinero_bot.py`) with:
+- Continuous floss emote loop (12-second cycle)
+- Automated public messages every 2 minutes (rotating messages)
+- Welcome whisper to users when they join
+- Teleports to configured spawn point on startup
+
+**Launch**: Use `start_cantinero.py` to run the bartender bot
+- Shares same Room ID, Owner ID, Admin IDs as main bot
+- Uses separate `CANTINERO_API_TOKEN` for authentication
+- Minimal configuration in `cantinero_config.json` (spawn point only)
+
 ## External Dependencies
 
 ### Highrise SDK
 - **Purpose**: Primary API for interacting with Highrise platform
 - **Integration**: Provides `BaseBot` class, event handlers, and models for User, Position, Items, etc.
-- **Authentication**: API token stored in `config.json`
+- **Authentication**: API token loaded from environment secrets
 
 ### Python Standard Library
 - **asyncio**: Asynchronous event loop management
@@ -214,9 +252,14 @@ Preferred communication style: Simple, everyday language.
 - **typing**: Type hints for code clarity
 
 ### File System
-- **Configuration**: `config.json` - Room ID, API credentials, zone coordinates, user permissions
+- **Configuration**: `config.json` - Room settings, zone coordinates, non-sensitive config
+- **Cantinero Config**: `cantinero_config.json` - Bartender bot settings (spawn point)
 - **Logging**: `bot_log.txt` - Operational logs and event tracking
 - **Data Storage**: `data/` directory containing user information, hearts, and activity files
+
+### Secrets Management
+- **Environment Variables**: All sensitive credentials loaded via Replit Secrets
+- **No Hardcoded Credentials**: API tokens, Room IDs, and user IDs never stored in code or config files
 
 ### No External Database
 The application intentionally avoids database dependencies, using file-based storage for simplicity and ease of deployment on Replit.
