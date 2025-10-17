@@ -37,7 +37,7 @@ async def run_bot(bot_class, token, room_id, bot_name):
     bot = bot_class()
     print(f"🤖 Iniciando bot {bot_name} ({bot_class.__name__})...")
     try:
-        await bot.start(token, room_id)
+        await bot.run(token, room_id)
     except Exception as e:
         print(f"❌ Error en bot {bot_name}: {e}")
 
