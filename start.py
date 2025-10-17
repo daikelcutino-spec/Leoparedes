@@ -3,8 +3,6 @@ import subprocess
 import json
 import sys
 import os
-import time
-import threading
 
 def load_config():
     """Carga la configuración desde config.json y secrets (prioridad a secrets)"""
@@ -49,11 +47,6 @@ def start_bot():
         if line:
             print(f"[BOT] {line.rstrip()}")
 
-def start_web_panel():
-    """Inicia el panel web"""
-    print("🌐 Iniciando panel web...")
-    subprocess.run(["python", "web_panel.py"])
-
 if __name__ == "__main__":
     config = load_config()
     
@@ -65,19 +58,13 @@ if __name__ == "__main__":
         sys.exit(1)
     
     print("=" * 60)
-    print("🚀 INICIANDO SISTEMA COMPLETO")
+    print("🚀 INICIANDO BOT DE HIGHRISE")
     print("=" * 60)
     print(f"🏠 Room ID: {config['room_id']}")
-    print(f"🌐 Panel Web: http://0.0.0.0:5000")
     print("=" * 60)
     
-    bot_thread = threading.Thread(target=start_bot, daemon=True)
-    bot_thread.start()
-    
-    time.sleep(3)
-    
     try:
-        start_web_panel()
+        start_bot()
     except KeyboardInterrupt:
-        print("\n🛑 Deteniendo servicios...")
+        print("\n🛑 Deteniendo bot...")
         sys.exit(0)
