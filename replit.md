@@ -6,26 +6,31 @@ This is a Highrise bot application built with Python that manages automated inte
 
 ## Recent Changes
 
-**October 17, 2025 - Security Enhancement**
-- ✅ **Removed Web Panel**: Eliminated Flask web interface for improved security and simplicity
-  - Deleted `web_panel.py` and all HTML templates
-  - Removed Flask dependency from `pyproject.toml`
-  - Updated `start.py` to only run the bot (no web server)
-- ✅ **Migrated to Secrets Management**: All sensitive data now loaded via environment variables
-  - Removed hardcoded API tokens, Room IDs, and user IDs from config files
-  - `config.json` now only contains non-sensitive configuration (zones, settings)
-  - `cantinero_config.json` now only contains non-sensitive settings
-- ✅ **Created Separate Cantinero Launcher**: Added `start_cantinero.py` for bartender bot
-  - Bot cantinero uses same credentials as main bot (except API token)
-  - Loads configuration from environment secrets: `CANTINERO_API_TOKEN`, `HIGHRISE_ROOM_ID`, etc.
+**October 17, 2025 - Sistema 24/7 con Flask y UptimeRobot**
+- ✅ **Configuración 24/7**: Implementado sistema para mantener ambos bots activos 24/7
+  - Creado `start.py` que ejecuta ambos bots simultáneamente usando threading
+  - Servidor Flask integrado en puerto 5000 con endpoint `/` para pings de UptimeRobot
+  - Ambos bots corren en hilos separados sin interferir entre sí
+  - URL pública generada automáticamente para monitoreo con UptimeRobot
+- ✅ **Migración a Secrets Management**: Todas las credenciales cargadas desde variables de entorno
+  - Bot principal usa `HIGHRISE_API_TOKEN`
+  - Bot cantinero usa `CANTINERO_API_TOKEN`
+  - Ambos bots comparten `HIGHRISE_ROOM_ID`
+  - Sin credenciales hardcodeadas en el código
 
 **Secrets Configuration**:
-- `HIGHRISE_API_TOKEN`: Main bot API token
-- `HIGHRISE_ROOM_ID`: Room ID for both bots
+- `HIGHRISE_API_TOKEN`: API token del bot principal
+- `CANTINERO_API_TOKEN`: API token del bot cantinero
+- `HIGHRISE_ROOM_ID`: Room ID compartido por ambos bots
 - `OWNER_ID`: Owner user ID
 - `ADMIN_IDS`: Comma-separated admin user IDs
 - `MODERATOR_IDS`: Comma-separated moderator user IDs
-- `CANTINERO_API_TOKEN`: Cantinero bot API token
+
+**Configuración UptimeRobot**:
+- Endpoint: `https://[tu-proyecto].repl.co/`
+- Método: HTTP(s)
+- Intervalo recomendado: 5 minutos
+- Respuesta esperada: "¡Bots vivos!"
 
 **October 4, 2025 - Session 3**
 - ✅ **Fixed Auto Emote Cycle Startup**: Resolved issue where 224-emote cycle wasn't starting

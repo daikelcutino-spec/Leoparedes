@@ -30,11 +30,11 @@ def start_main_bot():
 
 def start_cantinero_bot():
     """Inicia el bot cantinero (cantinero_bot.py)"""
-    api_token = os.getenv("HIGHRISE_API_TOKEN", "")
+    api_token = os.getenv("CANTINERO_API_TOKEN", "")
     room_id = os.getenv("HIGHRISE_ROOM_ID", "")
     
     if not api_token or not room_id:
-        print("❌ Error: Faltan credenciales (HIGHRISE_API_TOKEN o HIGHRISE_ROOM_ID)")
+        print("❌ Error: Faltan credenciales (CANTINERO_API_TOKEN o HIGHRISE_ROOM_ID)")
         return
     
     print("🍻 Iniciando bot cantinero...")
@@ -47,9 +47,9 @@ def start_cantinero_bot():
                 print(f"[CANTINERO BOT] {line.rstrip()}")
 
 def run_flask():
-    """Ejecuta el servidor Flask en puerto 8080"""
-    print("🌐 Iniciando servidor Flask en puerto 8080...")
-    app.run(host='0.0.0.0', port=8080)
+    """Ejecuta el servidor Flask en puerto 5000"""
+    print("🌐 Iniciando servidor Flask en puerto 5000...")
+    app.run(host='0.0.0.0', port=5000)
 
 if __name__ == "__main__":
     print("=" * 60)
