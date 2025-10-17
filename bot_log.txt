@@ -6386,3 +6386,115 @@ Té caliente con miel
 [2025-10-14 16:31:52] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Que pasen un feliz Martes! 🌙
 [2025-10-14 16:33:52] [CHAT] [PUBLIC] CANTINERO_BOT: ‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️
 [2025-10-14 16:35:53] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Consigue tu VIP Permanente!💎 Para ser un miembro eterno de 🕷️ NOCTURNO 🕷️, Mándale 100 de oro al bot: @NOCTURNO_BOT. ¡Gracias por apoyar la oscuridad! [BOT_MENTION]
+[2025-10-14 16:36:28] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 16:36:28] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 16:36:30] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 16:36:30] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 16:36:30] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 16:36:30] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 16:36:33] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 16:36:50] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 16:36:50] [WHISPER] CANTINERO_BOT: Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad.
+[2025-10-14 16:36:50] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-14 16:36:52] [ERROR] Error cambiando outfit: Cannot write to closing transport
+[2025-10-14 16:36:52] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 16:36:52] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 16:36:53] [BOT] Outfit NOCTURNO aplicado
+[2025-10-14 16:36:53] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-14 16:36:53] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-14 16:36:53] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-14 16:36:56] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-14 16:38:51] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Que pasen un feliz Martes! 🌙
+[2025-10-14 16:40:51] [CHAT] [PUBLIC] CANTINERO_BOT: ‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️
+[2025-10-14 16:42:51] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Consigue tu VIP Permanente!💎 Para ser un miembro eterno de 🕷️ NOCTURNO 🕷️, Mándale 100 de oro al bot: @NOCTURNO_BOT. ¡Gracias por apoyar la oscuridad! [BOT_MENTION]
+[2025-10-14 16:44:51] [CHAT] [PUBLIC] CANTINERO_BOT: Acércate a la barra.🥃 Estoy para servirle. ¿Qué deseas hoy?🍻
+[2025-10-14 16:46:51] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Que pasen un feliz Martes! 🌙
+[2025-10-14 16:48:52] [CHAT] [PUBLIC] CANTINERO_BOT: ‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️
+[2025-10-14 16:50:52] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Consigue tu VIP Permanente!💎 Para ser un miembro eterno de 🕷️ NOCTURNO 🕷️, Mándale 100 de oro al bot: @NOCTURNO_BOT. ¡Gracias por apoyar la oscuridad! [BOT_MENTION]
+[2025-10-17 17:12:09] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-17 17:12:09] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-17 17:12:11] [ERROR] Error cambiando outfit: Cannot write to closing transport
+[2025-10-17 17:12:11] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-17 17:12:11] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-17 17:12:11] [BOT] Outfit NOCTURNO aplicado
+[2025-10-17 17:12:11] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-17 17:12:11] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-17 17:12:12] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-17 17:12:14] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-17 17:12:15] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-17 17:12:39] [ERROR] Error verificando presencia del bot: Cannot write to closing transport
+[2025-10-17 17:12:39] [BOT] Intento de reconexión 1/5
+[2025-10-17 17:12:41] [ERROR] Fallo en intento 1: Cannot write to closing transport
+[2025-10-17 17:12:41] [BOT] Intento de reconexión 2/5
+[2025-10-17 17:12:45] [ERROR] Fallo en intento 2: Cannot write to closing transport
+[2025-10-17 17:12:45] [BOT] Intento de reconexión 3/5
+[2025-10-17 17:12:51] [ERROR] Fallo en intento 3: Cannot write to closing transport
+[2025-10-17 17:12:51] [BOT] Intento de reconexión 4/5
+[2025-10-17 17:12:59] [ERROR] Fallo en intento 4: Cannot write to closing transport
+[2025-10-17 17:12:59] [BOT] Intento de reconexión 5/5
+[2025-10-17 17:13:09] [ERROR] Fallo en intento 5: Cannot write to closing transport
+[2025-10-17 17:13:09] [ERROR] Reconexión fallida después de múltiples intentos
+[2025-10-17 17:13:39] [ERROR] Error verificando presencia del bot: Cannot write to closing transport
+[2025-10-17 17:13:39] [BOT] Intento de reconexión 1/5
+[2025-10-17 17:13:41] [ERROR] Fallo en intento 1: Cannot write to closing transport
+[2025-10-17 17:13:41] [BOT] Intento de reconexión 2/5
+[2025-10-17 17:13:45] [ERROR] Fallo en intento 2: Cannot write to closing transport
+[2025-10-17 17:13:45] [BOT] Intento de reconexión 3/5
+[2025-10-17 17:13:51] [ERROR] Fallo en intento 3: Cannot write to closing transport
+[2025-10-17 17:13:51] [BOT] Intento de reconexión 4/5
+[2025-10-17 17:13:59] [ERROR] Fallo en intento 4: Cannot write to closing transport
+[2025-10-17 17:13:59] [BOT] Intento de reconexión 5/5
+[2025-10-17 17:14:09] [ERROR] Fallo en intento 5: Cannot write to closing transport
+[2025-10-17 17:14:09] [ERROR] Reconexión fallida después de múltiples intentos
+[2025-10-17 17:14:39] [ERROR] Error verificando presencia del bot: Cannot write to closing transport
+[2025-10-17 17:14:39] [BOT] Intento de reconexión 1/5
+[2025-10-17 17:14:41] [ERROR] Fallo en intento 1: Cannot write to closing transport
+[2025-10-17 17:14:41] [BOT] Intento de reconexión 2/5
+[2025-10-17 17:14:45] [ERROR] Fallo en intento 2: Cannot write to closing transport
+[2025-10-17 17:14:45] [BOT] Intento de reconexión 3/5
+[2025-10-17 17:14:51] [ERROR] Fallo en intento 3: Cannot write to closing transport
+[2025-10-17 17:14:51] [BOT] Intento de reconexión 4/5
+[2025-10-17 17:14:59] [ERROR] Fallo en intento 4: Cannot write to closing transport
+[2025-10-17 17:14:59] [BOT] Intento de reconexión 5/5
+[2025-10-17 17:15:09] [ERROR] Fallo en intento 5: Cannot write to closing transport
+[2025-10-17 17:15:09] [ERROR] Reconexión fallida después de múltiples intentos
+[2025-10-17 17:15:39] [ERROR] Error verificando presencia del bot: Cannot write to closing transport
+[2025-10-17 17:15:39] [BOT] Intento de reconexión 1/5
+[2025-10-17 17:15:41] [ERROR] Fallo en intento 1: Cannot write to closing transport
+[2025-10-17 17:15:41] [BOT] Intento de reconexión 2/5
+[2025-10-17 17:15:45] [ERROR] Fallo en intento 2: Cannot write to closing transport
+[2025-10-17 17:15:45] [BOT] Intento de reconexión 3/5
+[2025-10-17 17:15:51] [ERROR] Fallo en intento 3: Cannot write to closing transport
+[2025-10-17 17:15:51] [BOT] Intento de reconexión 4/5
+[2025-10-17 17:15:59] [ERROR] Fallo en intento 4: Cannot write to closing transport
+[2025-10-17 17:15:59] [BOT] Intento de reconexión 5/5
+[2025-10-17 17:16:09] [ERROR] Fallo en intento 5: Cannot write to closing transport
+[2025-10-17 17:16:09] [ERROR] Reconexión fallida después de múltiples intentos
+[2025-10-17 17:16:39] [ERROR] Error verificando presencia del bot: Cannot write to closing transport
+[2025-10-17 17:16:39] [BOT] Intento de reconexión 1/5
+[2025-10-17 17:16:41] [ERROR] Fallo en intento 1: Cannot write to closing transport
+[2025-10-17 17:16:41] [BOT] Intento de reconexión 2/5
+[2025-10-17 17:16:45] [ERROR] Fallo en intento 2: Cannot write to closing transport
+[2025-10-17 17:16:45] [BOT] Intento de reconexión 3/5
+[2025-10-17 17:16:51] [ERROR] Fallo en intento 3: Cannot write to closing transport
+[2025-10-17 17:16:51] [BOT] Intento de reconexión 4/5
+[2025-10-17 17:16:59] [ERROR] Fallo en intento 4: Cannot write to closing transport
+[2025-10-17 17:16:59] [BOT] Intento de reconexión 5/5
+[2025-10-17 17:17:09] [ERROR] Fallo en intento 5: Cannot write to closing transport
+[2025-10-17 17:17:09] [ERROR] Reconexión fallida después de múltiples intentos
+[2025-10-17 17:17:19] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-17 17:17:21] [BOT] Outfit NOCTURNO aplicado
+[2025-10-17 17:17:21] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-17 17:17:21] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-17 17:17:22] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-17 17:17:25] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-17 17:18:10] [BOT] Bot ID almacenado: 681d54aa4cedce763169580f
+[2025-10-17 17:18:12] [BOT] Outfit NOCTURNO aplicado
+[2025-10-17 17:18:12] [BOT] Bot posicionado en spawn point: {'x': 9.5, 'y': 4.25, 'z': 23.5}
+[2025-10-17 17:18:12] [BOT] Bot inicializado en modo idle (ID: 681d54aa4cedce763169580f)
+[2025-10-17 17:18:13] [BOT] Ciclo automático de 224 emotes iniciado
+[2025-10-17 17:18:16] [BOT] Iniciando ciclo automático de 222 emotes gratuitos
+[2025-10-17 17:18:35] [CHAT] [PUBLIC] _Kmi.77: !myid
+[2025-10-17 17:20:10] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Que pasen un feliz Viernes! 🌙
+[2025-10-17 17:22:11] [CHAT] [PUBLIC] CANTINERO_BOT: ‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️
+[2025-10-17 17:24:11] [CHAT] [PUBLIC] CANTINERO_BOT: ¡Consigue tu VIP Permanente!💎 Para ser un miembro eterno de 🕷️ NOCTURNO 🕷️, Mándale 100 de oro al bot: @NOCTURNO_BOT. ¡Gracias por apoyar la oscuridad! [BOT_MENTION]

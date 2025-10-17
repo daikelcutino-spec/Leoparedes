@@ -1,6 +1,4 @@
 [21:19:50] @baby__lax: !inventory
-[21:19:50] BOT → 26. clothing: eye-n_animecollection2018bishoneneyes
-[21:19:50] @baby__lax: !inventory
 [21:19:50] BOT → 27. clothing: pants-n_room12019formalslacksblack
 [21:19:51] @baby__lax: !inventory
 [21:19:51] BOT → 28. clothing: shirt-n_room12019buttondownblack
@@ -98,3 +96,5 @@
 [16:25:47] BOT → 📍 Punto de teletransporte 'loop' creado en posición: X=8.5, Y=7.0, Z=1.5
 [16:26:18] @baby__lax: !delpoint loop
 [16:26:18] BOT → ✅ Punto 'loop' eliminado!
+[17:18:35] @_Kmi.77: !myid
+[17:18:35] BOT → 🆔 Tu ID de usuario es: 64dc252537db1cdb8e202d8d
