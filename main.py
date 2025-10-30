@@ -1536,7 +1536,7 @@ class Bot(BaseBot):
                     self.add_user_hearts(target_user_obj.id, hearts_count, target_username)
                     heart_message = f"💖 {username} envió {hearts_count} ❤️ a {target_username}"
                     await send_response(heart_message)
-                    for _ in range(min(hearts_count, 30)):
+                    for _ in range(hearts_count):
                         await self.highrise.react("heart", target_user_obj.id)
                         await asyncio.sleep(0.05)
                 elif is_vip:
@@ -2952,7 +2952,7 @@ class Bot(BaseBot):
 
     async def on_user_move(self, user: User, destination: Position | AnchorPosition) -> None:
         """Manejador de movimiento de usuario para flashmode automático
-        Activa flashmode cuando hay cambio de piso (Y >= 1.0 unidades)
+        Activa flashmode solo cuando el usuario sube a una altura Y >= 10.0 bloques
         """
         def _coords(p):
             return (p.x, p.y, p.z) if isinstance(p, Position) else None
@@ -2979,8 +2979,9 @@ class Bot(BaseBot):
 
             floor_change_threshold = 1.0
             y_change = abs(dest_xyz[1] - last_xyz[1])
+            minimum_height = 10.0
 
-            if y_change >= floor_change_threshold:
+            if y_change >= floor_change_threshold and dest_xyz[1] >= minimum_height and dest_xyz[1] > last_xyz[1]:
                 cooldown_time = 3.0
                 if user_id in self.flashmode_cooldown:
                     time_since_last = current_time - self.flashmode_cooldown[user_id]
@@ -2993,7 +2994,7 @@ class Bot(BaseBot):
                         await self.highrise.teleport(user_id, destination)
                         self.flashmode_cooldown[user_id] = current_time
                         log_event("FLASHMODE", f"Auto-flashmode {username}: Y:{last_xyz[1]:.1f}→{dest_xyz[1]:.1f}")
-                        print(f"⚡ FLASHMODE: {username} subió/bajó piso {last_xyz[1]:.1f} → {dest_xyz[1]:.1f}")
+                        print(f"⚡ FLASHMODE: {username} subió a altura {dest_xyz[1]:.1f} (>= 10 bloques)")
                 else:
                     print(f"❌ Flashmode bloqueado: {username} intentó zona prohibida")
 
