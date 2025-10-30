@@ -2952,7 +2952,7 @@ class Bot(BaseBot):
 
     async def on_user_move(self, user: User, destination: Position | AnchorPosition) -> None:
         """Manejador de movimiento de usuario para flashmode automático
-        Activa flashmode solo cuando el usuario sube a una altura Y >= 10.0 bloques
+        Activa flashmode cuando el usuario sube o baja desde/hacia altura Y >= 10.0 bloques
         """
         def _coords(p):
             return (p.x, p.y, p.z) if isinstance(p, Position) else None
@@ -2981,7 +2981,7 @@ class Bot(BaseBot):
             y_change = abs(dest_xyz[1] - last_xyz[1])
             minimum_height = 10.0
 
-            if y_change >= floor_change_threshold and dest_xyz[1] >= minimum_height and dest_xyz[1] > last_xyz[1]:
+            if y_change >= floor_change_threshold and (dest_xyz[1] >= minimum_height or last_xyz[1] >= minimum_height):
                 cooldown_time = 3.0
                 if user_id in self.flashmode_cooldown:
                     time_since_last = current_time - self.flashmode_cooldown[user_id]
@@ -2993,8 +2993,9 @@ class Bot(BaseBot):
                     if isinstance(destination, Position):
                         await self.highrise.teleport(user_id, destination)
                         self.flashmode_cooldown[user_id] = current_time
+                        direction = "subió" if dest_xyz[1] > last_xyz[1] else "bajó"
                         log_event("FLASHMODE", f"Auto-flashmode {username}: Y:{last_xyz[1]:.1f}→{dest_xyz[1]:.1f}")
-                        print(f"⚡ FLASHMODE: {username} subió a altura {dest_xyz[1]:.1f} (>= 10 bloques)")
+                        print(f"⚡ FLASHMODE: {username} {direction} de/a altura >= 10 bloques ({last_xyz[1]:.1f} → {dest_xyz[1]:.1f})")
                 else:
                     print(f"❌ Flashmode bloqueado: {username} intentó zona prohibida")
 
