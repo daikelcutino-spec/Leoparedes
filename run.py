@@ -29,6 +29,7 @@ def run_bot(bot_name, bot_file, room_id, api_token):
         api_token
     ]
     
+    process = None
     while True:
         try:
             process = subprocess.Popen(
@@ -39,8 +40,9 @@ def run_bot(bot_name, bot_file, room_id, api_token):
                 bufsize=1
             )
             
-            for line in process.stdout:
-                print(f"[{bot_name}] {line}", end='')
+            if process.stdout:
+                for line in process.stdout:
+                    print(f"[{bot_name}] {line}", end='')
             
             process.wait()
             
@@ -54,7 +56,8 @@ def run_bot(bot_name, bot_file, room_id, api_token):
                 
         except KeyboardInterrupt:
             print(f"\n⚠️ Deteniendo {bot_name}...")
-            process.kill()
+            if process:
+                process.kill()
             break
         except Exception as e:
             print(f"\n❌ Error en {bot_name}: {e}")
