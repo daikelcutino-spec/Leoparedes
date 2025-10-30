@@ -1,4 +1,9 @@
 {
+  "api_token": "b0c7b29926c42a39987057723b8def359ce211d320ecd7f946401fdf9b14d56ah",
+  "room_id": "686c527e9668a3cb40e1f58d",
+  "owner_id": "662aae9b602b4a897557ec18",
+  "admin_ids": ["669da7b73867bac51391c757"],
+  "moderator_ids": [],
   "vip_zone": {
     "x": 16.0,
     "y": 17.0,
