@@ -121,7 +121,6 @@ def main():
     )
     
     thread1.start()
-    time.sleep(2)
     thread2.start()
     
     print("\n" + "="*60)
