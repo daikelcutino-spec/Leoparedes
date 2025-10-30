@@ -1,0 +1,47 @@
+# Archivos de configuración con tokens sensibles
+config.json
+cantinero_config.json
+
+# Archivos de datos
+data/
+*.txt
+*.json
+
+# Excepciones: archivos de ejemplo
+!config.example.json
+!cantinero_config.example.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Logs
+*.log
+bot_log.txt
+bot_responses.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Replit
+.replit
+replit.nix
+.pythonlibs/
+.cache/
+.upm/
+uv.lock
