@@ -2,92 +2,7 @@
 
 ## Overview
 
-This is a Highrise bot application built with Python that manages automated interactions, user moderation, and special features within a Highrise virtual room. The bot handles user permissions (VIP, moderators, admins), automated emote cycles, spatial zone management, user activity tracking, and economy features including a heart-based currency system.
-
-## Recent Changes
-
-**October 17, 2025 - Sistema 24/7 con Flask y UptimeRobot**
-- ✅ **Configuración 24/7**: Implementado sistema para mantener ambos bots activos 24/7
-  - Creado `start.py` que ejecuta ambos bots simultáneamente usando threading
-  - Servidor Flask integrado en puerto 5000 con endpoint `/` para pings de UptimeRobot
-  - Ambos bots corren en hilos separados sin interferir entre sí
-  - URL pública generada automáticamente para monitoreo con UptimeRobot
-- ✅ **Migración a Secrets Management**: Todas las credenciales cargadas desde variables de entorno
-  - Bot principal usa `HIGHRISE_API_TOKEN`
-  - Bot cantinero usa `CANTINERO_API_TOKEN`
-  - Ambos bots comparten `HIGHRISE_ROOM_ID`
-  - Sin credenciales hardcodeadas en el código
-
-**Secrets Configuration**:
-- `HIGHRISE_API_TOKEN`: API token del bot principal
-- `CANTINERO_API_TOKEN`: API token del bot cantinero
-- `HIGHRISE_ROOM_ID`: Room ID compartido por ambos bots
-- `OWNER_ID`: Owner user ID
-- `ADMIN_IDS`: Comma-separated admin user IDs
-- `MODERATOR_IDS`: Comma-separated moderator user IDs
-
-**Configuración UptimeRobot**:
-- Endpoint: `https://[tu-proyecto].repl.co/`
-- Método: HTTP(s)
-- Intervalo recomendado: 5 minutos
-- Respuesta esperada: "¡Bots vivos!"
-
-**October 4, 2025 - Session 3**
-- ✅ **Fixed Auto Emote Cycle Startup**: Resolved issue where 224-emote cycle wasn't starting
-  - Simplified on_start method by removing blocking chat messages
-  - Enhanced start_auto_emote_cycle with cycle counter and progress logging (every 20 emotes)
-  - Added bot_mode check to allow stopping cycle if needed
-  - Added better error handling and recovery
-- ✅ **Improved Flashmode Auto-teleport**: Enhanced on_user_move for better reliability
-  - Clarified logic: only activates for floor changes (Y >= 1.0) with minimal horizontal movement
-  - Added explicit axis delta calculations for better precision
-  - Improved cooldown messaging and logging
-  - Added comprehensive documentation in code
-- ✅ Verified all features working correctly with no errors
-
-**October 4, 2025 - Session 2**
-- ✅ **Enhanced Reaction Commands**: Modified !thumbs, !clap, !wave to support advanced features
-- ✅ **Multiple Reactions**: Commands now support !thumbs/@clap/@wave @user [cantidad] to send multiple reactions (up to 30)
-- ✅ **Broadcast Reactions**: Commands now support !thumbs/@clap/@wave all to send reactions to all users in room
-- ✅ **Pattern Consistency**: All reaction commands now follow the same pattern as !heart command
-- ✅ Verified !inventory command already present and working (ADMIN/OWNER only)
-- ✅ Bot tested and running successfully without errors
-
-**October 4, 2025 - Session 1**
-- ✅ **MASSIVE FEATURE UPDATE**: Added 8 new command systems with 30+ new commands
-- ✅ **Sistema de Inventario**: !inventory @user, !give @user [item_id] (ADMIN/OWNER only)
-- ✅ **Moderación Extendida**: !unmute, !unban, !banlist, !mutelist, modified !mute to use seconds
-- ✅ **Sistema de Movimiento (Walk)**: !walk [x] [y] [z], !walkto @user - bot walks gradually instead of teleporting
-- ✅ **Sistema de Anchors**: !anchor [id] @user, !setanchor [id], !listanchors (ADMIN/OWNER)
-- ✅ **Sistema de Privilegios**: !setmod @user, !removemod @user, !privilege @user (ADMIN/OWNER)
-- ✅ **Sistema de Canales**: !channel create/invite/kick/delete (with API limitation notes)
-- ✅ **Sistema de Voice/Audio**: !voice enable/disable/mute/unmute (with API limitation notes)
-- ✅ **Sistema de Room Settings**: !roomset private/public/capacity/name/description (with API limitation notes)
-- ✅ **Nuevas Reacciones**: !thumbs @user, !clap @user, !wave @user (available to all users)
-- ✅ **Modified !tome**: Bot now walks gradually to owner instead of instant teleport
-- ✅ **Modified !bot @user**: Bot walks to user, performs action, walks back to original position
-- ✅ Added ANCHOR_POINTS global dictionary for anchor system
-- ✅ All new commands tested and working correctly
-
-**October 3, 2025**
-- ✅ **MAJOR REFACTORING**: Unified command handling system for public chat and whisper commands
-- ✅ Created central `handle_command` method that processes all commands with automatic response routing
-- ✅ Commands now work seamlessly in both public chat (with @ mention) and private whispers
-- ✅ Refactored `on_chat` method (reduced from 2000+ lines to 56 lines)
-- ✅ Added new `on_whisper` method to handle private whisper commands
-- ✅ Removed 690 lines of duplicate code (file reduced from 6397 to 5708 lines)
-- ✅ All commands now use unified `send_response()` helper for smart routing
-- ✅ Bot tested and running successfully with no errors
-
-**October 2, 2025**
-- ✅ Installed Python 3.11.13 runtime environment
-- ✅ Installed highrise-bot-sdk (v24.1.0) and dependencies via uv package manager
-- ✅ Configured "Highrise Bot" workflow for automatic execution
-- ✅ Changed bot default mode from "floss" to "idle" to prevent emote errors
-- ✅ Disabled auto-start of floss mode (can be manually activated with !floss command)
-- ✅ Bot now connects successfully without errors
-- ✅ Integrated "fake floss acelerado" - simulates floss dance with progressive acceleration using free emotes
-- ✅ Bot now performs welcome floss dance sequence when connecting to room (~12 seconds duration)
+This project is a Python-based Highrise bot application designed to manage automated interactions, user moderation, and special features within a Highrise virtual room. Its primary purpose is to create an engaging and controlled environment by handling user permissions, automating emotes, managing spatial zones, tracking user activity, and implementing a heart-based economy system. The project aims to provide a robust and automated presence that enhances the user experience within the Highrise platform.
 
 ## User Preferences
 
@@ -97,174 +12,53 @@ Preferred communication style: Simple, everyday language.
 
 ### Core Bot Architecture
 
-**Problem**: Need to create an automated presence in a Highrise room that can moderate users, perform automated actions, and respond to commands.
-
-**Solution**: Event-driven architecture using the Highrise SDK's `BaseBot` class with async/await patterns for handling real-time events.
-
-**Key Design Decisions**:
-- Async event handlers for chat messages, user joins/leaves, and position changes
-- Centralized configuration via `config.json` for room settings and zone definitions
-- **Secrets-based credential management** via environment variables (no hardcoded tokens/IDs)
-- File-based persistence for user data (hearts, activity, user info, bans, mutes)
-- Logging system that writes to `bot_log.txt` for debugging and audit trails
-
-**Alternatives Considered**: A database-driven approach was not chosen to keep deployment simple and avoid external database dependencies.
+The bot uses an event-driven architecture built on the Highrise SDK's `BaseBot` class, leveraging async/await patterns for real-time event handling. Key design decisions include:
+- Asynchronous event handlers for chat messages, user lifecycle events, and position changes.
+- Centralized configuration via `config.json` for room settings and zone definitions.
+- Secrets-based credential management using environment variables for sensitive data.
+- File-based persistence for user data (hearts, activity, user info, bans, mutes) to simplify deployment.
+- A logging system writes operational and interaction data to `bot_log.txt`.
 
 ### Authorization & User Management
 
-**Problem**: Need hierarchical permission system for different user roles.
-
-**Solution**: Role-based access control with four tiers:
-- Owner (highest privileges)
-- Admins (can ban, mute, manage users)
-- Moderators (can kick, mute, basic moderation)
-- VIP Users (access to restricted zones)
-
-**Implementation**:
-- User IDs loaded from environment secrets (`OWNER_ID`, `ADMIN_IDS`, `MODERATOR_IDS`)
-- Fallback to `config.json` if secrets not available (for backwards compatibility)
-- VIP status tracked in runtime set `VIP_USERS` and persisted to file
-- Banned/muted users stored in dictionaries with expiration timestamps
+A role-based access control system with four tiers (Owner, Admins, Moderators, VIP Users) manages hierarchical permissions. User IDs are loaded from environment secrets, with a fallback to `config.json`. VIP status and banned/muted users are tracked at runtime and persisted to files.
 
 ### Spatial Zone Management
 
-**Problem**: Restrict access to specific areas within the virtual room.
-
-**Solution**: Coordinate-based zone system with multiple zone types:
-- VIP Zone (x, y, z coordinates)
-- DJ Zone
-- Directivo (Management) Zone
-- Forbidden Zones (with radius-based detection)
-
-**Rationale**: Uses Euclidean distance calculation to detect when users enter restricted areas and automatically teleports unauthorized users away.
+The system implements coordinate-based zone management, including VIP, DJ, Management, and Forbidden Zones. It uses Euclidean distance calculations to restrict access and automatically teleport unauthorized users from restricted areas.
 
 ### Economy System
 
-**Problem**: Engage users with a virtual currency system.
-
-**Solution**: Heart-based economy where users:
-- Earn hearts through activity (messages, time spent in room)
-- Can transfer hearts to other users
-- Bot maintains its own wallet for transactions
-
-**Data Persistence**: Hearts tracked in `USER_HEARTS` dictionary and saved to `data/hearts.txt`.
+A heart-based virtual economy allows users to earn hearts through activity, transfer them, and enables the bot to manage its own wallet. Hearts are tracked in a dictionary and persisted to `data/hearts.txt`.
 
 ### Automated Bot Behavior
 
-**Problem**: Bot should appear active and engaging even without commands.
-
-**Solution**: Automated emote cycling system that:
-- Plays sequential emotes from a predefined list
-- Each emote has specific duration timing
-- Cycles continuously for visual presence
-- Can be interrupted by manual commands
-
-**Configuration**: Initial outfit and emote set via `config.json` (`bot_initial_outfit`, `bot_initial_emote`).
+The bot features an automated emote cycling system that plays predefined emotes to maintain an active visual presence. This cycle can be interrupted by manual commands. Initial outfit and emote sets are configured via `config.json`.
 
 ### Activity Tracking
 
-**Problem**: Monitor user engagement and time spent in room.
-
-**Solution**: Multi-metric tracking system:
-- Message count per user
-- Last activity timestamp
-- Join time tracking (`USER_JOIN_TIMES`)
-- Automatic rewards based on activity thresholds
-
-**Data Storage**: Activity data persisted to `data/activity.txt` with format `user_id:messages:last_activity`.
+User engagement is monitored through a multi-metric tracking system that records message counts, last activity timestamps, and join times. This data is persisted to `data/activity.txt` and used for automatic rewards.
 
 ### Logging & Monitoring
 
-**Problem**: Need visibility into bot operations and user interactions.
-
-**Solution**: Structured logging system with:
-- Event type categorization (BOT, CHAT, ADMIN, MOD, ERROR, WARNING)
-- Timestamp-based entries
-- File-based storage in `bot_log.txt`
-- Console output for critical events only
-
-**Log Categories**: Bot actions, chat messages, moderation actions, errors filtered by severity.
+A structured logging system categorizes events (BOT, CHAT, ADMIN, MOD, ERROR, WARNING), includes timestamps, and stores entries in `bot_log.txt`. Critical events are also output to the console.
 
 ### Data Persistence Strategy
 
-**Problem**: Maintain state across bot restarts.
-
-**Solution**: Hybrid approach using:
-- JSON files for structured data (`user_info.json`)
-- Plain text files for simple key-value data (`hearts.txt`, `activity.txt`)
-- Data directory organization under `data/` folder
-
-**Trade-offs**: 
-- Pros: Simple, no external dependencies, easy to debug
-- Cons: Not suitable for high-concurrency or large-scale deployments
+A hybrid approach uses JSON files for structured data (`user_info.json`) and plain text files for simple key-value data (`hearts.txt`, `activity.txt`), all organized under the `data/` directory. This strategy prioritizes simplicity and ease of deployment over high-concurrency performance.
 
 ### Command System
 
-**Problem**: Users need to interact with bot features through both public chat and private whispers.
-
-**Solution**: Unified command handling system with three-layer architecture:
-
-1. **`handle_command` method** (Line 733): Central command processor that:
-   - Accepts `is_whisper` parameter to determine response routing
-   - Uses internal `send_response()` helper function
-   - Routes responses to whisper (private) or public chat based on context
-   - Contains all command logic in one place (~4000 lines)
-
-2. **`on_chat` method** (Line 4810): Handles public chat messages:
-   - Performs initialization (user tracking, ban/mute checks, bot mention detection)
-   - Calls `handle_command(user, msg, is_whisper=False)` for commands
-   - Sends public responses with @ mention
-
-3. **`on_whisper` method** (Line 4866): Handles private whisper messages:
-   - Performs initialization (user tracking, ban/mute checks)
-   - Calls `handle_command(user, msg, is_whisper=True)` for commands
-   - Sends responses via private whisper
-
-**Key Features**:
-- Commands work identically in both public chat and whispers
-- Role-based access control enforced in `handle_command`
-- Smart response routing via `send_response()` helper
-- Supports all command types: user commands (!hearts, !emote), moderation (!ban, !mute, !kick), admin (!vip, !zone)
-
-**Design Pattern**: Centralized command pattern with context-aware response routing and role-based access checks.
+A unified, three-layer command handling system processes user interactions from both public chat and private whispers. The `handle_command` method acts as a central processor, routing responses contextually via a `send_response()` helper function and enforcing role-based access control.
 
 ### Cantinero Bot (Bartender)
 
-**Problem**: Need a separate bot that acts as a bartender with automated messages and emotes.
-
-**Solution**: Standalone bot (`cantinero_bot.py`) with:
-- Continuous floss emote loop (12-second cycle)
-- Automated public messages every 2 minutes (rotating messages)
-- Welcome whisper to users when they join
-- Teleports to configured spawn point on startup
-
-**Launch**: Use `start_cantinero.py` to run the bartender bot
-- Shares same Room ID, Owner ID, Admin IDs as main bot
-- Uses separate `CANTINERO_API_TOKEN` for authentication
-- Minimal configuration in `cantinero_config.json` (spawn point only)
+A separate `cantinero_bot.py` operates as a bartender, performing a continuous floss emote loop, broadcasting automated public messages, sending welcome whispers, and teleporting to a configured spawn point. It shares room and owner IDs with the main bot but uses a separate API token and minimal configuration in `cantinero_config.json`.
 
 ## External Dependencies
 
-### Highrise SDK
-- **Purpose**: Primary API for interacting with Highrise platform
-- **Integration**: Provides `BaseBot` class, event handlers, and models for User, Position, Items, etc.
-- **Authentication**: API token loaded from environment secrets
-
-### Python Standard Library
-- **asyncio**: Asynchronous event loop management
-- **json**: Configuration and data serialization
-- **datetime/time**: Timestamp management and scheduling
-- **typing**: Type hints for code clarity
-
-### File System
-- **Configuration**: `config.json` - Room settings, zone coordinates, non-sensitive config
-- **Cantinero Config**: `cantinero_config.json` - Bartender bot settings (spawn point)
-- **Logging**: `bot_log.txt` - Operational logs and event tracking
-- **Data Storage**: `data/` directory containing user information, hearts, and activity files
-
-### Secrets Management
-- **Environment Variables**: All sensitive credentials loaded via Replit Secrets
-- **No Hardcoded Credentials**: API tokens, Room IDs, and user IDs never stored in code or config files
-
-### No External Database
-The application intentionally avoids database dependencies, using file-based storage for simplicity and ease of deployment on Replit.
+- **Highrise SDK**: The primary API for interacting with the Highrise platform, providing `BaseBot` and event handlers. Authentication uses API tokens from environment variables.
+- **Python Standard Library**: Utilized for asynchronous operations (`asyncio`), data serialization (`json`), timestamp management (`datetime`, `time`), and type hinting (`typing`).
+- **File System**: Used for configuration (`config.json`, `cantinero_config.json`), logging (`bot_log.txt`), and data storage (`data/` directory for user info, hearts, activity).
+- **Environment Variables**: All sensitive credentials (API tokens, Room IDs, user IDs) are loaded from environment variables for security.
+- **No External Database**: The project intentionally avoids external database dependencies, relying solely on file-based storage.
