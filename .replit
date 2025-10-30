@@ -6,46 +6,7 @@ expertMode = true
 channel = "stable-25_05"
 
 [workflows]
-runButton = "Project"
-
-[[workflows.workflow]]
-name = "Bot + Web Panel"
-author = 47414083
-mode = "parallel"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python -m highrise main:Bot 686c527e9668a3cb40e1f58d b0c7b29926c42a39987057723b8def359ce211d320ecd7f946401fdf9b14d56a"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python web_panel.py"
-
-[[workflows.workflow]]
-name = "Ambos Bots NOCTURNO"
-author = 48486318
-mode = "parallel"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python -m highrise main:Bot 686c527e9668a3cb40e1f58d b0c7b29926c42a39987057723b8def359ce211d320ecd7f946401fdf9b14d56a"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python -m highrise cantinero_bot:BartenderBot 686c527e9668a3cb40e1f58d e85f532a8d3060b6e6bc2ebafdf9a657d052c51897524926f4e6b226edd7d68d"
-
-[[workflows.workflow]]
-name = "Bots + Panel Web"
-author = 48486318
-mode = "parallel"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python -m highrise main:Bot 686c527e9668a3cb40e1f58d b0c7b29926c42a39987057723b8def359ce211d320ecd7f946401fdf9b14d56a"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python web_panel.py"
+runButton = "Bots 24/7"
 
 [[workflows.workflow]]
 name = "Project"
@@ -59,6 +20,7 @@ args = "Bots 24/7"
 [[workflows.workflow]]
 name = "Bots 24/7"
 author = "agent"
+mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
@@ -70,7 +32,6 @@ outputType = "webview"
 
 [[ports]]
 localPort = 5000
-externalPort = 80
 
 [[ports]]
 localPort = 8080

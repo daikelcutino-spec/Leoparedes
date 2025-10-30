@@ -1,76 +1,71 @@
-
 import os
 import subprocess
 from threading import Thread
 from flask import Flask
+import time
+import socket
 
-# Configura Flask
+# === FLASK RÁPIDO (URL PÚBLICA INMEDIATA) ===
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "¡Bots vivos!"
+    return f"""
+    <h1> BOT DUAL 24/7</h1>
+    <p>Principal + Cantinero</p>
+    <p>URL: <code>{os.environ.get('REPL_SLUG')}--{os.environ.get('REPL_OWNER')}.repl.co</code></p>
+    <p>Auto-hosting GRATIS</p>
+    """
 
-def run_flask():
-    print("🌐 Iniciando servidor Flask en puerto 8080...")
-    app.run(host='0.0.0.0', port=8080)
+# === AUTO-PING INTERNO (MANTIENE VIVO) ===
+def auto_ping():
+    while True:
+        try:
+            s = socket.create_connection(("8.8.8.8", 53), timeout=5)
+            s.close()
+        except:
+            pass
+        time.sleep(60)
 
-def run_main_bot():
-    """Ejecuta el bot principal usando subprocess"""
-    token = os.getenv("HIGHRISE_API_TOKEN")
-    room_id = os.getenv("HIGHRISE_ROOM_ID")
-    
-    if not token or not room_id:
-        print("❌ Error: Faltan HIGHRISE_API_TOKEN o HIGHRISE_ROOM_ID")
-        return
-    
-    print(f"🤖 Iniciando bot principal...")
-    try:
-        subprocess.run([
-            "python", "-m", "highrise", 
-            "main:Bot", 
-            room_id, 
-            token
-        ])
-    except Exception as e:
-        print(f"❌ Error en bot principal: {e}")
+# === BOTS EN BUCLE ===
+def run_bot(cmd, name):
+    while True:
+        try:
+            print(f"{name} iniciado")
+            subprocess.Popen(cmd).wait()
+            print(f"{name} caído. Reiniciando...")
+            time.sleep(5)
+        except Exception as e:
+            print(f"Error: {e}")
+            time.sleep(5)
 
-def run_cantinero_bot():
-    """Ejecuta el bot cantinero usando subprocess"""
-    token = os.getenv("CANTINERO_API_TOKEN")
-    room_id = os.getenv("HIGHRISE_ROOM_ID")
-    
-    if not token or not room_id:
-        print("❌ Error: Faltan CANTINERO_API_TOKEN o HIGHRISE_ROOM_ID")
-        return
-    
-    print(f"🤖 Iniciando bot cantinero...")
-    try:
-        subprocess.run([
-            "python", "-m", "highrise", 
-            "cantinero_bot:BartenderBot", 
-            room_id, 
-            token
-        ])
-    except Exception as e:
-        print(f"❌ Error en bot cantinero: {e}")
-
+# === INICIO ===
 if __name__ == "__main__":
-    print("=" * 60)
-    print("🚀 INICIANDO SISTEMA DUAL DE BOTS")
-    print("=" * 60)
+    print("INICIANDO AUTO-HOSTING 24/7...")
 
-    # Inicia Flask en un hilo separado
-    flask_thread = Thread(target=run_flask, daemon=True)
-    flask_thread.start()
+    # Flask (URL pública)
+    Thread(target=lambda: app.run(
+        host='0.0.0.0',
+        port=int(os.environ.get('PORT', 8080)),
+        debug=False,
+        use_reloader=False
+    ), daemon=True).start()
 
-    # Inicia ambos bots en hilos separados
-    main_bot_thread = Thread(target=run_main_bot, daemon=False)
-    cantinero_bot_thread = Thread(target=run_cantinero_bot, daemon=False)
-    
-    main_bot_thread.start()
-    cantinero_bot_thread.start()
-    
-    # Esperar a que los bots terminen (nunca deberían terminar en operación normal)
-    main_bot_thread.join()
-    cantinero_bot_thread.join()
+    # Auto-ping (mantiene vivo)
+    Thread(target=auto_ping, daemon=True).start()
+
+    # Bots
+    token1 = os.getenv("HIGHRISE_API_TOKEN")
+    room = os.getenv("HIGHRISE_ROOM_ID")
+    if token1 and room:
+        cmd1 = ["python", "-m", "highrise", "main:Bot", room, token1]
+        Thread(target=run_bot, args=(cmd1, "Bot Principal")).start()
+
+    token2 = os.getenv("CANTINERO_API_TOKEN")
+    if token2 and room:
+        cmd2 = ["python", "-m", "highrise", "cantinero_bot:BartenderBot", room, token2]
+        Thread(target=run_bot, args=(cmd2, "Bot Cantinero")).start()
+
+    # Mantener vivo
+    while True:
+        time.sleep(100)
