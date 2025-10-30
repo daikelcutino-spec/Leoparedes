@@ -1013,7 +1013,7 @@ class Bot(BaseBot):
         force_public = any(msg.startswith(cmd) for cmd in public_commands)
 
         context_dependent_commands = [
-            "!heart", "!thumbs", "!clap", "!wave",
+            "!heart", "!heartall", "!thumbs", "!clap", "!wave",
             "!punch", "!slap", "!flirt", "!scare", "!electro", 
             "!hug", "!ninja", "!laugh", "!boom"
         ]
