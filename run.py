@@ -106,7 +106,12 @@ def main():
     print(f"   2. Bot Cantinero (cantinero_bot.py)")
     print(f"\n🔗 Sala: {room_id_main}\n")
     
-    input("Presiona ENTER para iniciar los bots...")
+    # Solo pedir confirmación si estamos en un entorno interactivo
+    import os
+    if os.isatty(0):  # Verifica si stdin es un terminal interactivo
+        input("Presiona ENTER para iniciar los bots...")
+    else:
+        print("🚀 Iniciando bots automáticamente...")
     
     thread1 = threading.Thread(
         target=run_bot,

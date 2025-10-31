@@ -3284,7 +3284,11 @@ class Bot(BaseBot):
     async def show_user_role_by_username(self, username: str):
         """Muestra el rol de un jugador por nombre de usuario"""
         target_user_id = None
-        users = (await self.highrise.get_room_users()).content
+        response = await self.highrise.get_room_users()
+        if isinstance(response, Error):
+            await self.highrise.chat("❌ Error obteniendo usuarios")
+            return
+        users = response.content
         for u, _ in users:
             if u.username == username:
                 target_user_id = u.id
@@ -3301,7 +3305,11 @@ class Bot(BaseBot):
         """Obtiene el objeto User del bot usando bot_id almacenado"""
         try:
             if not hasattr(self, 'bot_id'): log_event("ERROR", "Bot ID no disponible"); return None
-            users = (await self.highrise.get_room_users()).content
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                log_event("ERROR", f"Error obteniendo usuarios de sala: {response.message}")
+                return None
+            users = response.content
             bot_user = next((u for u, _ in users if u.id == self.bot_id), None)
             if bot_user: log_event("BOT", f"Bot encontrado: {bot_user.username}")
             else: log_event("WARNING", f"Bot no encontrado en sala con ID: {self.bot_id}")
