@@ -1,3 +1,3 @@
 # Actividad de usuarios (user_id:messages:last_activity:username)
-68bc8edd6eceda8985f80e9c:2:2025-10-31T01:01:36.959501:CANTINERO_BOT
-64dc252537db1cdb8e202d8d:2:2025-10-31T01:03:10.907714:_Kmi.77
+64dc252537db1cdb8e202d8d:2:2025-10-31T01:17:02.488663:_Kmi.77
+68bc8edd6eceda8985f80e9c:1:2025-10-31T01:16:43.275118:CANTINERO_BOT

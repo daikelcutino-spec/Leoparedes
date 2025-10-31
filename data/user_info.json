@@ -1,10 +1,18 @@
 {
+  "68bc8edd6eceda8985f80e9c": {
+    "username": "CANTINERO_BOT",
+    "first_seen": "2025-10-31T01:14:43.021669",
+    "account_created": null,
+    "total_time_in_room": 0,
+    "total_messages": 1,
+    "time_joined": 1761873283.021678
+  },
   "64dc252537db1cdb8e202d8d": {
     "username": "_Kmi.77",
-    "first_seen": "2025-10-31T01:02:27.587082",
+    "first_seen": "2025-10-31T01:14:58.407985",
     "account_created": null,
     "total_time_in_room": 0,
     "total_messages": 2,
-    "time_joined": 1761872547.5870957
+    "time_joined": 1761873298.4079943
   }
 }
