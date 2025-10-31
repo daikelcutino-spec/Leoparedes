@@ -188,6 +188,36 @@ class BartenderBot(BaseBot):
         
         is_admin_or_owner = (user_id == owner_id or user_id in admin_ids)
         
+        # Comando !floss (Solo admin/owner)
+        if msg.lower() == "!floss":
+            if not is_admin_or_owner:
+                await self.highrise.chat("❌ Solo admin y propietario pueden usar !floss")
+                return
+            
+            if self.floss_mode_active:
+                await self.highrise.chat("⚠️ El modo floss ya está activo. Usa 'stop' para detenerlo.")
+                return
+            
+            self.floss_mode_active = True
+            self.floss_task = asyncio.create_task(self.floss_command_loop())
+            await self.highrise.chat("💃 ¡Modo floss infinito activado! Usa 'stop' para detener.")
+            print(f"💃 {username} activó modo floss infinito")
+            return
+        
+        # Comando stop (Solo admin/owner)
+        if msg.lower() == "stop":
+            if not is_admin_or_owner:
+                return
+            
+            if self.floss_mode_active:
+                self.floss_mode_active = False
+                if self.floss_task:
+                    self.floss_task.cancel()
+                    self.floss_task = None
+                await self.highrise.chat("🛑 Modo floss detenido.")
+                print(f"🛑 {username} detuvo el modo floss")
+            return
+        
         # Comando !trago @user
         if msg.startswith("!trago"):
             parts = msg.split()
