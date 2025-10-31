@@ -23,7 +23,10 @@ class BartenderBot(BaseBot):
             5: "¡Que pasen un feliz Sábado! 🌙",
             6: "¡Que pasen un feliz Domingo! 🌙"
         }
-        weekday = datetime.now().weekday()
+        # Usar hora UTC-5 (ajustar según tu zona horaria)
+        from datetime import timedelta
+        local_time = datetime.utcnow() - timedelta(hours=5)
+        weekday = local_time.weekday()
         return days[weekday]
 
     def get_auto_messages(self):

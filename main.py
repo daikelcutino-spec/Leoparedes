@@ -2871,20 +2871,31 @@ class Bot(BaseBot):
             if not self.is_vip_by_username(user.username): await send_response("❌ ¡Solo VIP pueden usar este comando!"); return
             target_username = msg[7:].strip()
             try:
-                users = (await self.highrise.get_room_users()).content
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    return
+                users = response.content
                 target_user = None
                 target_position = None
                 for u, pos in users:
-                    if u.username == target_username:
+                    if u.username.lower() == target_username.lower():
                         target_user = u
                         target_position = pos
                         break
                 if target_user and target_position:
-                    new_position = Position(target_position.x + 1, target_position.y, target_position.z)
+                    # Manejar tanto Position como AnchorPosition
+                    if isinstance(target_position, Position):
+                        new_position = Position(target_position.x + 1, target_position.y, target_position.z)
+                    elif isinstance(target_position, AnchorPosition) and target_position.offset:
+                        new_position = Position(target_position.offset.x + 1, target_position.offset.y, target_position.offset.z)
+                    else:
+                        await send_response("❌ No se pudo obtener la posición del usuario")
+                        return
                     await self.highrise.teleport(user_id, new_position)
                     await send_response( f"🎯 Te has teletransportado a @{target_username}!")
                 else: await send_response( f"❌ ¡Usuario {target_username} no encontrado!")
-            except Exception as e: await send_response( f"Error: {e}")
+            except Exception as e: await send_response( f"❌ Error: {e}")
             return
 
         # Comando !addzone (Admin/Owner)
