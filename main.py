@@ -47,6 +47,7 @@ TELEPORT_POINTS = {}
 ACTIVE_EMOTES = {}
 USER_JOIN_TIMES = {}
 SAVED_OUTFITS = {}
+JAIL_USERS = set()  # Usuarios que fueron enviados a la cárcel por admin/owner
 
 # Constantes de reintentos
 MAX_RETRIES = 3
@@ -920,8 +921,13 @@ class Bot(BaseBot):
                     "!help leaderboard - Ayuda ranking\n"
                     "!help heart - Ayuda corazones")
 
-    def is_in_forbidden_zone(self, x: float, y: float, z: float) -> bool:
-        """Verifica si el punto está en zona prohibida"""
+    def is_in_forbidden_zone(self, x: float, y: float, z: float, user_id: str = None) -> bool:
+        """Verifica si el punto está en zona prohibida
+        Admin y owner tienen acceso completo a todas las zonas"""
+        # Admin y owner pueden acceder a cualquier zona
+        if user_id and (self.is_admin(user_id) or user_id == OWNER_ID):
+            return False
+        
         for zone in FORBIDDEN_ZONES:
             distance = ((x - zone["x"])**2 + (y - zone["y"])**2 + (z - zone["z"])**2)**0.5
             if distance <= zone["radius"]:
@@ -1671,7 +1677,7 @@ class Bot(BaseBot):
                         current_z = current_position.z if isinstance(current_position, Position) else (current_position.offset.z if current_position.offset else 0)
                         if abs(current_y - y) < 1.0: await send_response("❌ ¡Flash solo para subir/bajar pisos!"); return
                         if abs(current_x - x) > 3.0 or abs(current_z - z) > 3.0: await send_response("❌ ¡Flash solo para subir/bajar pisos!"); return
-                        if not self.is_in_forbidden_zone(x, y, z):
+                        if not self.is_in_forbidden_zone(x, y, z, user.id):
                             pos = Position(x, y, z)
                             await self.highrise.teleport(user.id, pos)
                             await send_response( f"⚡ Flasheaste entre pisos ({x}, {y}, {z})")
@@ -2093,6 +2099,77 @@ class Bot(BaseBot):
             if not target_user: await send_response( f"❌ Usuario {target_username} no encontrado!"); return
             await self.highrise.moderate_room(target_user.id, "mute", 0)
             await send_response( f"🔊 Quitaste el silencio a {target_username}")
+            return
+
+        # Comando !jail - Enviar usuario a la cárcel (Admin/Owner)
+        if msg.startswith("!jail "):
+            if not (self.is_admin(user_id) or user_id == OWNER_ID):
+                await send_response("❌ ¡Solo administradores y propietario pueden enviar a la cárcel!")
+                return
+            
+            target_username = msg[6:].strip().replace("@", "")
+            
+            # Verificar que la cárcel esté configurada
+            if "carcel" not in TELEPORT_POINTS:
+                await send_response("❌ La cárcel no está configurada. Usa !addzone carcel primero")
+                return
+            
+            # Buscar al usuario
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                log_event("ERROR", f"get_room_users failed: {response.message}")
+                return
+            users = response.content
+            target_user = next((u for u, _ in users if u.username == target_username), None)
+            
+            if not target_user:
+                await send_response(f"❌ Usuario {target_username} no encontrado en la sala!")
+                return
+            
+            # Agregar al usuario a la lista de cárcel
+            JAIL_USERS.add(target_user.id)
+            
+            # Teletransportar a la cárcel
+            point = TELEPORT_POINTS["carcel"]
+            try:
+                carcel_position = Position(point["x"], point["y"], point["z"])
+                await self.highrise.teleport(target_user.id, carcel_position)
+                await send_response(f"⛓️ {target_username} fue enviado a la cárcel por @{username}!")
+                await self.highrise.send_whisper(target_user.id, f"⛓️ Fuiste enviado a la cárcel por @{username}. Escribe 'carcel' para ir ahí.")
+                log_event("JAIL", f"{username} envió a {target_username} a la cárcel")
+            except Exception as e:
+                await send_response(f"❌ Error enviando a la cárcel: {e}")
+                JAIL_USERS.discard(target_user.id)
+            return
+
+        # Comando !unjail - Liberar usuario de la cárcel (Admin/Owner)
+        if msg.startswith("!unjail "):
+            if not (self.is_admin(user_id) or user_id == OWNER_ID):
+                await send_response("❌ ¡Solo administradores y propietario pueden liberar de la cárcel!")
+                return
+            
+            target_username = msg[8:].strip().replace("@", "")
+            
+            # Buscar al usuario
+            response = await self.highrise.get_room_users()
+            if isinstance(response, Error):
+                await send_response("❌ Error obteniendo usuarios")
+                return
+            users = response.content
+            target_user = next((u for u, _ in users if u.username == target_username), None)
+            
+            if not target_user:
+                await send_response(f"❌ Usuario {target_username} no encontrado en la sala!")
+                return
+            
+            if target_user.id in JAIL_USERS:
+                JAIL_USERS.discard(target_user.id)
+                await send_response(f"✅ {target_username} fue liberado de la cárcel por @{username}!")
+                await self.highrise.send_whisper(target_user.id, f"✅ Fuiste liberado de la cárcel por @{username}!")
+                log_event("JAIL", f"{username} liberó a {target_username} de la cárcel")
+            else:
+                await send_response(f"ℹ️ {target_username} no está en la cárcel")
             return
 
         # Comando !unban
@@ -2762,6 +2839,20 @@ class Bot(BaseBot):
                     log_event("TELEPORT", f"{username} intentó acceder a '{point_name}' sin permisos")
                     return
             
+            elif point_name == "carcel":
+                # La cárcel solo puede ser accedida por admin/owner o usuarios que fueron enviados ahí
+                is_admin_or_owner = (user_id == OWNER_ID or self.is_admin(user_id))
+                is_jailed = user_id in JAIL_USERS
+                
+                if not is_admin_or_owner and not is_jailed:
+                    await send_response(f"🔒 ¡Solo puedes ir a la cárcel si un admin te envía ahí!")
+                    log_event("TELEPORT", f"{username} intentó acceder a cárcel sin autorización")
+                    return
+                
+                # Si el usuario llega a la cárcel, removerlo de la lista de JAIL_USERS
+                if is_jailed and user_id in JAIL_USERS:
+                    JAIL_USERS.discard(user_id)
+            
             point = TELEPORT_POINTS[point_name]
             try:
                 teleport_position = Position(point["x"], point["y"], point["z"])
@@ -2971,7 +3062,7 @@ class Bot(BaseBot):
                         self.user_positions[user_id] = destination
                         return
 
-                if not self.is_in_forbidden_zone(dest_xyz[0], dest_xyz[1], dest_xyz[2]):
+                if not self.is_in_forbidden_zone(dest_xyz[0], dest_xyz[1], dest_xyz[2], user_id):
                     if isinstance(destination, Position):
                         await self.highrise.teleport(user_id, destination)
                         self.flashmode_cooldown[user_id] = current_time
