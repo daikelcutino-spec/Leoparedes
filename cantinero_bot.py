@@ -1,4 +1,3 @@
-
 from highrise import BaseBot, User, Position, AnchorPosition
 from highrise.models import SessionMetadata, Error
 import asyncio
@@ -17,7 +16,8 @@ class BartenderBot(BaseBot):
         self.call_partner = None
         self.users_called = set()  # Usuarios que ya llamaron (solo pueden llamar 1 vez)
         self.users_blocked_notified = set()  # Usuarios que ya recibieron mensaje de bloqueo
-        
+        self.user_floss_loops = {}  # {user_id: task} - Usuarios con bucle floss activo
+
         # Lista de bebidas para el comando !trago
         self.bebidas = [
             "🍺 Una cerveza bien fría",
@@ -63,13 +63,13 @@ class BartenderBot(BaseBot):
         """Se ejecuta cuando el bot se conecta a la sala"""
         self.bot_id = session_metadata.user_id
         print(f"🕷️ Bot Cantinero NOCTURNO iniciado! ID: {self.bot_id}")
-        
+
         # Teletransportar al punto de inicio si está configurado
         try:
             import json
             with open("cantinero_config.json", "r", encoding="utf-8") as f:
                 config = json.load(f)
-            
+
             punto_inicio = config.get("punto_inicio")
             if punto_inicio:
                 from highrise import Position
@@ -91,7 +91,7 @@ class BartenderBot(BaseBot):
             try:
                 if not self.is_in_call:
                     await self.highrise.send_emote("dance-floss")
-                    print("💃 Ejecutando emote floss")
+                    print("💃 Ejecutando emote floss automático")
                 await asyncio.sleep(12)
             except Exception as e:
                 print(f"⚠️ Error al enviar emote floss: {e}")
@@ -108,7 +108,7 @@ class BartenderBot(BaseBot):
 
                 # Enviar mensaje público en el chat
                 await self.highrise.chat(message)
-                
+
                 self.current_message_index = (self.current_message_index + 1) % len(auto_messages)
                 print(f"📢 Mensaje automático público enviado: {message[:50]}...")
             except Exception as e:
@@ -122,24 +122,24 @@ class BartenderBot(BaseBot):
         while True:
             try:
                 await asyncio.sleep(30)
-                
+
                 # Verificar si el bot está en la sala
                 try:
                     room_users = await self.highrise.get_room_users()
                     if isinstance(room_users, Error):
                         raise Exception("Error obteniendo usuarios de la sala")
-                    
+
                     users = room_users.content
                     bot_in_room = any(u.id == self.bot_id for u, _ in users)
-                    
+
                     if not bot_in_room:
                         print("⚠️ Bot cantinero desconectado de la sala, reconectando...")
                         await self.attempt_reconnection()
-                        
+
                 except Exception as e:
                     print(f"❌ Error verificando presencia del bot cantinero: {e}")
                     await self.attempt_reconnection()
-                    
+
             except Exception as e:
                 print(f"❌ Error en auto_reconnect_loop: {e}")
                 await asyncio.sleep(5)
@@ -150,22 +150,22 @@ class BartenderBot(BaseBot):
         for attempt in range(1, max_attempts + 1):
             try:
                 print(f"🔄 Intento de reconexión {attempt}/{max_attempts}...")
-                
+
                 await asyncio.sleep(attempt * 2)
-                
+
                 room_users = await self.highrise.get_room_users()
                 if not isinstance(room_users, Error):
                     print("✅ Reconexión exitosa del bot cantinero!")
-                    
+
                     # Reiniciar tareas
                     asyncio.create_task(self.floss_loop())
                     asyncio.create_task(self.auto_message_loop())
-                    
+
                     return True
-                    
+
             except Exception as e:
                 print(f"❌ Fallo en intento {attempt}: {e}")
-                
+
         print("❌ No se pudo reconectar después de varios intentos")
         return False
 
@@ -174,7 +174,7 @@ class BartenderBot(BaseBot):
         msg = message.strip()
         user_id = user.id
         username = user.username
-        
+
         # Cargar configuración para verificar admin/owner
         import json
         try:
@@ -185,39 +185,35 @@ class BartenderBot(BaseBot):
         except:
             owner_id = ""
             admin_ids = []
-        
+
         is_admin_or_owner = (user_id == owner_id or user_id in admin_ids)
-        
-        # Comando !floss (Solo admin/owner)
+
+        # Comando !floss
         if msg.lower() == "!floss":
             if not is_admin_or_owner:
                 await self.highrise.chat("❌ Solo admin y propietario pueden usar !floss")
                 return
-            
-            if self.floss_mode_active:
-                await self.highrise.chat("⚠️ El modo floss ya está activo. Usa 'stop' para detenerlo.")
+
+            if user_id in self.user_floss_loops:
+                await self.highrise.chat("⚠️ Ya estás haciendo floss. Usa 'stop floss' para detener.")
                 return
-            
-            self.floss_mode_active = True
-            self.floss_task = asyncio.create_task(self.floss_command_loop())
-            await self.highrise.chat("💃 ¡Modo floss infinito activado! Usa 'stop' para detener.")
-            print(f"💃 {username} activó modo floss infinito")
+
+            self.user_floss_loops[user_id] = asyncio.create_task(self.user_floss_loop(user_id, username))
+            await self.highrise.chat(f"💃 ¡A hacer floss, @{username}!")
+            print(f"💃 {username} inició el emote floss")
             return
-        
-        # Comando stop (Solo admin/owner)
-        if msg.lower() == "stop":
-            if not is_admin_or_owner:
-                return
-            
-            if self.floss_mode_active:
-                self.floss_mode_active = False
-                if self.floss_task:
-                    self.floss_task.cancel()
-                    self.floss_task = None
-                await self.highrise.chat("🛑 Modo floss detenido.")
-                print(f"🛑 {username} detuvo el modo floss")
+
+        # Comando stop (para detener floss de usuario)
+        if msg.lower() == "stop floss":
+            if user_id in self.user_floss_loops:
+                task = self.user_floss_loops.pop(user_id)
+                task.cancel()
+                await self.highrise.chat("🛑 ¡Detuviste tu floss!")
+                print(f"🛑 {username} detuvo su emote floss")
+            else:
+                await self.highrise.chat("❓ No estás haciendo floss actualmente.")
             return
-        
+
         # Comando !trago @user
         if msg.startswith("!trago"):
             parts = msg.split()
@@ -230,7 +226,7 @@ class BartenderBot(BaseBot):
             else:
                 await self.highrise.chat("❌ Usa: !trago @usuario")
             return
-        
+
         # Detectar mención @CANTINERO_BOT
         if "@CANTINERO_BOT" in msg or "@cantinero" in msg.lower():
             # Verificar si el usuario ya llamó (excepto admin/owner)
@@ -241,43 +237,43 @@ class BartenderBot(BaseBot):
                     self.users_blocked_notified.add(user_id)
                     print(f"🚫 {username} intentó llamar nuevamente - Mensaje de bloqueo enviado")
                 return
-            
+
             # Agregar usuario a la lista de llamadas (solo si no es admin/owner)
             if not is_admin_or_owner:
                 self.users_called.add(user_id)
-            
+
             # Iniciar llamada extendida
             self.is_in_call = True
             self.call_partner = username
-            
+
             # Fase 1: Contestar teléfono
             await asyncio.sleep(0.5)
             await self.highrise.chat(f"📞 *suena el teléfono* ¡Un momento!")
-            
+
             # Fase 2: Detener floss y atender
             await asyncio.sleep(2)
             await self.highrise.send_emote("emote-telekinesis")
             await asyncio.sleep(1)
             await self.highrise.chat(f"📞 *contesta* ¿Sí? Habla @{username}, ¿en qué te puedo servir?")
-            
+
             # Fase 3: Conversación
             await asyncio.sleep(4)
             await self.highrise.chat("🤔 Ajá... entiendo, entiendo...")
-            
+
             await asyncio.sleep(3)
             await self.highrise.chat("😊 ¡Claro que sí! Con gusto te atiendo.")
-            
+
             # Fase 4: Despedida
             await asyncio.sleep(3)
             await self.highrise.chat(f"📞 Perfecto @{username}, ya voy para allá. *cuelga*")
-            
+
             await asyncio.sleep(2)
             await self.highrise.chat("¡Que tengas excelente día! 🍻✨")
-            
+
             # Finalizar llamada
             self.is_in_call = False
             self.call_partner = None
-            
+
             print(f"📞 Llamada completada con {username} (Admin/Owner: {is_admin_or_owner})")
 
     async def on_user_join(self, user: User, position: Union[Position, AnchorPosition]) -> None:
@@ -288,3 +284,17 @@ class BartenderBot(BaseBot):
             print(f"✅ Saludo enviado a {user.username}")
         except Exception as e:
             print(f"Error al saludar a {user.username}: {e}")
+
+    async def user_floss_loop(self, user_id: str, username: str) -> None:
+        """Loop de floss para un usuario específico"""
+        print(f"💃 Iniciando bucle infinito de floss para {username}")
+
+        while user_id in self.user_floss_loops:
+            try:
+                await self.highrise.send_emote("dance-floss", user_id)
+                await asyncio.sleep(11.5)
+            except Exception as e:
+                print(f"⚠️ Error al enviar emote floss a {username}: {e}")
+                await asyncio.sleep(3)
+
+        print(f"🛑 Bucle de floss detenido para {username}")
