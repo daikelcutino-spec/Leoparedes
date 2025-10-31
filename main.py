@@ -544,6 +544,16 @@ class Bot(BaseBot):
                                 x, y, z = float(parts[1]), float(parts[2]), float(parts[3])
                                 TELEPORT_POINTS[name] = {"x": x, "y": y, "z": z}
             print(f"Puntos de teletransporte cargados: {len(TELEPORT_POINTS)} puntos")
+            
+            # Cargar outfits guardados
+            if os.path.exists("data/saved_outfits.json"):
+                from highrise.models import Item
+                with open("data/saved_outfits.json", "r", encoding="utf-8") as f:
+                    outfits_data = json.load(f)
+                    for num_str, items_data in outfits_data.items():
+                        outfit_items = [Item(type=item["type"], id=item["id"], amount=item.get("amount", 1)) for item in items_data]
+                        SAVED_OUTFITS[int(num_str)] = outfit_items
+            print(f"Outfits guardados cargados: {len(SAVED_OUTFITS)} outfits")
         except Exception as e:
             print(f"Error cargando datos: {e}")
 
@@ -1882,11 +1892,33 @@ class Bot(BaseBot):
                 await send_response("❌ Error obteniendo outfit")
                 log_event("ERROR", f"get_user_outfit failed: {user_outfit_response.message}")
                 return
+            
+            # Guardar outfit en el bot
             await self.highrise.set_outfit(user_outfit_response.outfit)
+            
+            # Guardar en SAVED_OUTFITS y persistir
             outfit_number = len(SAVED_OUTFITS) + 1
             SAVED_OUTFITS[outfit_number] = user_outfit_response.outfit
-            self.save_data()
-            await send_response( f"👔 Outfit copiado y guardado como #{outfit_number}")
+            
+            # Guardar a archivo JSON
+            try:
+                import os
+                os.makedirs("data", exist_ok=True)
+                import json
+                outfits_data = {}
+                for num, outfit in SAVED_OUTFITS.items():
+                    outfits_data[num] = [{"type": item.type, "id": item.id, "amount": item.amount} for item in outfit]
+                
+                with open("data/saved_outfits.json", "w", encoding="utf-8") as f:
+                    json.dump(outfits_data, f, indent=2, ensure_ascii=False)
+                
+                print(f"✅ Outfit #{outfit_number} guardado en archivo")
+                log_event("OUTFIT", f"Outfit #{outfit_number} guardado por {username}")
+            except Exception as e:
+                print(f"❌ Error guardando outfit a archivo: {e}")
+                log_event("ERROR", f"Error guardando outfit: {e}")
+            
+            await send_response(f"👔 Outfit copiado y guardado como #{outfit_number}")
             return
 
         # Comando !setdirectivo (Owner)
@@ -2940,6 +2972,14 @@ class Bot(BaseBot):
 
         USER_NAMES[user_id] = username
 
+        # Detectar mención al bot cantinero
+        if "@CANTINERO_BOT" in msg or "@cantinero" in msg.lower():
+            await asyncio.sleep(0.3)
+            await self.highrise.chat(f"📞 *llamando al cantinero* ¡@{username} necesita atención en la barra!")
+            log_event("CALL", f"{username} mencionó al bot cantinero")
+            # El bot cantinero responderá automáticamente
+            return
+
         bot_username = "NOCTURNO_BOT"
         is_bot_mention = False
         treat_as_whisper = False
@@ -2947,7 +2987,7 @@ class Bot(BaseBot):
         # Detectar si mencionan al bot
         if f"@{bot_username}" in msg or "@nocturno" in msg.lower() or "@bot" in msg.lower():
             is_bot_mention = True
-            treat_as_whisper = True  # Tratar menciones como si fueran whispers
+            treat_as_whisper = True
             msg = msg.replace(f"@{bot_username}", "").replace("@nocturno", "").replace("@bot", "").strip()
 
         log_event("CHAT", f"[PUBLIC] {username}: {message}" + (" [BOT_MENTION]" if is_bot_mention else ""))
@@ -2961,7 +3001,6 @@ class Bot(BaseBot):
             return
 
         self.update_activity(user_id)
-        # Si mencionaron al bot, tratar como whisper para que responda por privado
         await self.handle_command(user, msg, is_whisper=treat_as_whisper)
 
     async def on_whisper(self, user: User, message: str) -> None:
