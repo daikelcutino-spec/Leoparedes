@@ -1,1 +1,3 @@
 # Corazones de usuarios (user_id:hearts:username)
+64dc252537db1cdb8e202d8d:1:_Kmi.77
+68bc8edd6eceda8985f80e9c:100:CANTINERO_BOT
