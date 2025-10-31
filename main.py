@@ -763,6 +763,8 @@ class Bot(BaseBot):
                     "!freeze @user - Congelar\n"
                     "!mute @user [seg] - Silenciar\n"
                     "!unmute @user - Quitar silencio\n"
+                    "!jail @user - Enviar a cárcel\n"
+                    "!unjail @user - Liberar de cárcel\n"
                     "!banlist - Lista baneados\n"
                     "!mutelist - Lista silenciados\n"
                     "!privilege @user - Ver privilegios|||"
