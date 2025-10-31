@@ -16,28 +16,10 @@ from highrise.models import SessionMetadata, CurrencyItem, Item, Error, Position
 # ============================================================================
 
 def load_config():
-    """Carga la configuración desde config.json y secrets"""
+    """Carga la configuración desde config.json"""
     try:
         with open("config.json", "r", encoding="utf-8") as f:
             config = json.load(f)
-        
-        # Cargar desde secrets si están disponibles
-        config["api_token"] = os.getenv("HIGHRISE_API_TOKEN", config.get("api_token", ""))
-        config["room_id"] = os.getenv("HIGHRISE_ROOM_ID", config.get("room_id", ""))
-        
-        # Cargar IDs de usuarios desde secrets
-        admin_ids_env = os.getenv("ADMIN_IDS", "")
-        if admin_ids_env:
-            config["admin_ids"] = [aid.strip() for aid in admin_ids_env.split(",") if aid.strip()]
-        
-        owner_id_env = os.getenv("OWNER_ID", "")
-        if owner_id_env:
-            config["owner_id"] = owner_id_env.strip()
-        
-        moderator_ids_env = os.getenv("MODERATOR_IDS", "")
-        if moderator_ids_env:
-            config["moderator_ids"] = [mid.strip() for mid in moderator_ids_env.split(",") if mid.strip()]
-        
         return config
     except Exception as e:
         print(f"Error cargando configuración: {e}")
