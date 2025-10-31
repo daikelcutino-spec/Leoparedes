@@ -106,11 +106,15 @@ def main():
     print(f"   2. Bot Cantinero (cantinero_bot.py)")
     print(f"\n🔗 Sala: {room_id_main}\n")
     
-    # Solo pedir confirmación si estamos en un entorno interactivo
+    # Solo pedir confirmación si NO estamos en Replit
     import os
-    if os.isatty(0):  # Verifica si stdin es un terminal interactivo
+    is_replit = os.getenv('REPL_ID') is not None or os.getenv('REPLIT_DB_URL') is not None
+    
+    if not is_replit:
+        # Estamos en PC local, pedir confirmación
         input("Presiona ENTER para iniciar los bots...")
     else:
+        # Estamos en Replit, iniciar automáticamente
         print("🚀 Iniciando bots automáticamente...")
     
     thread1 = threading.Thread(
