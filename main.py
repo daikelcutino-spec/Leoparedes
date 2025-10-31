@@ -2975,9 +2975,9 @@ class Bot(BaseBot):
         # Detectar mención al bot cantinero
         if "@CANTINERO_BOT" in msg or "@cantinero" in msg.lower():
             await asyncio.sleep(0.3)
-            await self.highrise.chat(f"📞 *llamando al cantinero* ¡@{username} necesita atención en la barra!")
+            await self.highrise.chat(f"📞 *marcando al cantinero* ¡@{username} está llamando a la barra!")
             log_event("CALL", f"{username} mencionó al bot cantinero")
-            # El bot cantinero responderá automáticamente
+            # El bot cantinero responderá automáticamente con sistema extendido
             return
 
         bot_username = "NOCTURNO_BOT"

@@ -15,6 +15,21 @@ class BartenderBot(BaseBot):
         self.bot_id = None
         self.is_in_call = False
         self.call_partner = None
+        self.users_called = set()  # Usuarios que ya llamaron (solo pueden llamar 1 vez)
+        
+        # Lista de bebidas para el comando !trago
+        self.bebidas = [
+            "🍺 Una cerveza bien fría",
+            "🍷 Una copa de vino tinto",
+            "🍸 Un martini shaken, not stirred",
+            "🥃 Un whisky en las rocas",
+            "🍹 Un mojito refrescante",
+            "🍾 Champagne de celebración",
+            "🧃 Un tequila shot",
+            "🥂 Un cóctel de la casa",
+            "☕ Un café irlandés",
+            "🍻 Una jarra de cerveza artesanal"
+        ]
 
     def get_day_message(self):
         """Obtiene el mensaje según el día de la semana"""
@@ -37,7 +52,7 @@ class BartenderBot(BaseBot):
         """Lista de mensajes automáticos incluyendo el día de la semana"""
         return [
             self.get_day_message(),
-            "‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @baby__lax. ¡Estamos para ayudarte!‼️",
+            "‼️¿Sugerencias o incomodidades? Contacta a un miembro superior de la sala: envía un mensaje a @Alber_JG_69 o a @_Kmi.77. ¡Estamos para ayudarte!‼️",
             "¡Consigue tu VIP Permanente!💎 Para ser un miembro eterno de 🕷️ NOCTURNO 🕷️, Mándale 100 de oro al bot: @NOCTURNO_BOT. ¡Gracias por apoyar la oscuridad!",
             "👉🏼PIDE TU CANCIÓN FAVORITA EN LA JARRITA DE TIP👈🏼",
             "Acércate a la barra.🥃 Estoy para servirle. ¿Qué deseas hoy?🍻"
@@ -147,26 +162,81 @@ class BartenderBot(BaseBot):
         return False
 
     async def on_chat(self, user: User, message: str) -> None:
-        """Detectar cuando mencionan al bot cantinero"""
+        """Detectar cuando mencionan al bot cantinero o usan comando !trago"""
         msg = message.strip()
+        user_id = user.id
+        username = user.username
+        
+        # Cargar configuración para verificar admin/owner
+        import json
+        try:
+            with open("config.json", "r", encoding="utf-8") as f:
+                config = json.load(f)
+            owner_id = config.get("owner_id", "")
+            admin_ids = config.get("admin_ids", [])
+        except:
+            owner_id = ""
+            admin_ids = []
+        
+        is_admin_or_owner = (user_id == owner_id or user_id in admin_ids)
+        
+        # Comando !trago @user
+        if msg.startswith("!trago"):
+            parts = msg.split()
+            if len(parts) >= 2:
+                target_username = parts[1].replace("@", "")
+                import random
+                bebida = random.choice(self.bebidas)
+                await self.highrise.chat(f"🍹 Para @{target_username}: {bebida}. ¡Salud! 🥂")
+                print(f"🍹 Bebida servida a {target_username}: {bebida}")
+            else:
+                await self.highrise.chat("❌ Usa: !trago @usuario")
+            return
         
         # Detectar mención @CANTINERO_BOT
         if "@CANTINERO_BOT" in msg or "@cantinero" in msg.lower():
-            # Notificar que recibió la llamada
-            await asyncio.sleep(0.5)
-            await self.highrise.chat("📞 *contesta el teléfono* ¿Sí? Dime, ¿en qué te puedo servir?")
+            # Verificar si el usuario ya llamó (excepto admin/owner)
+            if not is_admin_or_owner and user_id in self.users_called:
+                await self.highrise.chat(f"📞 Lo siento @{username}, ya me llamaste antes. ¡Solo una llamada por persona! (Admin y propietario tienen llamadas ilimitadas)")
+                return
+            
+            # Agregar usuario a la lista de llamadas (solo si no es admin/owner)
+            if not is_admin_or_owner:
+                self.users_called.add(user_id)
+            
+            # Iniciar llamada extendida
             self.is_in_call = True
-            self.call_partner = user.username
+            self.call_partner = username
             
-            # Detener floss durante la llamada
-            await asyncio.sleep(3)
+            # Fase 1: Contestar teléfono
+            await asyncio.sleep(0.5)
+            await self.highrise.chat(f"📞 *suena el teléfono* ¡Un momento!")
+            
+            # Fase 2: Detener floss y atender
+            await asyncio.sleep(2)
             await self.highrise.send_emote("emote-telekinesis")
+            await asyncio.sleep(1)
+            await self.highrise.chat(f"📞 *contesta* ¿Sí? Habla @{username}, ¿en qué te puedo servir?")
             
-            # Finalizar llamada después de 10 segundos
-            await asyncio.sleep(10)
-            await self.highrise.chat("📞 *cuelga* ¡Que tengas buen día! 🍻")
+            # Fase 3: Conversación
+            await asyncio.sleep(4)
+            await self.highrise.chat("🤔 Ajá... entiendo, entiendo...")
+            
+            await asyncio.sleep(3)
+            await self.highrise.chat("😊 ¡Claro que sí! Con gusto te atiendo.")
+            
+            # Fase 4: Despedida
+            await asyncio.sleep(3)
+            await self.highrise.chat(f"📞 Perfecto @{username}, ya voy para allá. *cuelga*")
+            
+            await asyncio.sleep(2)
+            await self.highrise.chat("¡Que tengas excelente día! 🍻✨")
+            
+            # Finalizar llamada
             self.is_in_call = False
             self.call_partner = None
+            
+            print(f"📞 Llamada completada con {username} (Admin/Owner: {is_admin_or_owner})")
 
                 
                 self.current_message_index = (self.current_message_index + 1) % len(auto_messages)
