@@ -16,6 +16,7 @@ class BartenderBot(BaseBot):
         self.is_in_call = False
         self.call_partner = None
         self.users_called = set()  # Usuarios que ya llamaron (solo pueden llamar 1 vez)
+        self.users_blocked_notified = set()  # Usuarios que ya recibieron mensaje de bloqueo
         
         # Lista de bebidas para el comando !trago
         self.bebidas = [
@@ -107,7 +108,14 @@ class BartenderBot(BaseBot):
 
                 # Enviar mensaje público en el chat
                 await self.highrise.chat(message)
+                
+                self.current_message_index = (self.current_message_index + 1) % len(auto_messages)
+                print(f"📢 Mensaje automático público enviado: {message[:50]}...")
+            except Exception as e:
+                print(f"Error en auto_message_loop: {e}")
 
+            # Esperar 2 minutos (120 segundos) para el siguiente mensaje
+            await asyncio.sleep(120)
 
     async def auto_reconnect_loop(self):
         """Sistema de reconexión automática"""
@@ -197,7 +205,11 @@ class BartenderBot(BaseBot):
         if "@CANTINERO_BOT" in msg or "@cantinero" in msg.lower():
             # Verificar si el usuario ya llamó (excepto admin/owner)
             if not is_admin_or_owner and user_id in self.users_called:
-                await self.highrise.chat(f"📞 Lo siento @{username}, ya me llamaste antes. ¡Solo una llamada por persona! (Admin y propietario tienen llamadas ilimitadas)")
+                # Mostrar mensaje de bloqueo solo la primera vez
+                if user_id not in self.users_blocked_notified:
+                    await self.highrise.chat(f"📞 @{username} te ha bloqueado de sus contactos 🚫")
+                    self.users_blocked_notified.add(user_id)
+                    print(f"🚫 {username} intentó llamar nuevamente - Mensaje de bloqueo enviado")
                 return
             
             # Agregar usuario a la lista de llamadas (solo si no es admin/owner)
@@ -237,15 +249,6 @@ class BartenderBot(BaseBot):
             self.call_partner = None
             
             print(f"📞 Llamada completada con {username} (Admin/Owner: {is_admin_or_owner})")
-
-                
-                self.current_message_index = (self.current_message_index + 1) % len(auto_messages)
-                print(f"📢 Mensaje automático público enviado: {message[:50]}...")
-            except Exception as e:
-                print(f"Error en auto_message_loop: {e}")
-
-            # Esperar 2 minutos (120 segundos) para el siguiente mensaje
-            await asyncio.sleep(120)
 
     async def on_user_join(self, user: User, position: Union[Position, AnchorPosition]) -> None:
         """Saluda a los usuarios cuando entran a la sala"""
