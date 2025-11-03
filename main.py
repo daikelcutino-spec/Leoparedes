@@ -3051,25 +3051,33 @@ class Bot(BaseBot):
         global BOT_WALLET
         
         if receiver.id == self.bot_id:
-            # Verificar si es donación de 100 oro para VIP
-            if str(tip.type) == "currency" and tip.amount == 100:
-                if sender.username not in VIP_USERS:
-                    VIP_USERS.add(sender.username)
-                    self.save_data()
-                    await self.highrise.send_whisper(sender.id, "Ahora eres VIP permanente en la sala 🕷️NOCTURNO🕷️")
-                    await self.highrise.chat(f"🌟 ¡@{sender.username} se unió al club VIP! 🌟")
-                    log_event("VIP", f"{sender.username} obtuvo VIP por donación de 100 oro")
+            # Verificar que sea una propina de oro (CurrencyItem) y no un item regular
+            if isinstance(tip, CurrencyItem):
+                tip_amount = tip.amount
+                
+                # Sistema VIP: Donación de exactamente 100 oro otorga VIP permanente
+                if tip_amount == 100:
+                    if sender.username not in VIP_USERS:
+                        VIP_USERS.add(sender.username)
+                        self.save_data()
+                        await self.highrise.send_whisper(sender.id, "✨ ¡Ahora eres VIP permanente en la sala 🕷️NOCTURNO🕷️!")
+                        await self.highrise.chat(f"🌟 ¡@{sender.username} se unió al club VIP con 100 oro! 🌟")
+                        log_event("VIP", f"{sender.username} obtuvo VIP por donación de 100 oro")
+                    else:
+                        await self.highrise.send_whisper(sender.id, "💖 ¡Gracias por tu donación de 100 oro!")
+                        await self.highrise.send_whisper(sender.id, "⭐ Ya eres VIP en la sala, esta donación apoya al bot")
                 else:
-                    await self.highrise.send_whisper(sender.id, "💖 ¡Gracias por tu donación de 100 oro!")
-                    await self.highrise.send_whisper(sender.id, "⭐ Ya eres VIP en la sala, esta donación apoya al bot")
+                    # Cualquier otra cantidad de oro
+                    await self.highrise.send_whisper(sender.id, f"💰 ¡Gracias por donar {tip_amount} oro al bot!")
+                    await self.highrise.send_whisper(sender.id, f"💡 Dona exactamente 100 oro para obtener VIP automáticamente")
+                
+                # Actualizar balance del bot
+                BOT_WALLET += tip_amount
+                log_event("TIP", f"{sender.username} donó {tip_amount} oro al bot (Balance: {BOT_WALLET})")
             else:
-                # Cualquier otra donación
-                await self.highrise.send_whisper(sender.id, f"💰 ¡Gracias por donar {tip.amount} oro al bot!")
-                await self.highrise.send_whisper(sender.id, f"💡 Dona 100 oro para obtener VIP automáticamente")
-            
-            # Actualizar balance del bot
-            BOT_WALLET += tip.amount
-            log_event("TIP", f"{sender.username} donó {tip.amount} oro al bot (Balance: {BOT_WALLET})")
+                # Si es un Item regular (no oro)
+                log_event("TIP", f"{sender.username} envió un item al bot (no oro)")
+                await self.highrise.send_whisper(sender.id, "💝 ¡Gracias por el regalo!")
 
     async def on_emote(self, user: User, emote_id: str, receiver: User | None) -> None:
         """Manejador de emotes"""
