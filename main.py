@@ -168,9 +168,9 @@ async def save_bot_inventory(bot_instance):
             with open("data/bot_inventory.json", "w", encoding="utf-8") as f:
                 json.dump(inventory_data, f, indent=2, ensure_ascii=False)
 
-            print(f"✅ Inventario del bot guardado: {len(inventory_data)} items")
+            safe_print(f"✅ Inventario del bot guardado: {len(inventory_data)} items")
     except Exception as e:
-        print(f"❌ Error guardando inventario del bot: {e}")
+        safe_print(f"❌ Error guardando inventario del bot: {e}")
 
 # ============================================================================
 # CATÁLOGO DE EMOTES
@@ -454,7 +454,7 @@ class Bot(BaseBot):
                         
                 except Exception as e:
                     log_event("ERROR", f"Error verificando presencia del bot: {e}")
-                    print(f"❌ Error verificando conexión: {e}")
+                    safe_print(f"❌ Error verificando conexión: {e}")
                     await self.attempt_reconnection()
                     
             except Exception as e:
@@ -466,7 +466,7 @@ class Bot(BaseBot):
         max_attempts = 5
         for attempt in range(1, max_attempts + 1):
             try:
-                print(f"🔄 Intento de reconexión {attempt}/{max_attempts}...")
+                safe_print(f"🔄 Intento de reconexión {attempt}/{max_attempts}...")
                 log_event("BOT", f"Intento de reconexión {attempt}/{max_attempts}")
                 
                 # Esperar antes de reintentar
@@ -490,9 +490,9 @@ class Bot(BaseBot):
                     
             except Exception as e:
                 log_event("ERROR", f"Fallo en intento {attempt}: {e}")
-                print(f"❌ Fallo en intento {attempt}: {e}")
+                safe_print(f"❌ Fallo en intento {attempt}: {e}")
                 
-        print("❌ No se pudo reconectar después de varios intentos")
+        safe_print("❌ No se pudo reconectar después de varios intentos")
         log_event("ERROR", "Reconexión fallida después de múltiples intentos")
         return False
 
@@ -504,7 +504,7 @@ class Bot(BaseBot):
             log_event("BOT", f"Bot ID almacenado: {self.bot_id}")
 
             if await self.connect_with_retry():
-                print("Бот успешно подключен!")
+                safe_print("Bot conectado exitosamente!")
                 self.load_data()
 
                 # Iniciar tareas en segundo plano
@@ -1924,10 +1924,10 @@ class Bot(BaseBot):
                 with open("data/saved_outfits.json", "w", encoding="utf-8") as f:
                     json.dump(outfits_data, f, indent=2, ensure_ascii=False)
                 
-                print(f"✅ Outfit #{outfit_number} guardado en archivo")
+                safe_print(f"✅ Outfit #{outfit_number} guardado en archivo")
                 log_event("OUTFIT", f"Outfit #{outfit_number} guardado por {username}")
             except Exception as e:
-                print(f"❌ Error guardando outfit a archivo: {e}")
+                safe_print(f"❌ Error guardando outfit a archivo: {e}")
                 log_event("ERROR", f"Error guardando outfit: {e}")
             
             await send_response(f"👔 Outfit copiado y guardado como #{outfit_number}")
@@ -3146,7 +3146,7 @@ class Bot(BaseBot):
             self.user_positions[user_id] = destination
 
         except Exception as e:
-            print(f"❌ Error en on_user_move: {e}")
+            safe_print(f"❌ Error en on_user_move: {e}")
 
     # ========================================================================
     # TAREAS EN SEGUNDO PLANO
@@ -3213,7 +3213,7 @@ class Bot(BaseBot):
 
     async def start_copied_emote_loop(self, emote_id: str):
         """Bucle infinito de emote copiado"""
-        print(f"🎭 INICIANDO BUCLE INFINITO DE EMOTE COPIADO: {emote_id}")
+        safe_print(f"🎭 INICIANDO BUCLE INFINITO DE EMOTE COPIADO: {emote_id}")
         log_event("BOT", f"Bucle infinito de emote copiado iniciado: {emote_id}")
         
         # Obtener duración del emote
@@ -3229,11 +3229,11 @@ class Bot(BaseBot):
                     await self.highrise.send_emote(emote_id, self.bot_id)
                     await asyncio.sleep(max(0.1, emote_duration - 0.3))
                 except Exception as e:
-                    print(f"❌ Error ejecutando emote copiado: {e}")
+                    safe_print(f"❌ Error ejecutando emote copiado: {e}")
                     await asyncio.sleep(1.0)
                     continue
         except Exception as e:
-            print(f"❌ ERROR en bucle de emote copiado: {e}")
+            safe_print(f"❌ ERROR en bucle de emote copiado: {e}")
             log_event("ERROR", f"Error en bucle de emote copiado: {e}")
 
     async def start_auto_emote_cycle(self):
@@ -3248,14 +3248,14 @@ class Bot(BaseBot):
         # Filtrar solo emotes gratuitos
         free_emotes = {num: data for num, data in emotes.items() if data.get("is_free", True)}
         
-        print(f"🎭 INICIANDO CICLO AUTOMÁTICO DE {len(free_emotes)} EMOTES GRATUITOS...")
+        safe_print(f"🎭 INICIANDO CICLO AUTOMÁTICO DE {len(free_emotes)} EMOTES GRATUITOS...")
         log_event("BOT", f"Iniciando ciclo automático de {len(free_emotes)} emotes gratuitos")
         
         try:
             cycle_count = 0
             while True:
                 cycle_count += 1
-                print(f"🔄 Ciclo #{cycle_count} - Iniciando secuencia de {len(free_emotes)} emotes")
+                safe_print(f"🔄 Ciclo #{cycle_count} - Iniciando secuencia de {len(free_emotes)} emotes")
                 
                 for number, emote_data in free_emotes.items():
                     if self.bot_mode != "auto":
@@ -3269,17 +3269,17 @@ class Bot(BaseBot):
                     try:
                         await self.highrise.send_emote(emote_id, self.bot_id)
                         if int(number) % 20 == 0:
-                            print(f"🎭 Emote #{number}/{len(free_emotes)}: {emote_name}")
+                            safe_print(f"🎭 Emote #{number}/{len(free_emotes)}: {emote_name}")
                         await asyncio.sleep(max(0.1, emote_duration - 0.3))
                     except Exception as e:
-                        print(f"❌ Error emote #{number} ({emote_name}): {e}")
+                        safe_print(f"❌ Error emote #{number} ({emote_name}): {e}")
                         await asyncio.sleep(0.5)
                         continue
                 
-                print(f"✅ Ciclo #{cycle_count} completado. Esperando 2 segundos...")
+                safe_print(f"✅ Ciclo #{cycle_count} completado. Esperando 2 segundos...")
                 await asyncio.sleep(2.0)
         except Exception as e:
-            print(f"❌ ERROR CRÍTICO en ciclo automático: {e}")
+            safe_print(f"❌ ERROR CRÍTICO en ciclo automático: {e}")
             log_event("ERROR", f"Error en ciclo automático: {e}")
 
     async def setup_initial_bot_appearance(self):
@@ -3289,17 +3289,17 @@ class Bot(BaseBot):
             if "bot_initial_outfit" in config:
                 outfit_id = config["bot_initial_outfit"]
                 await self.change_bot_outfit(outfit_id)
-                print(f"🎽 Outfit inicial configurado: {outfit_id}")
+                safe_print(f"🎽 Outfit inicial configurado: {outfit_id}")
             
             if "spawn_point" in config and config["spawn_point"]:
                 spawn = config["spawn_point"]
                 try:
                     spawn_position = Position(spawn["x"], spawn["y"], spawn["z"])
                     await self.highrise.teleport(self.bot_id, spawn_position)
-                    print(f"📍 Bot teletransportado al punto de inicio: X={spawn['x']}, Y={spawn['y']}, Z={spawn['z']}")
+                    safe_print(f"📍 Bot teletransportado al punto de inicio: X={spawn['x']}, Y={spawn['y']}, Z={spawn['z']}")
                     log_event("BOT", f"Bot posicionado en spawn point: {spawn}")
                 except Exception as e:
-                    print(f"⚠️ Error teletransportando al spawn: {e}")
+                    safe_print(f"⚠️ Error teletransportando al spawn: {e}")
             
             log_event("BOT", f"Bot inicializado en modo idle (ID: {self.bot_id})")
         except Exception as e:
