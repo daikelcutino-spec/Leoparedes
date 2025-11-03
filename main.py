@@ -90,6 +90,18 @@ def log_bot_response(message: str):
     except Exception as e:
         print(f"Error logging bot response: {e}")
 
+def safe_print(message: str):
+    """Imprime mensaje de forma segura en Windows, manejando errores de encoding"""
+    try:
+        print(message)
+    except UnicodeEncodeError:
+        # Si falla con emojis, imprimir sin ellos
+        try:
+            print(message.encode('ascii', 'ignore').decode('ascii'))
+        except:
+            # Si todo falla, usar repr
+            print(repr(message))
+
 # ============================================================================
 # SISTEMA DE PERSISTENCIA DE DATOS
 # ============================================================================
@@ -416,7 +428,7 @@ class Bot(BaseBot):
 
     async def connect_with_retry(self):
         """Conexión con reintentos"""
-        print("✅ Conexión establecida con High Rise")
+        safe_print("✅ Conexión establecida con High Rise")
         return True
 
     async def auto_reconnect_loop(self):
@@ -437,7 +449,7 @@ class Bot(BaseBot):
                     
                     if not bot_in_room:
                         log_event("WARNING", "Bot no encontrado en la sala, intentando reconectar...")
-                        print("⚠️ Bot desconectado de la sala, reconectando...")
+                        safe_print("⚠️ Bot desconectado de la sala, reconectando...")
                         await self.attempt_reconnection()
                         
                 except Exception as e:
@@ -463,7 +475,7 @@ class Bot(BaseBot):
                 # Intentar obtener usuarios de la sala como prueba de conexión
                 room_users = await self.highrise.get_room_users()
                 if not isinstance(room_users, Error):
-                    print("✅ Reconexión exitosa!")
+                    safe_print("✅ Reconexión exitosa!")
                     log_event("BOT", "Reconexión exitosa")
                     
                     # Reiniciar tareas en segundo plano si es necesario
@@ -508,7 +520,7 @@ class Bot(BaseBot):
                 # Iniciar ciclo automático de emotes (sin esperar a que termine)
                 self.bot_mode = "auto"
                 asyncio.create_task(self.start_auto_emote_cycle())
-                print("🎭 Ciclo automático de 224 emotes iniciado")
+                safe_print("🎭 Ciclo automático de 224 emotes iniciado")
                 log_event("BOT", "Ciclo automático de 224 emotes iniciado")
             else:
                 print("No se pudo conectar al servidor")
@@ -516,7 +528,7 @@ class Bot(BaseBot):
         except Exception as e:
             print(f"Error en on_start: {e}")
 
-        print("🤖 ¡Bot iniciado! Usa !help para ver los comandos.")
+        safe_print("🤖 ¡Bot iniciado! Usa !help para ver los comandos.")
 
     # ========================================================================
     # SISTEMA DE CARGA Y GUARDADO DE DATOS
@@ -3248,7 +3260,7 @@ class Bot(BaseBot):
                 
                 for number, emote_data in free_emotes.items():
                     if self.bot_mode != "auto":
-                        print("⏸️ Ciclo automático detenido (modo cambiado)")
+                        safe_print("⏸️ Ciclo automático detenido (modo cambiado)")
                         return
                     
                     emote_id = emote_data["id"]
@@ -3493,7 +3505,7 @@ def signal_handler(sig, frame):
     try:
         save_leaderboard_data()
         save_user_info()
-        print("✅ Datos guardados con éxito")
+        safe_print("✅ Datos guardados con éxito")
     except Exception as e: print(f"❌ Error guardando datos: {e}")
     print("👋 ¡Adiós!")
     sys.exit(0)
