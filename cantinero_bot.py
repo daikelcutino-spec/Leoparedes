@@ -28,7 +28,6 @@ class BartenderBot(BaseBot):
         self.call_partner = None
         self.users_called = set()  # Usuarios que ya llamaron (solo pueden llamar 1 vez)
         self.users_blocked_notified = set()  # Usuarios que ya recibieron mensaje de bloqueo
-        self.user_floss_loops = {}  # {user_id: task} - Usuarios con bucle floss activo
 
         # Lista de bebidas para el comando !trago
         self.bebidas = [
@@ -200,30 +199,29 @@ class BartenderBot(BaseBot):
 
         is_admin_or_owner = (user_id == owner_id or user_id in admin_ids)
 
-        # Comando !floss
-        if msg.lower() == "!floss":
+        # Comando !copy - Copiar outfit del usuario que usa el comando
+        if msg.lower() == "!copy":
             if not is_admin_or_owner:
-                await self.highrise.chat("❌ Solo admin y propietario pueden usar !floss")
+                await self.highrise.chat("❌ Solo admin y propietario pueden copiar outfits")
                 return
 
-            if user_id in self.user_floss_loops:
-                await self.highrise.chat("⚠️ Ya estás haciendo floss. Usa 'stop floss' para detener.")
-                return
-
-            self.user_floss_loops[user_id] = asyncio.create_task(self.user_floss_loop(user_id, username))
-            await self.highrise.chat(f"💃 ¡A hacer floss, @{username}!")
-            safe_print(f"💃 {username} inició el emote floss")
-            return
-
-        # Comando stop (para detener floss de usuario)
-        if msg.lower() == "stop floss":
-            if user_id in self.user_floss_loops:
-                task = self.user_floss_loops.pop(user_id)
-                task.cancel()
-                await self.highrise.chat("🛑 ¡Detuviste tu floss!")
-                safe_print(f"🛑 {username} detuvo su emote floss")
-            else:
-                await self.highrise.chat("❓ No estás haciendo floss actualmente.")
+            try:
+                # Obtener el outfit del usuario que ejecuta el comando
+                user_outfit_response = await self.highrise.get_user_outfit(user_id)
+                
+                if isinstance(user_outfit_response, Error):
+                    await self.highrise.chat("❌ Error obteniendo tu outfit")
+                    safe_print(f"❌ Error obteniendo outfit: {user_outfit_response.message}")
+                    return
+                
+                # Copiar el outfit al bot cantinero
+                await self.highrise.set_outfit(user_outfit_response.outfit)
+                
+                await self.highrise.chat(f"👔 ¡Outfit de @{username} copiado exitosamente!")
+                safe_print(f"✅ Bot cantinero copió el outfit de {username}")
+            except Exception as e:
+                await self.highrise.chat(f"❌ Error copiando outfit: {e}")
+                safe_print(f"❌ Error en !copy: {e}")
             return
 
         # Comando !trago @user
@@ -297,16 +295,4 @@ class BartenderBot(BaseBot):
         except Exception as e:
             print(f"Error al saludar a {user.username}: {e}")
 
-    async def user_floss_loop(self, user_id: str, username: str) -> None:
-        """Loop de floss para un usuario específico"""
-        safe_print(f"💃 Iniciando bucle infinito de floss para {username}")
-
-        while user_id in self.user_floss_loops:
-            try:
-                await self.highrise.send_emote("dance-floss", user_id)
-                await asyncio.sleep(11.5)
-            except Exception as e:
-                safe_print(f"⚠️ Error al enviar emote floss a {username}: {e}")
-                await asyncio.sleep(3)
-
-        safe_print(f"🛑 Bucle de floss detenido para {username}")
+    
