@@ -2839,11 +2839,13 @@ class Bot(BaseBot):
                 await send_response("❌ Zona directivo no configurada. Usa !setdirectivo para establecerla")
             return
 
-        # Comando carcel (teletransporte a carcel - solo admin/owner)
+        # Comando carcel (teletransporte a carcel - admin/owner o encarcelados)
         if msg == "carcel" or msg == "!carcel":
-            has_permission = (user_id == OWNER_ID or self.is_admin(user_id))
-            if not has_permission:
-                await send_response("🔒 La cárcel es solo para admins y propietario!")
+            is_admin_or_owner = (user_id == OWNER_ID or self.is_admin(user_id))
+            is_jailed = user_id in JAIL_USERS
+            
+            if not is_admin_or_owner and not is_jailed:
+                await send_response("🔒 La cárcel es solo para admins, propietario o usuarios encarcelados!")
                 return
             
             if "carcel" in TELEPORT_POINTS:
@@ -2851,7 +2853,10 @@ class Bot(BaseBot):
                 try:
                     carcel_position = Position(point["x"], point["y"], point["z"])
                     await self.highrise.teleport(user_id, carcel_position)
-                    await send_response(f"⛓️ Fuiste enviado a la cárcel!")
+                    if is_jailed:
+                        await send_response(f"⛓️ Teletransportado a la cárcel. Espera a que un admin te libere con !unjail")
+                    else:
+                        await send_response(f"⛓️ Fuiste a la cárcel!")
                     log_event("TELEPORT", f"{username} fue a la cárcel - X:{point['x']}, Y:{point['y']}, Z:{point['z']}")
                 except Exception as e:
                     await send_response(f"❌ Error de teletransporte: {e}")
@@ -2895,9 +2900,7 @@ class Bot(BaseBot):
                     log_event("TELEPORT", f"{username} intentó acceder a cárcel sin autorización")
                     return
                 
-                # Si el usuario llega a la cárcel, removerlo de la lista de JAIL_USERS
-                if is_jailed and user_id in JAIL_USERS:
-                    JAIL_USERS.discard(user_id)
+                # NO remover de JAIL_USERS - solo !unjail puede liberar
             
             point = TELEPORT_POINTS[point_name]
             try:
@@ -3041,7 +3044,11 @@ class Bot(BaseBot):
         USER_JOIN_TIMES[user_id] = time.time()
         USER_INFO[user_id]["time_joined"] = time.time()
 
-        await self.highrise.send_whisper(user_id, "💫🌚Bienvenido a la sala ✓NOCTURNO✓ ponte cómodo y disfruta al máximo🌚💫")
+        try:
+            await self.highrise.send_whisper(user_id, "💫🌚Bienvenido a la sala ✓NOCTURNO✓ ponte cómodo y disfruta al máximo🌚💫")
+            safe_print(f"✅ Bienvenida enviada a {username}")
+        except Exception as e:
+            safe_print(f"⚠️ Error enviando bienvenida a {username}: {e}")
 
     async def on_user_leave(self, user: User) -> None:
         """Usuario sale de la sala"""
@@ -3140,9 +3147,9 @@ class Bot(BaseBot):
                         self.flashmode_cooldown[user_id] = current_time
                         direction = "subió" if dest_xyz[1] > last_xyz[1] else "bajó"
                         log_event("FLASHMODE", f"Auto-flashmode {username}: Y:{last_xyz[1]:.1f}→{dest_xyz[1]:.1f}")
-                        print(f"⚡ FLASHMODE: {username} {direction} de/a altura >= 10 bloques ({last_xyz[1]:.1f} → {dest_xyz[1]:.1f})")
+                        safe_print(f"⚡ FLASHMODE: {username} {direction} de/a altura >= 10 bloques ({last_xyz[1]:.1f} → {dest_xyz[1]:.1f})")
                 else:
-                    print(f"❌ Flashmode bloqueado: {username} intentó zona prohibida")
+                    safe_print(f"❌ Flashmode bloqueado: {username} intentó zona prohibida")
 
             self.user_positions[user_id] = destination
 
@@ -3176,7 +3183,7 @@ class Bot(BaseBot):
         while True:
             try:
                 await self.highrise.chat(announcements[announcement_index])
-                print(f"📢 Anuncio público enviado: {announcements[announcement_index][:50]}...")
+                safe_print(f"📢 Anuncio público enviado: {announcements[announcement_index][:50]}...")
                 announcement_index = (announcement_index + 1) % len(announcements)
 
                 vip_counter += 1
