@@ -2647,6 +2647,7 @@ class Bot(BaseBot):
                         await send_response( f"📍 Punto de teletransporte '{point_name}' creado en posición: X={user_position.x}, Y={user_position.y}, Z={user_position.z}")
                     elif isinstance(user_position, AnchorPosition) and user_position.offset:
                         TELEPORT_POINTS[point_name] = {"x": user_position.offset.x, "y": user_position.offset.y, "z": user_position.offset.z}
+                        save_leaderboard_data()
                         self.save_data()
                         await send_response( f"📍 Punto de teletransporte '{point_name}' creado en posición: X={user_position.offset.x}, Y={user_position.offset.y}, Z={user_position.offset.z}")
                     else:
@@ -2945,9 +2946,16 @@ class Bot(BaseBot):
             users = (await self.highrise.get_room_users()).content
             user_position = next((pos for u, pos in users if u.id == user_id), None)
             if user_position:
-                TELEPORT_POINTS[zone_name] = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                if isinstance(user_position, Position):
+                    TELEPORT_POINTS[zone_name] = {"x": user_position.x, "y": user_position.y, "z": user_position.z}
+                elif isinstance(user_position, AnchorPosition) and user_position.offset:
+                    TELEPORT_POINTS[zone_name] = {"x": user_position.offset.x, "y": user_position.offset.y, "z": user_position.offset.z}
+                else:
+                    await send_response("❌ Error obteniendo posición")
+                    return
+                save_leaderboard_data()
                 self.save_data()
-                await send_response( f"🗺️ Zona '{zone_name}' creada en posición ({user_position.x}, {user_position.y}, {user_position.z})")
+                await send_response( f"🗺️ Zona '{zone_name}' creada en posición ({TELEPORT_POINTS[zone_name]['x']}, {TELEPORT_POINTS[zone_name]['y']}, {TELEPORT_POINTS[zone_name]['z']})")
             else: await send_response("❌ Error obteniendo posición")
             return
 
@@ -3502,9 +3510,16 @@ def signal_handler(sig, frame):
             time_in_room = round(current_time - join_time)
             USER_INFO[user_id]["total_time_in_room"] += time_in_room
     try:
+        # Guardar puntos de teletransporte
+        os.makedirs("data", exist_ok=True)
+        with open("data/teleport_points.txt", "w", encoding="utf-8") as f:
+            f.write("# Puntos de teletransporte (nombre|x|y|z)\n")
+            for name, coords in TELEPORT_POINTS.items():
+                f.write(f"{name}|{coords['x']}|{coords['y']}|{coords['z']}\n")
+        
         save_leaderboard_data()
         save_user_info()
-        safe_print("✅ Datos guardados con éxito")
+        safe_print("✅ Datos guardados con éxito (incluidos puntos de teletransporte)")
     except Exception as e: print(f"❌ Error guardando datos: {e}")
     print("👋 ¡Adiós!")
     sys.exit(0)
