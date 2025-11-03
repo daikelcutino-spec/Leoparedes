@@ -2839,13 +2839,11 @@ class Bot(BaseBot):
                 await send_response("❌ Zona directivo no configurada. Usa !setdirectivo para establecerla")
             return
 
-        # Comando carcel (teletransporte a carcel - admin/owner o encarcelados)
+        # Comando carcel (teletransporte a carcel - solo admin/owner)
         if msg == "carcel" or msg == "!carcel":
-            is_admin_or_owner = (user_id == OWNER_ID or self.is_admin(user_id))
-            is_jailed = user_id in JAIL_USERS
-            
-            if not is_admin_or_owner and not is_jailed:
-                await send_response("🔒 La cárcel es solo para admins, propietario o usuarios encarcelados!")
+            has_permission = (user_id == OWNER_ID or self.is_admin(user_id))
+            if not has_permission:
+                await send_response("🔒 La cárcel es solo para admins y propietario!")
                 return
             
             if "carcel" in TELEPORT_POINTS:
@@ -2853,10 +2851,7 @@ class Bot(BaseBot):
                 try:
                     carcel_position = Position(point["x"], point["y"], point["z"])
                     await self.highrise.teleport(user_id, carcel_position)
-                    if is_jailed:
-                        await send_response(f"⛓️ Teletransportado a la cárcel. Espera a que un admin te libere con !unjail")
-                    else:
-                        await send_response(f"⛓️ Fuiste a la cárcel!")
+                    await send_response(f"⛓️ Fuiste a la cárcel!")
                     log_event("TELEPORT", f"{username} fue a la cárcel - X:{point['x']}, Y:{point['y']}, Z:{point['z']}")
                 except Exception as e:
                     await send_response(f"❌ Error de teletransporte: {e}")
@@ -2891,16 +2886,13 @@ class Bot(BaseBot):
                     return
             
             elif point_name == "carcel":
-                # La cárcel solo puede ser accedida por admin/owner o usuarios que fueron enviados ahí
+                # La cárcel solo puede ser accedida por admin/owner
                 is_admin_or_owner = (user_id == OWNER_ID or self.is_admin(user_id))
-                is_jailed = user_id in JAIL_USERS
                 
-                if not is_admin_or_owner and not is_jailed:
-                    await send_response(f"🔒 ¡Solo puedes ir a la cárcel si un admin te envía ahí!")
+                if not is_admin_or_owner:
+                    await send_response(f"🔒 ¡Solo admins y propietario pueden ir a la cárcel!")
                     log_event("TELEPORT", f"{username} intentó acceder a cárcel sin autorización")
                     return
-                
-                # NO remover de JAIL_USERS - solo !unjail puede liberar
             
             point = TELEPORT_POINTS[point_name]
             try:
