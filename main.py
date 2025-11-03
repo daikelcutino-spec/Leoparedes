@@ -2155,11 +2155,6 @@ class Bot(BaseBot):
             
             target_username = msg[6:].strip().replace("@", "")
             
-            # Verificar que la cárcel esté configurada
-            if "carcel" not in TELEPORT_POINTS:
-                await send_response("❌ La cárcel no está configurada. Usa !addzone carcel primero")
-                return
-            
             # Buscar al usuario
             response = await self.highrise.get_room_users()
             if isinstance(response, Error):
@@ -2173,17 +2168,26 @@ class Bot(BaseBot):
                 await send_response(f"❌ Usuario {target_username} no encontrado en la sala!")
                 return
             
+            # Crear zona cárcel automáticamente si no existe (muy alto, Y=100.0)
+            if "carcel" not in TELEPORT_POINTS:
+                # Posición muy alta fuera de la sala normal
+                TELEPORT_POINTS["carcel"] = {"x": 0.0, "y": 100.0, "z": 0.0}
+                self.save_data()
+                safe_print(f"🔒 Zona cárcel creada automáticamente en Y=100.0")
+                log_event("JAIL", "Zona cárcel creada automáticamente en altura Y=100.0")
+            
             # Agregar al usuario a la lista de cárcel
             JAIL_USERS.add(target_user.id)
             
-            # Teletransportar a la cárcel
+            # Teletransportar a la cárcel (altura muy elevada)
             point = TELEPORT_POINTS["carcel"]
             try:
                 carcel_position = Position(point["x"], point["y"], point["z"])
                 await self.highrise.teleport(target_user.id, carcel_position)
-                await send_response(f"⛓️ {target_username} fue enviado a la cárcel por @{username}!")
-                await self.highrise.send_whisper(target_user.id, f"⛓️ Fuiste enviado a la cárcel por @{username}. Escribe 'carcel' para ir ahí.")
-                log_event("JAIL", f"{username} envió a {target_username} a la cárcel")
+                await send_response(f"⛓️ {target_username} fue enviado a la cárcel en altura Y={point['y']}!")
+                await self.highrise.send_whisper(target_user.id, f"⛓️ Fuiste enviado a la cárcel por @{username}.\n⚠️ No puedes escapar hasta que un admin te libere.")
+                await self.highrise.chat(f"🚨 @{target_username} fue enviado a la cárcel por @{username}")
+                log_event("JAIL", f"{username} envió a {target_username} a la cárcel (Y={point['y']})")
             except Exception as e:
                 await send_response(f"❌ Error enviando a la cárcel: {e}")
                 JAIL_USERS.discard(target_user.id)
@@ -2211,8 +2215,19 @@ class Bot(BaseBot):
             
             if target_user.id in JAIL_USERS:
                 JAIL_USERS.discard(target_user.id)
-                await send_response(f"✅ {target_username} fue liberado de la cárcel por @{username}!")
+                
+                # Teletransportar a un punto seguro (entrada de la sala)
+                try:
+                    # Usar spawn point si existe, sino posición por defecto
+                    spawn = config.get("spawn_point", {"x": 0.0, "y": 0.0, "z": 0.0})
+                    spawn_position = Position(spawn["x"], spawn["y"], spawn["z"])
+                    await self.highrise.teleport(target_user.id, spawn_position)
+                except Exception as e:
+                    safe_print(f"⚠️ Error teletransportando a spawn: {e}")
+                
+                await send_response(f"✅ {target_username} fue liberado de la cárcel!")
                 await self.highrise.send_whisper(target_user.id, f"✅ Fuiste liberado de la cárcel por @{username}!")
+                await self.highrise.chat(f"🔓 @{target_username} fue liberado de la cárcel por @{username}")
                 log_event("JAIL", f"{username} liberó a {target_username} de la cárcel")
             else:
                 await send_response(f"ℹ️ {target_username} no está en la cárcel")
@@ -2840,24 +2855,27 @@ class Bot(BaseBot):
                 await send_response("❌ Zona directivo no configurada. Usa !setdirectivo para establecerla")
             return
 
-        # Comando carcel (teletransporte a carcel - solo admin/owner)
+        # Comando carcel (teletransporte a carcel - solo admin/owner pueden ir voluntariamente)
         if msg == "carcel" or msg == "!carcel":
             has_permission = (user_id == OWNER_ID or self.is_admin(user_id))
             if not has_permission:
-                await send_response("🔒 La cárcel es solo para admins y propietario!")
+                await send_response("🔒 ¡La cárcel es solo para prisioneros!\n⚠️ Solo admin/owner pueden visitarla voluntariamente")
                 return
             
-            if "carcel" in TELEPORT_POINTS:
-                point = TELEPORT_POINTS["carcel"]
-                try:
-                    carcel_position = Position(point["x"], point["y"], point["z"])
-                    await self.highrise.teleport(user_id, carcel_position)
-                    await send_response(f"⛓️ Fuiste a la cárcel!")
-                    log_event("TELEPORT", f"{username} fue a la cárcel - X:{point['x']}, Y:{point['y']}, Z:{point['z']}")
-                except Exception as e:
-                    await send_response(f"❌ Error de teletransporte: {e}")
-            else:
-                await send_response("❌ La cárcel no está configurada")
+            # Crear cárcel automáticamente si no existe
+            if "carcel" not in TELEPORT_POINTS:
+                TELEPORT_POINTS["carcel"] = {"x": 0.0, "y": 100.0, "z": 0.0}
+                self.save_data()
+                safe_print(f"🔒 Zona cárcel creada automáticamente en Y=100.0")
+            
+            point = TELEPORT_POINTS["carcel"]
+            try:
+                carcel_position = Position(point["x"], point["y"], point["z"])
+                await self.highrise.teleport(user_id, carcel_position)
+                await send_response(f"⛓️ Visitaste la cárcel en altura Y={point['y']}")
+                log_event("TELEPORT", f"{username} visitó la cárcel - X:{point['x']}, Y:{point['y']}, Z:{point['z']}")
+            except Exception as e:
+                await send_response(f"❌ Error de teletransporte: {e}")
             return
 
         # Teletransporte a puntos (escribiendo el nombre directamente)
@@ -3103,8 +3121,9 @@ class Bot(BaseBot):
         pass
 
     async def on_user_move(self, user: User, destination: Position | AnchorPosition) -> None:
-        """Manejador de movimiento de usuario para flashmode automático
+        """Manejador de movimiento de usuario para flashmode automático y sistema anti-escape de cárcel
         Activa flashmode cuando el usuario sube o baja desde/hacia altura Y >= 10.0 bloques
+        Previene que usuarios en la cárcel escapen teletransportándolos de vuelta
         """
         def _coords(p):
             return (p.x, p.y, p.z) if isinstance(p, Position) else None
@@ -3116,6 +3135,32 @@ class Bot(BaseBot):
 
             if not hasattr(self, 'flashmode_cooldown'): 
                 self.flashmode_cooldown = {}
+
+            # SISTEMA ANTI-ESCAPE DE CÁRCEL
+            # Si el usuario está en la cárcel y NO es admin/owner, devolverlo a la cárcel
+            if user_id in JAIL_USERS:
+                is_admin_or_owner = (user_id == OWNER_ID or self.is_admin(user_id))
+                
+                if not is_admin_or_owner:
+                    # Verificar si están intentando escapar de la cárcel
+                    if "carcel" in TELEPORT_POINTS:
+                        jail_point = TELEPORT_POINTS["carcel"]
+                        dest_xyz = _coords(destination)
+                        
+                        if dest_xyz:
+                            # Si intentan alejarse más de 3 bloques de la cárcel, devolverlos
+                            distance_from_jail = ((dest_xyz[0] - jail_point["x"])**2 + 
+                                                 (dest_xyz[1] - jail_point["y"])**2 + 
+                                                 (dest_xyz[2] - jail_point["z"])**2)**0.5
+                            
+                            if distance_from_jail > 3.0:
+                                # Devolverlos a la cárcel
+                                jail_position = Position(jail_point["x"], jail_point["y"], jail_point["z"])
+                                await self.highrise.teleport(user_id, jail_position)
+                                await self.highrise.send_whisper(user_id, "⛓️ ¡No puedes escapar de la cárcel!\n⚠️ Solo un admin puede liberarte con !unjail")
+                                safe_print(f"🔒 Intento de escape bloqueado: {username} devuelto a la cárcel")
+                                log_event("JAIL", f"Intento de escape bloqueado: {username}")
+                                return
 
             last_pos = self.user_positions.get(user_id)
             if not last_pos:
