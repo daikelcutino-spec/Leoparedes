@@ -933,7 +933,7 @@ class Bot(BaseBot):
                     "!help leaderboard - Ayuda ranking\n"
                     "!help heart - Ayuda corazones")
 
-    def is_in_forbidden_zone(self, x: float, y: float, z: float, user_id: str = None) -> bool:
+    def is_in_forbidden_zone(self, x: float, y: float, z: float, user_id: Optional[str] = None) -> bool:
         """Verifica si el punto está en zona prohibida
         Admin y owner tienen acceso completo a todas las zonas"""
         # Admin y owner pueden acceder a cualquier zona
