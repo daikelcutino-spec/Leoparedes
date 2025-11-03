@@ -333,5 +333,15 @@
     "type": "clothing",
     "id": "shirt-n_room22019sporttank",
     "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "shirt-n_dealerbluevest",
+    "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "mouth-basic2018fullpeaked",
+    "amount": 1
   }
 ]
