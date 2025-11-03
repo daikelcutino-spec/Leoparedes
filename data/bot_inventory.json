@@ -343,5 +343,10 @@
     "type": "clothing",
     "id": "mouth-basic2018fullpeaked",
     "amount": 1
+  },
+  {
+    "type": "clothing",
+    "id": "mouth-basic2018unimpressed",
+    "amount": 1
   }
 ]
