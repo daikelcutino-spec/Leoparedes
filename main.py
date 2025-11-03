@@ -537,25 +537,84 @@ class Bot(BaseBot):
     def load_data(self):
         """Carga datos desde archivos"""
         try:
+            # Crear directorio data si no existe
+            os.makedirs("data", exist_ok=True)
+            
             # Cargar VIP
             if os.path.exists("data/vip.txt"):
                 with open("data/vip.txt", "r", encoding="utf-8") as f:
                     for line in f:
                         if line.strip() and not line.startswith("#"):
                             VIP_USERS.add(line.strip())
-            print(f"Datos VIP cargados: {len(VIP_USERS)} usuarios")
+            safe_print(f"✅ Datos VIP cargados: {len(VIP_USERS)} usuarios")
 
             # Cargar puntos de teletransporte
             if os.path.exists("data/teleport_points.txt"):
                 with open("data/teleport_points.txt", "r", encoding="utf-8") as f:
                     for line in f:
                         if line.strip() and not line.startswith("#"):
-                            parts = line.strip().split("|")
-                            if len(parts) == 4:
-                                name = parts[0]
-                                x, y, z = float(parts[1]), float(parts[2]), float(parts[3])
-                                TELEPORT_POINTS[name] = {"x": x, "y": y, "z": z}
-            print(f"Puntos de teletransporte cargados: {len(TELEPORT_POINTS)} puntos")
+                            try:
+                                parts = line.strip().split("|")
+                                if len(parts) == 4:
+                                    name = parts[0]
+                                    x, y, z = float(parts[1]), float(parts[2]), float(parts[3])
+                                    TELEPORT_POINTS[name] = {"x": x, "y": y, "z": z}
+                            except ValueError as e:
+                                safe_print(f"⚠️ Error parseando punto: {line.strip()} - {e}")
+            safe_print(f"✅ Puntos de teletransporte cargados: {len(TELEPORT_POINTS)} puntos")
+            
+            # Cargar corazones
+            if os.path.exists("data/hearts.txt"):
+                with open("data/hearts.txt", "r", encoding="utf-8") as f:
+                    for line in f:
+                        if line.strip() and not line.startswith("#"):
+                            try:
+                                parts = line.strip().split(":")
+                                if len(parts) >= 2:
+                                    user_id = parts[0]
+                                    hearts = int(parts[1])
+                                    USER_HEARTS[user_id] = hearts
+                                    if len(parts) >= 3:
+                                        USER_NAMES[user_id] = parts[2]
+                            except ValueError as e:
+                                safe_print(f"⚠️ Error parseando corazones: {line.strip()} - {e}")
+            safe_print(f"✅ Corazones cargados: {len(USER_HEARTS)} usuarios")
+            
+            # Cargar actividad
+            if os.path.exists("data/activity.txt"):
+                with open("data/activity.txt", "r", encoding="utf-8") as f:
+                    for line in f:
+                        if line.strip() and not line.startswith("#"):
+                            try:
+                                parts = line.strip().split(":")
+                                if len(parts) >= 3:
+                                    user_id = parts[0]
+                                    messages = int(parts[1])
+                                    last_activity = parts[2]
+                                    USER_ACTIVITY[user_id] = {
+                                        "messages": messages,
+                                        "last_activity": datetime.fromisoformat(last_activity)
+                                    }
+                                    if len(parts) >= 4:
+                                        USER_NAMES[user_id] = parts[3]
+                            except (ValueError, IndexError) as e:
+                                safe_print(f"⚠️ Error parseando actividad: {line.strip()} - {e}")
+            safe_print(f"✅ Actividad cargada: {len(USER_ACTIVITY)} usuarios")
+            
+            # Cargar información de usuarios
+            if os.path.exists("data/user_info.json"):
+                with open("data/user_info.json", "r", encoding="utf-8") as f:
+                    loaded_data = json.load(f)
+                    for user_id, data in loaded_data.items():
+                        USER_INFO[user_id] = data
+                        # Convertir fechas ISO a datetime
+                        for key in ["first_seen", "account_created"]:
+                            if key in data and data[key]:
+                                try:
+                                    USER_INFO[user_id][key] = datetime.fromisoformat(data[key].replace('Z', '+00:00'))
+                                except:
+                                    pass
+            safe_print(f"✅ Info de usuarios cargada: {len(USER_INFO)} usuarios")
             
             # Cargar outfits guardados
             if os.path.exists("data/saved_outfits.json"):
@@ -565,9 +624,12 @@ class Bot(BaseBot):
                     for num_str, items_data in outfits_data.items():
                         outfit_items = [Item(type=item["type"], id=item["id"], amount=item.get("amount", 1)) for item in items_data]
                         SAVED_OUTFITS[int(num_str)] = outfit_items
-            print(f"Outfits guardados cargados: {len(SAVED_OUTFITS)} outfits")
+            safe_print(f"✅ Outfits guardados cargados: {len(SAVED_OUTFITS)} outfits")
+            
         except Exception as e:
-            print(f"Error cargando datos: {e}")
+            safe_print(f"❌ Error cargando datos: {e}")
+            import traceback
+            traceback.print_exc()
 
     def save_data(self):
         """Guarda datos en archivos"""
@@ -576,22 +638,35 @@ class Bot(BaseBot):
 
             # Guardar VIP
             with open("data/vip.txt", "w", encoding="utf-8") as f:
-                f.write("# Usuarios VIP (un ID por línea)\n")
-                for user_id in VIP_USERS:
-                    f.write(f"{user_id}\n")
-            print(f"Datos VIP guardados: {len(VIP_USERS)} usuarios")
+                f.write("# Usuarios VIP (un username por línea)\n")
+                for username in sorted(VIP_USERS):
+                    f.write(f"{username}\n")
+            safe_print(f"✅ Datos VIP guardados: {len(VIP_USERS)} usuarios")
 
             # Guardar puntos de teletransporte
             with open("data/teleport_points.txt", "w", encoding="utf-8") as f:
                 f.write("# Puntos de teletransporte (nombre|x|y|z)\n")
-                for name, coords in TELEPORT_POINTS.items():
+                for name, coords in sorted(TELEPORT_POINTS.items()):
                     f.write(f"{name}|{coords['x']}|{coords['y']}|{coords['z']}\n")
-            print(f"Puntos guardados: {len(TELEPORT_POINTS)}")
+            safe_print(f"✅ Puntos de teletransporte guardados: {len(TELEPORT_POINTS)}")
+
+            # Guardar outfits
+            if SAVED_OUTFITS:
+                outfits_data = {}
+                for num, outfit in SAVED_OUTFITS.items():
+                    outfits_data[str(num)] = [{"type": item.type, "id": item.id, "amount": item.amount} for item in outfit]
+                
+                with open("data/saved_outfits.json", "w", encoding="utf-8") as f:
+                    json.dump(outfits_data, f, indent=2, ensure_ascii=False)
+                safe_print(f"✅ Outfits guardados: {len(SAVED_OUTFITS)}")
 
             save_user_info()
             save_leaderboard_data()
+            
         except Exception as e:
-            print(f"Error guardando datos: {e}")
+            safe_print(f"❌ Error guardando datos: {e}")
+            import traceback
+            traceback.print_exc()
 
     # ========================================================================
     # SISTEMA DE VERIFICACIÓN DE PERMISOS
