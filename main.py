@@ -3052,8 +3052,8 @@ class Bot(BaseBot):
                 log_event("ERROR", f"Error en !goto: {e}")
             return
 
-        # Comando !emotestats - Muestra estadísticas de salud de emotes (Admin/Owner)
-        if msg == "!emotestats":
+        # Comando !estadoemotes - Muestra estadísticas de salud de emotes (Admin/Owner)
+        if msg == "!estadoemotes":
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
                 await send_response("❌ ¡Solo admins y propietario pueden ver las estadísticas de emotes!")
                 return
@@ -3082,8 +3082,8 @@ class Bot(BaseBot):
             log_event("ADMIN", f"{username} consultó estadísticas de emotes")
             return
 
-        # Comando !emotereset [emote_id] - Reinicia estado de emote(s) (Owner)
-        if msg.startswith("!emotereset"):
+        # Comando !reiniciaremote [emote_id] - Reinicia estado de emote(s) (Owner)
+        if msg.startswith("!reiniciaremote"):
             if user_id != OWNER_ID:
                 await send_response("❌ ¡Solo el propietario puede reiniciar el estado de emotes!")
                 return
