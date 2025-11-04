@@ -126,8 +126,8 @@ class BartenderBot(BaseBot):
                 if self.emote_loop_active and not self.is_in_call:
                     await self.highrise.send_emote(self.current_emote)
                     consecutive_errors = 0  # Resetear contador en caso de éxito
-                    # Esperar 18 segundos para evitar rate limiting
-                    await asyncio.sleep(18)
+                    # Espera mínima para bucle continuo
+                    await asyncio.sleep(0.5)
                 else:
                     # Si está desactivado o en llamada, esperar
                     await asyncio.sleep(2)

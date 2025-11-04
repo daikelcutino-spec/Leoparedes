@@ -2787,6 +2787,58 @@ class Bot(BaseBot):
             else: await send_response("❌ Usa: !comando @usuario")
             return
 
+        # Comando !sendall [zona] - Enviar a todos los usuarios a una zona (Admin/Owner)
+        if msg.startswith("!sendall "):
+            if not (self.is_admin(user_id) or user_id == OWNER_ID):
+                await send_response("❌ ¡Solo admins y propietario pueden usar !sendall!")
+                return
+            
+            parts = msg.split()
+            if len(parts) < 2:
+                await send_response("❌ Usa: !sendall [zona]\n💡 Usa !tplist para ver zonas disponibles")
+                return
+            
+            zone_name = parts[1].lower()
+            
+            if zone_name not in TELEPORT_POINTS:
+                await send_response(f"❌ Zona '{zone_name}' no encontrada. Usa !tplist")
+                return
+            
+            point = TELEPORT_POINTS[zone_name]
+            
+            try:
+                response = await self.highrise.get_room_users()
+                if isinstance(response, Error):
+                    await send_response("❌ Error obteniendo usuarios")
+                    return
+                
+                users = response.content
+                moved_count = 0
+                
+                for u, _ in users:
+                    # Saltar admin, owner y bots
+                    if u.id == OWNER_ID or self.is_admin(u.id):
+                        continue
+                    if any(name in u.username.lower() for name in ["bot", "glux", "highrise"]):
+                        continue
+                    
+                    try:
+                        teleport_position = Position(point["x"], point["y"], point["z"])
+                        await self.highrise.teleport(u.id, teleport_position)
+                        moved_count += 1
+                        await asyncio.sleep(0.2)  # Delay para evitar rate limit
+                    except Exception as e:
+                        safe_print(f"⚠️ Error moviendo a {u.username}: {e}")
+                        continue
+                
+                await self.highrise.chat(f"🚁 {moved_count} usuarios fueron enviados a '{zone_name}' por @{username}")
+                await send_response(f"✅ {moved_count} usuarios enviados a '{zone_name}'")
+                log_event("TELEPORT", f"{username} envió {moved_count} usuarios a '{zone_name}'")
+            except Exception as e:
+                await send_response(f"❌ Error: {e}")
+                log_event("ERROR", f"Error en !sendall: {e}")
+            return
+
         # Comando !goto @user [punto] - Teletransportar usuario a punto guardado (Admin/Owner)
         if msg.startswith("!goto "):
             if not (self.is_admin(user_id) or user_id == OWNER_ID):
