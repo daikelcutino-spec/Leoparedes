@@ -66,7 +66,14 @@ A unified, three-layer command handling system processes user interactions from 
 
 ### Cantinero Bot (Bartender)
 
-A separate `cantinero_bot.py` operates as a bartender, performing a continuous floss emote loop, broadcasting automated public messages, sending welcome whispers, and teleporting to a configured spawn point. It shares room and owner IDs with the main bot but uses a separate API token and minimal configuration in `cantinero_config.json`.
+A separate `cantinero_bot.py` operates as a bartender with a configurable emote loop system, broadcasting automated public messages, sending welcome whispers, and teleporting to a configured spawn point. It shares room and owner IDs with the main bot but uses a separate API token and minimal configuration in `cantinero_config.json`.
+
+**Emote System:**
+- Starts with "ghostfloat" (emote-ghost-idle) by default
+- Admin/Owner can change the emote in loop using `!canemote <emote_id>`
+- Admin/Owner can stop/start the loop with `!canstop` and `!canstart`
+- Admin/Owner can check status with `!canstatus`
+- Executes configured emote every 18 seconds to avoid rate limiting
 
 ## External Dependencies
 
@@ -90,6 +97,15 @@ A separate `cantinero_bot.py` operates as a bartender, performing a continuous f
   - Reducida frecuencia de verificaciones de reconexión de 15s a 30s para menor carga en API
   - Eliminado keepalive redundante que duplicaba llamadas pesadas a la API
   - Mejorado manejo de errores con contadores y límites inteligentes
+- **Sistema de emotes configurables para bot cantinero**:
+  - Convertido floss automático a sistema de emotes configurables
+  - Bot inicia con "ghostfloat" (emote-ghost-idle) por defecto
+  - Nuevos comandos solo para admin/owner:
+    - `!canemote <emote_id>` - Cambiar emote en bucle
+    - `!canstop` - Detener emote en bucle
+    - `!canstart` - Reanudar emote en bucle
+    - `!canstatus` - Ver estado actual del emote
+  - Sistema flexible que permite usar cualquier emote de Highrise
 
 ### October 31, 2025
 - **Removed secrets dependency**: All configuration now uses `config.json` files for easier local PC deployment

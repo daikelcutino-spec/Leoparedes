@@ -28,7 +28,11 @@ class BartenderBot(BaseBot):
         self.call_partner = None
         self.users_called = set()  # Usuarios que ya llamaron (solo pueden llamar 1 vez)
         self.users_blocked_notified = set()  # Usuarios que ya recibieron mensaje de bloqueo
-
+        
+        # Sistema de emotes en bucle
+        self.current_emote = "emote-ghost-idle"  # ghostfloat - emote por defecto
+        self.emote_loop_active = True  # Activado por defecto
+        
         # Lista de bebidas para el comando !trago
         self.bebidas = [
             "🍺 Una cerveza bien fría",
@@ -93,10 +97,10 @@ class BartenderBot(BaseBot):
 
         # Iniciar todos los loops con manejo de errores
         try:
-            asyncio.create_task(self.floss_loop())
-            safe_print("✅ Floss loop iniciado")
+            asyncio.create_task(self.emote_loop())
+            safe_print(f"✅ Emote loop iniciado con: {self.current_emote} (ghostfloat)")
         except Exception as e:
-            safe_print(f"❌ Error iniciando floss_loop: {e}")
+            safe_print(f"❌ Error iniciando emote_loop: {e}")
         
         try:
             asyncio.create_task(self.auto_message_loop())
@@ -110,30 +114,30 @@ class BartenderBot(BaseBot):
         except Exception as e:
             safe_print(f"❌ Error iniciando auto_reconnect_loop: {e}")
 
-    async def floss_loop(self) -> None:
-        """Loop infinito que ejecuta el emote floss con pausas para evitar rate limiting"""
-        await asyncio.sleep(5)  # Esperar más al inicio
+    async def emote_loop(self) -> None:
+        """Loop infinito que ejecuta el emote configurado en bucle"""
+        await asyncio.sleep(5)  # Esperar al inicio
         consecutive_errors = 0
         max_consecutive_errors = 3
 
         while True:
             try:
-                if not self.is_in_call:
-                    await self.highrise.send_emote("dance-floss")
+                # Solo ejecutar si el loop está activo y no está en llamada
+                if self.emote_loop_active and not self.is_in_call:
+                    await self.highrise.send_emote(self.current_emote)
                     consecutive_errors = 0  # Resetear contador en caso de éxito
-                    # Esperar 18 segundos para evitar rate limiting (antes era 11.8)
-                    # Esto reduce la frecuencia de ~5 emotes/min a ~3 emotes/min
+                    # Esperar 18 segundos para evitar rate limiting
                     await asyncio.sleep(18)
                 else:
-                    # Si está en llamada, esperar y revisar cada segundo
-                    await asyncio.sleep(1)
+                    # Si está desactivado o en llamada, esperar
+                    await asyncio.sleep(2)
             except Exception as e:
                 consecutive_errors += 1
-                safe_print(f"⚠️ Error floss ({consecutive_errors}/{max_consecutive_errors}): {type(e).__name__}: {e}")
+                safe_print(f"⚠️ Error emote loop ({consecutive_errors}/{max_consecutive_errors}): {type(e).__name__}: {e}")
                 
                 # Backoff exponencial: 10s, 20s, 40s
                 wait_time = min(10 * (2 ** (consecutive_errors - 1)), 60)
-                safe_print(f"⏳ Esperando {wait_time}s antes de reintentar floss...")
+                safe_print(f"⏳ Esperando {wait_time}s antes de reintentar emote...")
                 await asyncio.sleep(wait_time)
                 
                 # Si hay demasiados errores, resetear después de espera larga
@@ -305,6 +309,54 @@ class BartenderBot(BaseBot):
             except Exception as e:
                 await self.highrise.chat(f"❌ Error copiando outfit: {e}")
                 safe_print(f"❌ Error en !copy: {e}")
+            return
+
+        # Comando !canemote <emote_id> - Cambiar emote en bucle (Solo Admin/Owner)
+        if msg.startswith("!canemote"):
+            if not is_admin_or_owner:
+                await self.highrise.chat("❌ Solo admin y propietario pueden cambiar el emote del cantinero")
+                return
+            
+            parts = msg.split()
+            if len(parts) >= 2:
+                emote_id = parts[1].strip()
+                self.current_emote = emote_id
+                self.emote_loop_active = True
+                await self.highrise.chat(f"🎭 Emote del cantinero cambiado a: {emote_id}")
+                safe_print(f"✅ Emote del cantinero cambiado a: {emote_id} por {username}")
+            else:
+                await self.highrise.chat("❌ Usa: !canemote <emote_id>\nEjemplos:\n!canemote dance-floss\n!canemote emote-ghost-idle")
+            return
+        
+        # Comando !canstop - Detener emote en bucle (Solo Admin/Owner)
+        if msg.lower() == "!canstop":
+            if not is_admin_or_owner:
+                await self.highrise.chat("❌ Solo admin y propietario pueden detener el emote del cantinero")
+                return
+            
+            self.emote_loop_active = False
+            await self.highrise.chat("⏸️ Emote del cantinero detenido")
+            safe_print(f"⏸️ Emote detenido por {username}")
+            return
+        
+        # Comando !canstart - Reanudar emote en bucle (Solo Admin/Owner)
+        if msg.lower() == "!canstart":
+            if not is_admin_or_owner:
+                await self.highrise.chat("❌ Solo admin y propietario pueden iniciar el emote del cantinero")
+                return
+            
+            self.emote_loop_active = True
+            await self.highrise.chat(f"▶️ Emote del cantinero reanudado: {self.current_emote}")
+            safe_print(f"▶️ Emote reanudado por {username}: {self.current_emote}")
+            return
+        
+        # Comando !canstatus - Ver estado actual del emote (Solo Admin/Owner)
+        if msg.lower() == "!canstatus":
+            if not is_admin_or_owner:
+                return
+            
+            status = "🟢 Activo" if self.emote_loop_active else "🔴 Detenido"
+            await self.highrise.chat(f"📊 Estado del cantinero:\nEmote: {self.current_emote}\nEstado: {status}")
             return
 
         # Comando !trago @user
