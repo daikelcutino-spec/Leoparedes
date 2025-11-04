@@ -173,6 +173,177 @@ async def save_bot_inventory(bot_instance):
         safe_print(f"❌ Error guardando inventario del bot: {e}")
 
 # ============================================================================
+# SISTEMA DE GESTIÓN DE SALUD DE EMOTES
+# ============================================================================
+
+class EmoteHealthManager:
+    """Gestiona la salud de los emotes, detectando y deshabilitando emotes problemáticos"""
+    
+    HEALTH_FILE = "data/emote_health.json"
+    SOFT_FAILURE_THRESHOLD = 3
+    HARD_FAILURE_THRESHOLD = 5
+    COOLDOWN_HOURS = 24
+    
+    def __init__(self):
+        self.emote_stats = {}
+        self.disabled_emotes = set()
+        self.load_health_data()
+    
+    def load_health_data(self):
+        """Carga datos de salud de emotes desde el archivo"""
+        try:
+            if os.path.exists(self.HEALTH_FILE):
+                with open(self.HEALTH_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    self.emote_stats = data.get("stats", {})
+                    self.disabled_emotes = set(data.get("disabled", []))
+                    safe_print(f"📊 Datos de salud de emotes cargados: {len(self.disabled_emotes)} deshabilitados")
+        except Exception as e:
+            safe_print(f"⚠️ Error cargando datos de salud de emotes: {e}")
+            self.emote_stats = {}
+            self.disabled_emotes = set()
+    
+    def save_health_data(self):
+        """Guarda datos de salud de emotes al archivo"""
+        try:
+            os.makedirs("data", exist_ok=True)
+            data = {
+                "stats": self.emote_stats,
+                "disabled": list(self.disabled_emotes),
+                "last_update": datetime.now().isoformat()
+            }
+            with open(self.HEALTH_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            safe_print(f"❌ Error guardando datos de salud de emotes: {e}")
+    
+    def should_run(self, emote_id: str, emote_name: str = "") -> bool:
+        """Determina si un emote debe ejecutarse"""
+        if emote_id in self.disabled_emotes:
+            return False
+        
+        if emote_id in self.emote_stats:
+            stats = self.emote_stats[emote_id]
+            
+            if stats.get("hard_disabled", False):
+                return False
+            
+            if stats.get("soft_disabled", False):
+                disabled_at = stats.get("disabled_at")
+                if disabled_at:
+                    try:
+                        disabled_time = datetime.fromisoformat(disabled_at)
+                        cooldown_end = disabled_time + timedelta(hours=self.COOLDOWN_HOURS)
+                        if datetime.now() < cooldown_end:
+                            return False
+                        else:
+                            stats["soft_disabled"] = False
+                            stats["failures"] = 0
+                            safe_print(f"♻️ Emote {emote_name} ({emote_id}) salió de cooldown")
+                            self.save_health_data()
+                    except:
+                        pass
+        
+        return True
+    
+    def record_success(self, emote_id: str, emote_name: str = ""):
+        """Registra una ejecución exitosa del emote"""
+        is_new_entry = emote_id not in self.emote_stats
+        was_soft_disabled = False
+        
+        if is_new_entry:
+            self.emote_stats[emote_id] = {
+                "name": emote_name,
+                "successes": 0,
+                "failures": 0,
+                "last_success": None,
+                "last_failure": None,
+                "soft_disabled": False,
+                "hard_disabled": False
+            }
+        else:
+            was_soft_disabled = self.emote_stats[emote_id].get("soft_disabled", False)
+        
+        self.emote_stats[emote_id]["successes"] += 1
+        self.emote_stats[emote_id]["last_success"] = datetime.now().isoformat()
+        
+        should_save = (
+            is_new_entry or 
+            was_soft_disabled or 
+            self.emote_stats[emote_id]["successes"] % 20 == 0
+        )
+        
+        if should_save:
+            self.save_health_data()
+    
+    def record_failure(self, emote_id: str, emote_name: str, exception: str) -> bool:
+        """Registra un fallo del emote. Retorna True si es error de transporte."""
+        is_transport_error = self._is_transport_error(exception)
+        
+        if emote_id not in self.emote_stats:
+            self.emote_stats[emote_id] = {
+                "name": emote_name,
+                "successes": 0,
+                "failures": 0,
+                "last_success": None,
+                "last_failure": None,
+                "last_exception": None,
+                "soft_disabled": False,
+                "hard_disabled": False
+            }
+        
+        stats = self.emote_stats[emote_id]
+        stats["failures"] += 1
+        stats["last_failure"] = datetime.now().isoformat()
+        stats["last_exception"] = str(exception)
+        
+        if stats["failures"] >= self.HARD_FAILURE_THRESHOLD:
+            if not stats.get("hard_disabled", False):
+                stats["hard_disabled"] = True
+                stats["disabled_at"] = datetime.now().isoformat()
+                self.disabled_emotes.add(emote_id)
+                safe_print(f"🚫 Emote {emote_name} ({emote_id}) DESHABILITADO PERMANENTEMENTE - {stats['failures']} fallos")
+                log_event("EMOTE", f"Emote {emote_name} deshabilitado permanentemente: {stats['failures']} fallos - Último error: {exception}")
+        
+        elif stats["failures"] >= self.SOFT_FAILURE_THRESHOLD:
+            if not stats.get("soft_disabled", False):
+                stats["soft_disabled"] = True
+                stats["disabled_at"] = datetime.now().isoformat()
+                safe_print(f"⚠️ Emote {emote_name} ({emote_id}) en COOLDOWN por {self.COOLDOWN_HOURS}h - {stats['failures']} fallos")
+                log_event("EMOTE", f"Emote {emote_name} en cooldown: {stats['failures']} fallos - Último error: {exception}")
+        
+        self.save_health_data()
+        return is_transport_error
+    
+    def _is_transport_error(self, exception_str: str) -> bool:
+        """Detecta si el error es relacionado con el transporte/conexión"""
+        transport_keywords = [
+            "transport",
+            "closing",
+            "connection",
+            "websocket",
+            "disconnect",
+            "closed",
+            "write to closing"
+        ]
+        exception_lower = str(exception_str).lower()
+        return any(keyword in exception_lower for keyword in transport_keywords)
+    
+    def get_disabled_count(self) -> int:
+        """Retorna el número de emotes deshabilitados"""
+        return len(self.disabled_emotes)
+    
+    def get_stats_summary(self) -> str:
+        """Retorna un resumen de las estadísticas"""
+        total = len(self.emote_stats)
+        disabled = len(self.disabled_emotes)
+        soft_disabled = sum(1 for s in self.emote_stats.values() if s.get("soft_disabled", False))
+        return f"Total: {total} | Deshabilitados: {disabled} | En cooldown: {soft_disabled}"
+
+# Instancia global del gestor de salud
+emote_health_manager = EmoteHealthManager()
+
+# ============================================================================
 # CATÁLOGO DE EMOTES
 # ============================================================================
 
@@ -2881,6 +3052,61 @@ class Bot(BaseBot):
                 log_event("ERROR", f"Error en !goto: {e}")
             return
 
+        # Comando !emotestats - Muestra estadísticas de salud de emotes (Admin/Owner)
+        if msg == "!emotestats":
+            if not (self.is_admin(user_id) or user_id == OWNER_ID):
+                await send_response("❌ ¡Solo admins y propietario pueden ver las estadísticas de emotes!")
+                return
+            
+            stats_summary = emote_health_manager.get_stats_summary()
+            disabled_count = emote_health_manager.get_disabled_count()
+            
+            message = f"📊 ESTADÍSTICAS DE SALUD DE EMOTES\n"
+            message += f"{stats_summary}\n\n"
+            
+            if disabled_count > 0:
+                message += "🚫 Emotes deshabilitados:\n"
+                for emote_id in emote_health_manager.disabled_emotes:
+                    if emote_id in emote_health_manager.emote_stats:
+                        stats = emote_health_manager.emote_stats[emote_id]
+                        name = stats.get("name", "desconocido")
+                        failures = stats.get("failures", 0)
+                        last_error = stats.get("last_exception", "N/A")[:50]
+                        message += f"• {name} ({emote_id[:15]}...): {failures} fallos\n"
+                        message += f"  Último error: {last_error}\n"
+            else:
+                message += "✅ No hay emotes deshabilitados"
+            
+            await send_response(message)
+            log_event("ADMIN", f"{username} consultó estadísticas de emotes")
+            return
+
+        # Comando !emotereset [emote_id] - Reinicia estado de emote(s) (Owner)
+        if msg.startswith("!emotereset"):
+            if user_id != OWNER_ID:
+                await send_response("❌ ¡Solo el propietario puede reiniciar el estado de emotes!")
+                return
+            
+            parts = msg.split()
+            if len(parts) > 1:
+                emote_id = parts[1]
+                if emote_id in emote_health_manager.emote_stats:
+                    del emote_health_manager.emote_stats[emote_id]
+                    if emote_id in emote_health_manager.disabled_emotes:
+                        emote_health_manager.disabled_emotes.remove(emote_id)
+                    emote_health_manager.save_health_data()
+                    await send_response(f"♻️ Estado del emote {emote_id} reiniciado")
+                    log_event("ADMIN", f"{username} reinició estado del emote {emote_id}")
+                else:
+                    await send_response(f"❌ Emote {emote_id} no encontrado en estadísticas")
+            else:
+                emote_health_manager.emote_stats = {}
+                emote_health_manager.disabled_emotes = set()
+                emote_health_manager.save_health_data()
+                await send_response("♻️ Todas las estadísticas de emotes han sido reiniciadas")
+                log_event("ADMIN", f"{username} reinició todas las estadísticas de emotes")
+            return
+
         # Comando !tp [punto]
         if msg.startswith("!tp "):
             point_name = msg[4:].strip().lower()
@@ -3426,7 +3652,7 @@ class Bot(BaseBot):
             log_event("ERROR", f"Error en bucle de emote copiado: {e}")
 
     async def start_auto_emote_cycle(self):
-        """Ciclo automático de emotes"""
+        """Ciclo automático de emotes con gestión de salud"""
         await asyncio.sleep(3)
         
         # Desactivar modo de emote copiado si estaba activo
@@ -3437,13 +3663,22 @@ class Bot(BaseBot):
         # Filtrar solo emotes gratuitos
         free_emotes = {num: data for num, data in emotes.items() if data.get("is_free", True)}
         
+        # Mostrar estadísticas de salud de emotes
+        stats_summary = emote_health_manager.get_stats_summary()
         safe_print(f"🎭 INICIANDO CICLO AUTOMÁTICO DE {len(free_emotes)} EMOTES GRATUITOS...")
-        log_event("BOT", f"Iniciando ciclo automático de {len(free_emotes)} emotes gratuitos")
+        safe_print(f"📊 Estado de salud: {stats_summary}")
+        log_event("BOT", f"Iniciando ciclo automático de {len(free_emotes)} emotes gratuitos - {stats_summary}")
+        
+        consecutive_transport_errors = 0
+        max_transport_errors = 3
         
         try:
             cycle_count = 0
             while True:
                 cycle_count += 1
+                emotes_run = 0
+                emotes_skipped = 0
+                
                 safe_print(f"🔄 Ciclo #{cycle_count} - Iniciando secuencia de {len(free_emotes)} emotes")
                 
                 for number, emote_data in free_emotes.items():
@@ -3455,21 +3690,59 @@ class Bot(BaseBot):
                     emote_name = emote_data["name"]
                     emote_duration = emote_data.get("duration", 5.0)
                     
+                    # Verificar si el emote debe ejecutarse
+                    if not emote_health_manager.should_run(emote_id, emote_name):
+                        emotes_skipped += 1
+                        continue
+                    
                     try:
                         await self.highrise.send_emote(emote_id, self.bot_id)
-                        if int(number) % 20 == 0:
-                            safe_print(f"🎭 Emote #{number}/{len(free_emotes)}: {emote_name}")
+                        emote_health_manager.record_success(emote_id, emote_name)
+                        consecutive_transport_errors = 0
+                        emotes_run += 1
+                        
+                        if emotes_run % 20 == 0:
+                            safe_print(f"🎭 Emote #{emotes_run}/{len(free_emotes)}: {emote_name}")
+                        
                         await asyncio.sleep(max(0.1, emote_duration - 0.3))
+                        
                     except Exception as e:
-                        safe_print(f"❌ Error emote #{number} ({emote_name}): {e}")
-                        await asyncio.sleep(0.5)
+                        error_msg = str(e)
+                        is_transport_error = emote_health_manager.record_failure(emote_id, emote_name, error_msg)
+                        
+                        if is_transport_error:
+                            consecutive_transport_errors += 1
+                            safe_print(f"🔴 Error de transporte #{consecutive_transport_errors} con emote {emote_name}: {error_msg}")
+                            log_event("ERROR", f"Error de transporte con emote {emote_name}: {error_msg}")
+                            
+                            # Si hay demasiados errores de transporte consecutivos, abortar ciclo
+                            if consecutive_transport_errors >= max_transport_errors:
+                                safe_print(f"🛑 ABORTANDO CICLO: {consecutive_transport_errors} errores de transporte consecutivos")
+                                log_event("ERROR", f"Ciclo abortado por {consecutive_transport_errors} errores de transporte")
+                                
+                                # Esperar con backoff exponencial antes de reintentar
+                                backoff_time = min(2 ** consecutive_transport_errors, 60)
+                                safe_print(f"⏱️ Esperando {backoff_time}s antes de reintentar...")
+                                await asyncio.sleep(backoff_time)
+                                
+                                # Reiniciar contador para el siguiente ciclo
+                                consecutive_transport_errors = 0
+                                break
+                        else:
+                            safe_print(f"⚠️ Error con emote {emote_name}: {error_msg}")
+                        
+                        await asyncio.sleep(1.0)
                         continue
                 
-                safe_print(f"✅ Ciclo #{cycle_count} completado. Esperando 2 segundos...")
+                if emotes_skipped > 0:
+                    safe_print(f"⏭️ Emotes omitidos por problemas: {emotes_skipped}")
+                
+                safe_print(f"✅ Ciclo #{cycle_count} completado. Ejecutados: {emotes_run}, Omitidos: {emotes_skipped}")
                 await asyncio.sleep(2.0)
+                
         except Exception as e:
             safe_print(f"❌ ERROR CRÍTICO en ciclo automático: {e}")
-            log_event("ERROR", f"Error en ciclo automático: {e}")
+            log_event("ERROR", f"Error crítico en ciclo automático: {e}")
 
     async def setup_initial_bot_appearance(self):
         """Configura apariencia inicial del bot"""
