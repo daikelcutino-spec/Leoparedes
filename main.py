@@ -428,7 +428,7 @@ emotes = {
     "80": {"id": "idle_singing", "name": "singalong", "duration": 11.31, "is_free": True},
     "81": {"id": "emote-frog", "name": "frog", "duration": 16.14, "is_free": True},
     "82": {"id": "dance-macarena", "name": "macarena", "duration": 15.0, "is_free": True},
-    "83": {"id": "emote-kissing-passionate", "name": "kiss", "duration": 10.47, "is_free": True},
+    "83": {"id": "emote-kissing-passionate", "name": "kiss", "duration": 9.5, "is_free": True},
     "84": {"id": "emoji-shake-head", "name": "shakehead", "duration": 3.5, "is_free": True},
     "85": {"id": "idle-sad", "name": "sad", "duration": 25.24, "is_free": True},
     "86": {"id": "emoji-nod", "name": "nod", "duration": 2.5, "is_free": True},
