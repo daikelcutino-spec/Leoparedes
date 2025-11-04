@@ -119,6 +119,15 @@ class BartenderBot(BaseBot):
         await asyncio.sleep(5)  # Esperar al inicio
         consecutive_errors = 0
         max_consecutive_errors = 3
+        
+        # Duraciones aproximadas de emotes comunes (en segundos)
+        emote_durations = {
+            "emote-ghost-idle": 20.43,  # ghostfloat
+            "emote-dab": 3.75,
+            "dance-gangnamstyle": 15.0,
+            "idle-floating": 27.60,  # fairyfloat
+            "emote-looping": 9.89,  # fairytwirl
+        }
 
         while True:
             try:
@@ -126,8 +135,13 @@ class BartenderBot(BaseBot):
                 if self.emote_loop_active and not self.is_in_call:
                     await self.highrise.send_emote(self.current_emote)
                     consecutive_errors = 0  # Resetear contador en caso de éxito
-                    # Espera mínima para bucle continuo
-                    await asyncio.sleep(0.5)
+                    
+                    # Obtener duración del emote actual
+                    emote_duration = emote_durations.get(self.current_emote, 10.0)
+                    
+                    # Esperar la duración del emote menos un pequeño margen
+                    # para que se repita de forma continua pero completa
+                    await asyncio.sleep(max(0.5, emote_duration - 0.3))
                 else:
                     # Si está desactivado o en llamada, esperar
                     await asyncio.sleep(2)
