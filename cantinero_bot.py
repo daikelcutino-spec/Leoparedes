@@ -188,27 +188,6 @@ class BartenderBot(BaseBot):
             # Esperar 2 minutos (120 segundos) para el siguiente mensaje
             await asyncio.sleep(120)
 
-    async def send_user_emote_loop(self, user_id: str, emote_id: str, username: str):
-        """Ejecuta un emote en bucle infinito para un usuario específico"""
-        safe_print(f"🎭 Iniciando emote loop '{emote_id}' para usuario {username}")
-        consecutive_errors = 0
-        max_consecutive_errors = 3
-        
-        while True:
-            try:
-                await self.highrise.send_emote(emote_id, user_id)
-                consecutive_errors = 0
-                await asyncio.sleep(5.0)  # Esperar 5 segundos entre repeticiones
-            except Exception as e:
-                consecutive_errors += 1
-                safe_print(f"⚠️ Error en emote loop para {username} ({consecutive_errors}/{max_consecutive_errors}): {e}")
-                
-                if consecutive_errors >= max_consecutive_errors:
-                    safe_print(f"❌ Deteniendo emote loop para {username} tras {max_consecutive_errors} errores")
-                    break
-                
-                await asyncio.sleep(10)  # Esperar más tiempo si hay error
-    
     async def start_auto_emote_cycle(self):
         """Ciclo automático de todos los emotes"""
         await asyncio.sleep(2)
@@ -848,30 +827,6 @@ class BartenderBot(BaseBot):
                 safe_print(f"✅ Emote #{emote_num} ({emote_data['name']}) activado por {username}")
             else:
                 await self.highrise.chat(f"❌ Emote #{emote_num} no existe")
-            return
-        
-        # Comando especial "floss" para admin/owner - ejecuta emote en el usuario
-        if msg.lower() == "floss":
-            if not is_admin_or_owner:
-                return
-            
-            try:
-                # Buscar el emote floss en la lista
-                floss_emote = None
-                for num, data in emotes.items():
-                    if "floss" in data["name"].lower() or "floss" in data["id"].lower():
-                        floss_emote = data
-                        break
-                
-                if floss_emote:
-                    # Ejecutar el emote en bucle infinito en el usuario que lo solicitó
-                    asyncio.create_task(self.send_user_emote_loop(user_id, floss_emote["id"], username))
-                    await self.highrise.chat(f"🎭 @{username} activó emote floss en bucle infinito")
-                    safe_print(f"✅ Emote floss activado para {username}")
-                else:
-                    await self.highrise.chat("❌ Emote floss no encontrado")
-            except Exception as e:
-                safe_print(f"❌ Error activando floss para {username}: {e}")
             return
         
         # Comando por nombre: !ghostfloat, !dab, etc.
