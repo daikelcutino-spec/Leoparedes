@@ -347,6 +347,7 @@ class BartenderBot(BaseBot):
             "18": {"id": "idle-wild", "name": "scritchy"},
             "19": {"id": "idle-nervous", "name": "bitnervous"},
             "20": {"id": "emote-iceskating", "name": "iceskating"},
+            "21": {"id": "dance-floss", "name": "floss"},
             "140": {"id": "emote-ghost-idle", "name": "ghostfloat"},
             "187": {"id": "emote-dab", "name": "dab"},
             "188": {"id": "dance-gangnamstyle", "name": "gangnamstyle"}
