@@ -332,12 +332,20 @@ class BartenderBot(BaseBot):
             safe_print(f"📞 Llamada completada con {username} (Admin/Owner: {is_admin_or_owner})")
 
     async def on_user_join(self, user: User, position: Union[Position, AnchorPosition]) -> None:
-        """Saluda a los usuarios cuando entran a la sala"""
+        """Saluda a los usuarios cuando entran a la sala con reintentos"""
         greeting = "Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad."
-        try:
-            await self.highrise.send_whisper(user.id, greeting)
-            safe_print(f"✅ Saludo enviado a {user.username}")
-        except Exception as e:
-            print(f"Error al saludar a {user.username}: {e}")
+        max_attempts = 3
+        
+        for attempt in range(1, max_attempts + 1):
+            try:
+                await asyncio.sleep(0.5 * attempt)  # Delay incremental para evitar rate limiting
+                await self.highrise.send_whisper(user.id, greeting)
+                safe_print(f"✅ Saludo cantinero enviado a {user.username} (intento {attempt})")
+                break  # Éxito, salir del loop
+            except Exception as e:
+                if attempt < max_attempts:
+                    safe_print(f"⚠️ Cantinero intento {attempt} fallido para {user.username}: {e}. Reintentando...")
+                else:
+                    safe_print(f"❌ Cantinero no pudo saludar a {user.username} después de {max_attempts} intentos: {e}")
 
     

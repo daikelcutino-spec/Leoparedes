@@ -83,6 +83,7 @@ A separate `cantinero_bot.py` operates as a bartender, performing a continuous f
 - **Bucle de emotes mejorado**: Reducido el tiempo de espera en `send_emote_loop` a `max(0.1, duration - 0.3)` para eliminar pausas visibles y lograr un flujo continuo sin interrupciones
 - **Logging del bot cantinero mejorado**: Agregados timestamps, tipos de error detallados y traceback completo para mejor debugging
 - **Corrección de bug**: Agregada verificación `if self.bot_id` antes de teleportar en `attempt_reconnection` para evitar errores cuando bot_id es None
+- **Sistema de bienvenida confiable**: Implementado sistema de reintentos (3 intentos con delays incrementales) en ambos bots para garantizar que los mensajes de bienvenida lleguen a todos los usuarios, evitando problemas de rate limiting de la API
 
 ### October 31, 2025
 - **Removed secrets dependency**: All configuration now uses `config.json` files for easier local PC deployment

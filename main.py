@@ -3135,11 +3135,22 @@ class Bot(BaseBot):
         USER_JOIN_TIMES[user_id] = time.time()
         USER_INFO[user_id]["time_joined"] = time.time()
 
-        try:
-            await self.highrise.send_whisper(user_id, "💫🌚Bienvenido a la sala ✓NOCTURNO✓ ponte cómodo y disfruta al máximo🌚💫")
-            safe_print(f"✅ Bienvenida enviada a {username}")
-        except Exception as e:
-            safe_print(f"⚠️ Error enviando bienvenida a {username}: {e}")
+        # Enviar bienvenida con reintentos
+        welcome_message = "💫🌚Bienvenido a la sala ✓NOCTURNO✓ ponte cómodo y disfruta al máximo🌚💫"
+        max_attempts = 3
+        
+        for attempt in range(1, max_attempts + 1):
+            try:
+                await asyncio.sleep(0.5 * attempt)  # Delay incremental para evitar rate limiting
+                await self.highrise.send_whisper(user_id, welcome_message)
+                safe_print(f"✅ Bienvenida enviada a {username} (intento {attempt})")
+                break  # Éxito, salir del loop
+            except Exception as e:
+                if attempt < max_attempts:
+                    safe_print(f"⚠️ Intento {attempt} fallido para {username}: {e}. Reintentando...")
+                else:
+                    safe_print(f"❌ Error enviando bienvenida a {username} después de {max_attempts} intentos: {e}")
+                    log_event("WARNING", f"Fallo bienvenida a {username}: {e}")
 
     async def on_user_leave(self, user: User) -> None:
         """Usuario sale de la sala"""
