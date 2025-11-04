@@ -85,7 +85,20 @@ A separate `cantinero_bot.py` operates as a bartender with a configurable emote 
 
 ## Recent Updates
 
-### November 4, 2025
+### November 4, 2025 (Tarde)
+- **Sistema de Gestión de Salud de Emotes (EmoteHealthManager)**:
+  - Implementado sistema inteligente que detecta y deshabilita automáticamente emotes problemáticos que causan desconexiones del bot
+  - **Persistencia completa**: Todos los datos se guardan en `data/emote_health.json` y sobreviven reinicios del bot
+  - **Umbrales automáticos**:
+    - 3 fallos consecutivos → emote en cooldown temporal (24 horas)
+    - 5 fallos consecutivos → emote deshabilitado permanentemente
+    - Detección inteligente de errores de transporte vs. errores normales
+  - **Backoff exponencial**: Si hay 3+ errores de transporte consecutivos, el bot aborta el ciclo actual y espera antes de reintentar (evita desconexiones)
+  - **Nuevos comandos de administrador**:
+    - `!emotestats` - Ver estadísticas de salud de emotes y lista de emotes deshabilitados (Admin/Owner)
+    - `!emotereset [emote_id]` - Reiniciar estado de un emote específico o todos los emotes (Owner)
+  - **Logs mejorados**: Reporta emotes en cuarentena, emotes omitidos y estadísticas de salud en cada ciclo
+  - **Balance I/O**: Guarda estado inmediatamente en cambios críticos (nuevos emotes, fallos, recuperaciones) y cada 20 éxitos para emotes conocidos
 - **Emotes optimizados**: Eliminados los emotes "icon" (key 49) y "omg" (key 45) del catálogo
 - **Bucle de emotes mejorado**: Reducido el tiempo de espera en `send_emote_loop` a `max(0.1, duration - 0.3)` para eliminar pausas visibles y lograr un flujo continuo sin interrupciones
 - **Logging del bot cantinero mejorado**: Agregados timestamps, tipos de error detallados y traceback completo para mejor debugging
