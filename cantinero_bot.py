@@ -28,11 +28,11 @@ class BartenderBot(BaseBot):
         self.call_partner = None
         self.users_called = set()  # Usuarios que ya llamaron (solo pueden llamar 1 vez)
         self.users_blocked_notified = set()  # Usuarios que ya recibieron mensaje de bloqueo
-        
+
         # Sistema de emotes en bucle
         self.current_emote = "emote-ghost-idle"  # ghostfloat - emote por defecto
         self.emote_loop_active = True  # Activado por defecto
-        
+
         # Lista de bebidas para el comando !trago
         self.bebidas = [
             "🍺 Una cerveza bien fría",
@@ -101,13 +101,13 @@ class BartenderBot(BaseBot):
             safe_print(f"✅ Emote loop iniciado con: {self.current_emote} (ghostfloat)")
         except Exception as e:
             safe_print(f"❌ Error iniciando emote_loop: {e}")
-        
+
         try:
             asyncio.create_task(self.auto_message_loop())
             safe_print("✅ Auto message loop iniciado")
         except Exception as e:
             safe_print(f"❌ Error iniciando auto_message_loop: {e}")
-        
+
         try:
             asyncio.create_task(self.auto_reconnect_loop())
             safe_print("✅ Auto reconnect loop iniciado")
@@ -119,7 +119,7 @@ class BartenderBot(BaseBot):
         await asyncio.sleep(5)  # Esperar al inicio
         consecutive_errors = 0
         max_consecutive_errors = 3
-        
+
         # Duraciones aproximadas de emotes comunes (en segundos)
         emote_durations = {
             "emote-ghost-idle": 20.43,  # ghostfloat
@@ -135,10 +135,10 @@ class BartenderBot(BaseBot):
                 if self.emote_loop_active and not self.is_in_call:
                     await self.highrise.send_emote(self.current_emote)
                     consecutive_errors = 0  # Resetear contador en caso de éxito
-                    
+
                     # Obtener duración del emote actual
                     emote_duration = emote_durations.get(self.current_emote, 10.0)
-                    
+
                     # Esperar la duración del emote menos un pequeño margen
                     # para que se repita de forma continua pero completa
                     await asyncio.sleep(max(0.5, emote_duration - 0.3))
@@ -148,12 +148,12 @@ class BartenderBot(BaseBot):
             except Exception as e:
                 consecutive_errors += 1
                 safe_print(f"⚠️ Error emote loop ({consecutive_errors}/{max_consecutive_errors}): {type(e).__name__}: {e}")
-                
+
                 # Backoff exponencial: 10s, 20s, 40s
                 wait_time = min(10 * (2 ** (consecutive_errors - 1)), 60)
                 safe_print(f"⏳ Esperando {wait_time}s antes de reintentar emote...")
                 await asyncio.sleep(wait_time)
-                
+
                 # Si hay demasiados errores, resetear después de espera larga
                 if consecutive_errors >= max_consecutive_errors:
                     consecutive_errors = 0
@@ -178,7 +178,7 @@ class BartenderBot(BaseBot):
             except Exception as e:
                 consecutive_errors += 1
                 safe_print(f"❌ Error en auto_message_loop ({consecutive_errors}/{max_consecutive_errors}): {type(e).__name__}: {e}")
-                
+
                 # Si hay muchos errores, esperar más
                 if consecutive_errors >= max_consecutive_errors:
                     safe_print(f"⚠️ Demasiados errores en mensajes automáticos, pausando 5 minutos...")
@@ -191,7 +191,7 @@ class BartenderBot(BaseBot):
     async def start_auto_emote_cycle(self):
         """Ciclo automático de todos los emotes"""
         await asyncio.sleep(2)
-        
+
         # Cargar emotes completos
         emotes = {
             "1": {"id": "emote-looping", "name": "fairytwirl", "duration": 9.89},
@@ -417,23 +417,23 @@ class BartenderBot(BaseBot):
             "223": {"id": "emoji-ghost", "name": "ghost", "duration": 3.74},
             "224": {"id": "emoji-mind-blown", "name": "mindblown", "duration": 3.46}
         }
-        
+
         safe_print(f"🎭 INICIANDO CICLO AUTOMÁTICO DE {len(emotes)} EMOTES...")
-        
+
         # Desactivar loop único
         self.emote_loop_active = False
-        
+
         try:
             cycle_count = 0
             while True:
                 cycle_count += 1
                 safe_print(f"🔄 Ciclo #{cycle_count} - Iniciando secuencia de {len(emotes)} emotes")
-                
+
                 for number, emote_data in emotes.items():
                     emote_id = emote_data["id"]
                     emote_name = emote_data["name"]
                     emote_duration = emote_data.get("duration", 5.0)
-                    
+
                     try:
                         await self.highrise.send_emote(emote_id, self.bot_id)
                         if int(number) % 20 == 0:
@@ -443,21 +443,21 @@ class BartenderBot(BaseBot):
                         safe_print(f"❌ Error emote #{number} ({emote_name}): {e}")
                         await asyncio.sleep(0.5)
                         continue
-                
+
                 safe_print(f"✅ Ciclo #{cycle_count} completado. Esperando 2 segundos...")
                 await asyncio.sleep(2.0)
         except Exception as e:
             safe_print(f"❌ ERROR en ciclo automático: {e}")
-    
+
     async def auto_reconnect_loop(self):
         """Sistema de reconexión automática mejorado con mejor logging"""
         consecutive_failures = 0
         last_check_time = None
-        
+
         while True:
             try:
                 await asyncio.sleep(30)  # Verificar cada 30 segundos para reducir carga en API
-                
+
                 from datetime import datetime
                 current_time = datetime.now().strftime("%H:%M:%S")
                 last_check_time = current_time
@@ -481,7 +481,7 @@ class BartenderBot(BaseBot):
                     else:
                         consecutive_failures += 1
                         safe_print(f"[{current_time}] ⚠️ Bot cantinero NO encontrado en sala ({consecutive_failures}/3)")
-                        
+
                         if consecutive_failures >= 3:
                             safe_print(f"[{current_time}] 🔄 Iniciando reconexión automática...")
                             await self.attempt_reconnection()
@@ -491,7 +491,7 @@ class BartenderBot(BaseBot):
                     consecutive_failures += 1
                     safe_print(f"[{current_time}] ❌ Error verificando presencia ({consecutive_failures}/3)")
                     safe_print(f"[{current_time}] Detalle del error: {type(e).__name__}: {str(e)}")
-                    
+
                     if consecutive_failures >= 3:
                         safe_print(f"[{current_time}] 🔄 Intentando reconexión tras {consecutive_failures} fallos...")
                         await self.attempt_reconnection()
@@ -516,10 +516,10 @@ class BartenderBot(BaseBot):
                 room_users = await self.highrise.get_room_users()
                 if not isinstance(room_users, Error):
                     safe_print("✅ Reconexión exitosa del bot cantinero!")
-                    
+
                     # Esperar antes de reiniciar tareas
                     await asyncio.sleep(2)
-                    
+
                     # Teletransportar al punto de inicio
                     try:
                         if self.bot_id:
@@ -570,15 +570,15 @@ class BartenderBot(BaseBot):
             try:
                 # Obtener el outfit del usuario que ejecuta el comando
                 user_outfit_response = await self.highrise.get_user_outfit(user_id)
-                
+
                 if isinstance(user_outfit_response, Error):
                     await self.highrise.chat("❌ Error obteniendo tu outfit")
                     safe_print(f"❌ Error obteniendo outfit: {user_outfit_response.message}")
                     return
-                
+
                 # Copiar el outfit al bot cantinero
                 await self.highrise.set_outfit(user_outfit_response.outfit)
-                
+
                 await self.highrise.chat(f"👔 ¡Outfit de @{username} copiado exitosamente!")
                 safe_print(f"✅ Bot cantinero copió el outfit de {username}")
             except Exception as e:
@@ -811,13 +811,13 @@ class BartenderBot(BaseBot):
             "223": {"id": "emoji-ghost", "name": "ghost", "duration": 3.74},
             "224": {"id": "emoji-mind-blown", "name": "mindblown", "duration": 3.46}
         }
-        
+
         # Comando por número: !1, !2, etc.
         if msg.startswith("!") and msg[1:].isdigit():
             if not is_admin_or_owner:
                 await self.highrise.chat("❌ Solo admin y propietario pueden cambiar emotes")
                 return
-            
+
             emote_num = msg[1:]
             if emote_num in emotes:
                 emote_data = emotes[emote_num]
@@ -828,67 +828,67 @@ class BartenderBot(BaseBot):
             else:
                 await self.highrise.chat(f"❌ Emote #{emote_num} no existe")
             return
-        
+
         # Comando por nombre: !ghostfloat, !dab, etc.
         if msg.startswith("!") and not msg[1:].isdigit() and msg.lower() != "!trago" and msg.lower() != "!copy" and msg.lower() != "!canstop" and msg.lower() != "!canstart" and msg.lower() != "!canstatus":
             if not is_admin_or_owner:
                 return
-            
+
             emote_name = msg[1:].lower().strip()
             emote_found = None
             emote_number = None
-            
+
             # Buscar por nombre
             for num, data in emotes.items():
                 if data["name"].lower() == emote_name or data["id"].lower() == emote_name:
                     emote_found = data
                     emote_number = num
                     break
-            
+
             if emote_found:
                 self.current_emote = emote_found["id"]
                 self.emote_loop_active = True
                 await self.highrise.chat(f"🎭 Emote cambiado a: {emote_found['name']} (#{emote_number}, bucle infinito)")
                 safe_print(f"✅ Emote '{emote_found['name']}' activado por {username}")
             return
-        
+
         # Comando !canstop - Detener emote en bucle (Solo Admin/Owner)
         if msg.lower() == "!canstop":
             if not is_admin_or_owner:
                 await self.highrise.chat("❌ Solo admin y propietario pueden detener el emote")
                 return
-            
+
             self.emote_loop_active = False
             await self.highrise.chat("⏸️ Emote detenido")
             safe_print(f"⏸️ Emote detenido por {username}")
             return
-        
+
         # Comando !canstart - Reanudar emote en bucle (Solo Admin/Owner)
         if msg.lower() == "!canstart":
             if not is_admin_or_owner:
                 await self.highrise.chat("❌ Solo admin y propietario pueden iniciar el emote")
                 return
-            
+
             self.emote_loop_active = True
             await self.highrise.chat(f"▶️ Emote reanudado: {self.current_emote}")
             safe_print(f"▶️ Emote reanudado por {username}: {self.current_emote}")
             return
-        
+
         # Comando !canstatus - Ver estado actual del emote (Solo Admin/Owner)
         if msg.lower() == "!canstatus":
             if not is_admin_or_owner:
                 return
-            
+
             status = "🟢 Activo" if self.emote_loop_active else "🔴 Detenido"
             await self.highrise.chat(f"📊 Estado:\nEmote: {self.current_emote}\nEstado: {status}")
             return
-        
+
         # Comando !automode - Ciclo infinito de todos los emotes (Solo Admin/Owner)
         if msg.lower() == "!automode":
             if not is_admin_or_owner:
                 await self.highrise.chat("❌ Solo admin y propietario pueden activar modo automático")
                 return
-            
+
             # Iniciar ciclo automático
             asyncio.create_task(self.start_auto_emote_cycle())
             await self.highrise.chat(f"🎭 ¡Modo automático activado!\n📊 Ciclo de {len(emotes)} emotes iniciado")
@@ -961,7 +961,7 @@ class BartenderBot(BaseBot):
         """Saluda a los usuarios cuando entran a la sala con reintentos"""
         greeting = "Bienvenido a🕷️NOCTURNO 🕷️. El velo se ha abierto solo para ti. Tu presencia es una nueva sombra en nuestra oscuridad."
         max_attempts = 3
-        
+
         for attempt in range(1, max_attempts + 1):
             try:
                 await asyncio.sleep(0.5 * attempt)  # Delay incremental para evitar rate limiting
@@ -973,5 +973,3 @@ class BartenderBot(BaseBot):
                     safe_print(f"⚠️ Cantinero intento {attempt} fallido para {user.username}: {e}. Reintentando...")
                 else:
                     safe_print(f"❌ Cantinero no pudo saludar a {user.username} después de {max_attempts} intentos: {e}")
-
-    
