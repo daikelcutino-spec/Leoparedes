@@ -95,7 +95,7 @@ class BartenderBot(BaseBot):
         asyncio.create_task(self.auto_reconnect_loop())
 
     async def floss_loop(self) -> None:
-        """Loop infinito que ejecuta el emote floss continuamente"""
+        """Loop infinito que ejecuta el emote floss continuamente sin pausas"""
         await asyncio.sleep(2)
 
         while True:
@@ -103,10 +103,15 @@ class BartenderBot(BaseBot):
                 if not self.is_in_call:
                     await self.highrise.send_emote("dance-floss")
                     safe_print("💃 Ejecutando emote floss automático")
-                await asyncio.sleep(12)
+                    # Esperar 11.8 segundos (el floss dura ~12s) para evitar pausas
+                    await asyncio.sleep(11.8)
+                else:
+                    # Si está en llamada, esperar y revisar cada segundo
+                    await asyncio.sleep(1)
             except Exception as e:
                 safe_print(f"⚠️ Error al enviar emote floss: {e}")
-                await asyncio.sleep(5)
+                # No pausar mucho tiempo en caso de error
+                await asyncio.sleep(2)
 
     async def auto_message_loop(self) -> None:
         """Loop que envía mensajes automáticos públicos cada 2 minutos"""
@@ -129,10 +134,12 @@ class BartenderBot(BaseBot):
             await asyncio.sleep(120)
 
     async def auto_reconnect_loop(self):
-        """Sistema de reconexión automática"""
+        """Sistema de reconexión automática mejorado"""
+        consecutive_failures = 0
+        
         while True:
             try:
-                await asyncio.sleep(30)
+                await asyncio.sleep(15)  # Verificar cada 15 segundos
 
                 # Verificar si el bot está en la sala
                 try:
@@ -143,13 +150,24 @@ class BartenderBot(BaseBot):
                     users = room_users.content
                     bot_in_room = any(u.id == self.bot_id for u, _ in users)
 
-                    if not bot_in_room:
-                        safe_print("⚠️ Bot cantinero desconectado de la sala, reconectando...")
-                        await self.attempt_reconnection()
+                    if bot_in_room:
+                        consecutive_failures = 0  # Resetear contador si está conectado
+                    else:
+                        consecutive_failures += 1
+                        safe_print(f"⚠️ Bot cantinero desconectado ({consecutive_failures}/3)")
+                        
+                        if consecutive_failures >= 3:
+                            safe_print("⚠️ Bot cantinero desconectado, reconectando...")
+                            await self.attempt_reconnection()
+                            consecutive_failures = 0
 
                 except Exception as e:
-                    safe_print(f"❌ Error verificando presencia del bot cantinero: {e}")
-                    await self.attempt_reconnection()
+                    consecutive_failures += 1
+                    safe_print(f"❌ Error verificando presencia ({consecutive_failures}/3): {e}")
+                    
+                    if consecutive_failures >= 3:
+                        await self.attempt_reconnection()
+                        consecutive_failures = 0
 
             except Exception as e:
                 safe_print(f"❌ Error en auto_reconnect_loop: {e}")
@@ -157,20 +175,32 @@ class BartenderBot(BaseBot):
 
     async def attempt_reconnection(self):
         """Intenta reconectar el bot cantinero"""
-        max_attempts = 5
+        max_attempts = 10
         for attempt in range(1, max_attempts + 1):
             try:
                 safe_print(f"🔄 Intento de reconexión {attempt}/{max_attempts}...")
 
-                await asyncio.sleep(attempt * 2)
+                # Esperar tiempo incremental
+                await asyncio.sleep(min(attempt * 3, 30))
 
                 room_users = await self.highrise.get_room_users()
                 if not isinstance(room_users, Error):
                     safe_print("✅ Reconexión exitosa del bot cantinero!")
-
-                    # Reiniciar tareas
-                    asyncio.create_task(self.floss_loop())
-                    asyncio.create_task(self.auto_message_loop())
+                    
+                    # Esperar antes de reiniciar tareas
+                    await asyncio.sleep(2)
+                    
+                    # Teletransportar al punto de inicio
+                    try:
+                        import json
+                        with open("cantinero_config.json", "r", encoding="utf-8") as f:
+                            config = json.load(f)
+                        punto_inicio = config.get("punto_inicio")
+                        if punto_inicio:
+                            spawn_position = Position(punto_inicio["x"], punto_inicio["y"], punto_inicio["z"])
+                            await self.highrise.teleport(self.bot_id, spawn_position)
+                    except:
+                        pass
 
                     return True
 
@@ -178,6 +208,7 @@ class BartenderBot(BaseBot):
                 safe_print(f"❌ Fallo en intento {attempt}: {e}")
 
         safe_print("❌ No se pudo reconectar después de varios intentos")
+        safe_print("🔄 El bot seguirá intentando reconectar...")
         return False
 
     async def on_chat(self, user: User, message: str) -> None:
