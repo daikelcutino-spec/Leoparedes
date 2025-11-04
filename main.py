@@ -3077,7 +3077,8 @@ class Bot(BaseBot):
             else:
                 message += "✅ No hay emotes deshabilitados"
             
-            await send_response(message)
+            # Siempre enviar por whisper para comandos de estadísticas
+            await self.highrise.send_whisper(user_id, message)
             log_event("ADMIN", f"{username} consultó estadísticas de emotes")
             return
 
@@ -3095,15 +3096,15 @@ class Bot(BaseBot):
                     if emote_id in emote_health_manager.disabled_emotes:
                         emote_health_manager.disabled_emotes.remove(emote_id)
                     emote_health_manager.save_health_data()
-                    await send_response(f"♻️ Estado del emote {emote_id} reiniciado")
+                    await self.highrise.send_whisper(user_id, f"♻️ Estado del emote {emote_id} reiniciado")
                     log_event("ADMIN", f"{username} reinició estado del emote {emote_id}")
                 else:
-                    await send_response(f"❌ Emote {emote_id} no encontrado en estadísticas")
+                    await self.highrise.send_whisper(user_id, f"❌ Emote {emote_id} no encontrado en estadísticas")
             else:
                 emote_health_manager.emote_stats = {}
                 emote_health_manager.disabled_emotes = set()
                 emote_health_manager.save_health_data()
-                await send_response("♻️ Todas las estadísticas de emotes han sido reiniciadas")
+                await self.highrise.send_whisper(user_id, "♻️ Todas las estadísticas de emotes han sido reiniciadas")
                 log_event("ADMIN", f"{username} reinició todas las estadísticas de emotes")
             return
 
