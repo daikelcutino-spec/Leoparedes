@@ -3075,7 +3075,9 @@ class Bot(BaseBot):
                         message += f"• {name} ({emote_id[:15]}...): {failures} fallos\n"
                         message += f"  Último error: {last_error}\n"
             else:
-                message += "✅ No hay emotes deshabilitados"
+                message += "✅ No hay emotes deshabilitados\n\n"
+                message += "💡 El sistema está monitoreando activamente todos los emotes.\n"
+                message += "Si algún emote falla, será deshabilitado automáticamente."
             
             # Siempre enviar por whisper para comandos de estadísticas
             await self.highrise.send_whisper(user_id, message)
