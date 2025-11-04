@@ -221,11 +221,9 @@ emotes = {
     "42": {"id": "emote-punkguitar", "name": "punk", "duration": 10.59, "is_free": True},
     "43": {"id": "emote-gravity", "name": "zerogravity", "duration": 9.02, "is_free": True},
     "44": {"id": "emote-pose5", "name": "beautiful", "duration": 5.49, "is_free": True},
-    "45": {"id": "emote-shocked", "name": "omg", "duration": 5.59, "is_free": False},
     "46": {"id": "idle-dance-casual", "name": "casual", "duration": 9.57, "is_free": True},
     "47": {"id": "emote-pose1", "name": "wink", "duration": 4.71, "is_free": True},
     "48": {"id": "emote-pose3", "name": "fightme", "duration": 5.57, "is_free": True},
-    "49": {"id": "emote-superpose", "name": "icon", "duration": 5.43, "is_free": False},
     "50": {"id": "emote-cute", "name": "cute", "duration": 7.20, "is_free": True},
     "51": {"id": "emote-cutey", "name": "cutey", "duration": 4.07, "is_free": True},
     "52": {"id": "emote-greedy", "name": "greedy", "duration": 5.72, "is_free": True},
@@ -1060,7 +1058,7 @@ class Bot(BaseBot):
             try:
                 await self.highrise.send_emote(emote_id, user_id)
                 duration = emote_info.get("duration", 5)
-                await asyncio.sleep(duration)
+                await asyncio.sleep(max(0.1, duration - 0.3))
             except Exception as e:
                 print(f"Error en send_emote_loop: {e}")
                 break

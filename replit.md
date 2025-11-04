@@ -78,6 +78,12 @@ A separate `cantinero_bot.py` operates as a bartender, performing a continuous f
 
 ## Recent Updates
 
+### November 4, 2025
+- **Emotes optimizados**: Eliminados los emotes "icon" (key 49) y "omg" (key 45) del catálogo
+- **Bucle de emotes mejorado**: Reducido el tiempo de espera en `send_emote_loop` a `max(0.1, duration - 0.3)` para eliminar pausas visibles y lograr un flujo continuo sin interrupciones
+- **Logging del bot cantinero mejorado**: Agregados timestamps, tipos de error detallados y traceback completo para mejor debugging
+- **Corrección de bug**: Agregada verificación `if self.bot_id` antes de teleportar en `attempt_reconnection` para evitar errores cuando bot_id es None
+
 ### October 31, 2025
 - **Removed secrets dependency**: All configuration now uses `config.json` files for easier local PC deployment
 - **Enhanced permissions**: Owner and Admin now have unrestricted access to ALL commands and zones

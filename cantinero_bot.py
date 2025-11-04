@@ -134,43 +134,56 @@ class BartenderBot(BaseBot):
             await asyncio.sleep(120)
 
     async def auto_reconnect_loop(self):
-        """Sistema de reconexión automática mejorado"""
+        """Sistema de reconexión automática mejorado con mejor logging"""
         consecutive_failures = 0
+        last_check_time = None
         
         while True:
             try:
                 await asyncio.sleep(15)  # Verificar cada 15 segundos
+                
+                from datetime import datetime
+                current_time = datetime.now().strftime("%H:%M:%S")
+                last_check_time = current_time
 
                 # Verificar si el bot está en la sala
                 try:
                     room_users = await self.highrise.get_room_users()
                     if isinstance(room_users, Error):
-                        raise Exception("Error obteniendo usuarios de la sala")
+                        safe_print(f"[{current_time}] ❌ Error API: {room_users.message}")
+                        raise Exception(f"Error API obteniendo usuarios: {room_users.message}")
 
                     users = room_users.content
                     bot_in_room = any(u.id == self.bot_id for u, _ in users)
 
                     if bot_in_room:
                         consecutive_failures = 0  # Resetear contador si está conectado
+                        # Logging solo cada 5 minutos para no saturar
+                        if consecutive_failures == 0 and int(current_time.split(':')[1]) % 5 == 0:
+                            safe_print(f"[{current_time}] ✅ Bot cantinero conectado OK")
                     else:
                         consecutive_failures += 1
-                        safe_print(f"⚠️ Bot cantinero desconectado ({consecutive_failures}/3)")
+                        safe_print(f"[{current_time}] ⚠️ Bot cantinero NO encontrado en sala ({consecutive_failures}/3)")
                         
                         if consecutive_failures >= 3:
-                            safe_print("⚠️ Bot cantinero desconectado, reconectando...")
+                            safe_print(f"[{current_time}] 🔄 Iniciando reconexión automática...")
                             await self.attempt_reconnection()
                             consecutive_failures = 0
 
                 except Exception as e:
                     consecutive_failures += 1
-                    safe_print(f"❌ Error verificando presencia ({consecutive_failures}/3): {e}")
+                    safe_print(f"[{current_time}] ❌ Error verificando presencia ({consecutive_failures}/3)")
+                    safe_print(f"[{current_time}] Detalle del error: {type(e).__name__}: {str(e)}")
                     
                     if consecutive_failures >= 3:
+                        safe_print(f"[{current_time}] 🔄 Intentando reconexión tras {consecutive_failures} fallos...")
                         await self.attempt_reconnection()
                         consecutive_failures = 0
 
             except Exception as e:
-                safe_print(f"❌ Error en auto_reconnect_loop: {e}")
+                safe_print(f"❌ Error crítico en auto_reconnect_loop: {type(e).__name__}: {str(e)}")
+                import traceback
+                safe_print(f"Traceback: {traceback.format_exc()}")
                 await asyncio.sleep(5)
 
     async def attempt_reconnection(self):
@@ -192,13 +205,14 @@ class BartenderBot(BaseBot):
                     
                     # Teletransportar al punto de inicio
                     try:
-                        import json
-                        with open("cantinero_config.json", "r", encoding="utf-8") as f:
-                            config = json.load(f)
-                        punto_inicio = config.get("punto_inicio")
-                        if punto_inicio:
-                            spawn_position = Position(punto_inicio["x"], punto_inicio["y"], punto_inicio["z"])
-                            await self.highrise.teleport(self.bot_id, spawn_position)
+                        if self.bot_id:
+                            import json
+                            with open("cantinero_config.json", "r", encoding="utf-8") as f:
+                                config = json.load(f)
+                            punto_inicio = config.get("punto_inicio")
+                            if punto_inicio:
+                                spawn_position = Position(punto_inicio["x"], punto_inicio["y"], punto_inicio["z"])
+                                await self.highrise.teleport(self.bot_id, spawn_position)
                     except:
                         pass
 
