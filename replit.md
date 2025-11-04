@@ -84,6 +84,12 @@ A separate `cantinero_bot.py` operates as a bartender, performing a continuous f
 - **Logging del bot cantinero mejorado**: Agregados timestamps, tipos de error detallados y traceback completo para mejor debugging
 - **Corrección de bug**: Agregada verificación `if self.bot_id` antes de teleportar en `attempt_reconnection` para evitar errores cuando bot_id es None
 - **Sistema de bienvenida confiable**: Implementado sistema de reintentos (3 intentos con delays incrementales) en ambos bots para garantizar que los mensajes de bienvenida lleguen a todos los usuarios, evitando problemas de rate limiting de la API
+- **Prevención de desconexiones del bot cantinero**: 
+  - Reducida frecuencia de emotes de 11.8s a 18s para evitar rate limiting (~3 emotes/min vs ~5 antes)
+  - Implementado backoff exponencial en caso de errores (10s, 20s, 40s)
+  - Reducida frecuencia de verificaciones de reconexión de 15s a 30s para menor carga en API
+  - Eliminado keepalive redundante que duplicaba llamadas pesadas a la API
+  - Mejorado manejo de errores con contadores y límites inteligentes
 
 ### October 31, 2025
 - **Removed secrets dependency**: All configuration now uses `config.json` files for easier local PC deployment

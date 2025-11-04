@@ -74,6 +74,7 @@ class BartenderBot(BaseBot):
         """Se ejecuta cuando el bot se conecta a la sala"""
         self.bot_id = session_metadata.user_id
         safe_print(f"🕷️ Bot Cantinero NOCTURNO iniciado! ID: {self.bot_id}")
+        safe_print(f"🕷️ User ID: {session_metadata.user_id}")
 
         # Teletransportar al punto de inicio si está configurado
         try:
@@ -90,32 +91,60 @@ class BartenderBot(BaseBot):
         except Exception as e:
             safe_print(f"⚠️ No se pudo teletransportar al punto de inicio: {e}")
 
-        asyncio.create_task(self.floss_loop())
-        asyncio.create_task(self.auto_message_loop())
-        asyncio.create_task(self.auto_reconnect_loop())
+        # Iniciar todos los loops con manejo de errores
+        try:
+            asyncio.create_task(self.floss_loop())
+            safe_print("✅ Floss loop iniciado")
+        except Exception as e:
+            safe_print(f"❌ Error iniciando floss_loop: {e}")
+        
+        try:
+            asyncio.create_task(self.auto_message_loop())
+            safe_print("✅ Auto message loop iniciado")
+        except Exception as e:
+            safe_print(f"❌ Error iniciando auto_message_loop: {e}")
+        
+        try:
+            asyncio.create_task(self.auto_reconnect_loop())
+            safe_print("✅ Auto reconnect loop iniciado")
+        except Exception as e:
+            safe_print(f"❌ Error iniciando auto_reconnect_loop: {e}")
 
     async def floss_loop(self) -> None:
-        """Loop infinito que ejecuta el emote floss continuamente sin pausas"""
-        await asyncio.sleep(2)
+        """Loop infinito que ejecuta el emote floss con pausas para evitar rate limiting"""
+        await asyncio.sleep(5)  # Esperar más al inicio
+        consecutive_errors = 0
+        max_consecutive_errors = 3
 
         while True:
             try:
                 if not self.is_in_call:
                     await self.highrise.send_emote("dance-floss")
-                    safe_print("💃 Ejecutando emote floss automático")
-                    # Esperar 11.8 segundos (el floss dura ~12s) para evitar pausas
-                    await asyncio.sleep(11.8)
+                    consecutive_errors = 0  # Resetear contador en caso de éxito
+                    # Esperar 18 segundos para evitar rate limiting (antes era 11.8)
+                    # Esto reduce la frecuencia de ~5 emotes/min a ~3 emotes/min
+                    await asyncio.sleep(18)
                 else:
                     # Si está en llamada, esperar y revisar cada segundo
                     await asyncio.sleep(1)
             except Exception as e:
-                safe_print(f"⚠️ Error al enviar emote floss: {e}")
-                # No pausar mucho tiempo en caso de error
-                await asyncio.sleep(2)
+                consecutive_errors += 1
+                safe_print(f"⚠️ Error floss ({consecutive_errors}/{max_consecutive_errors}): {type(e).__name__}: {e}")
+                
+                # Backoff exponencial: 10s, 20s, 40s
+                wait_time = min(10 * (2 ** (consecutive_errors - 1)), 60)
+                safe_print(f"⏳ Esperando {wait_time}s antes de reintentar floss...")
+                await asyncio.sleep(wait_time)
+                
+                # Si hay demasiados errores, resetear después de espera larga
+                if consecutive_errors >= max_consecutive_errors:
+                    consecutive_errors = 0
 
     async def auto_message_loop(self) -> None:
         """Loop que envía mensajes automáticos públicos cada 2 minutos"""
         await asyncio.sleep(120)
+        consecutive_errors = 0
+        max_consecutive_errors = 3
 
         while True:
             try:
@@ -126,9 +155,17 @@ class BartenderBot(BaseBot):
                 await self.highrise.chat(message)
 
                 self.current_message_index = (self.current_message_index + 1) % len(auto_messages)
+                consecutive_errors = 0  # Resetear en caso de éxito
                 safe_print(f"📢 Mensaje automático público enviado: {message[:50]}...")
             except Exception as e:
-                print(f"Error en auto_message_loop: {e}")
+                consecutive_errors += 1
+                safe_print(f"❌ Error en auto_message_loop ({consecutive_errors}/{max_consecutive_errors}): {type(e).__name__}: {e}")
+                
+                # Si hay muchos errores, esperar más
+                if consecutive_errors >= max_consecutive_errors:
+                    safe_print(f"⚠️ Demasiados errores en mensajes automáticos, pausando 5 minutos...")
+                    await asyncio.sleep(300)  # 5 minutos
+                    consecutive_errors = 0
 
             # Esperar 2 minutos (120 segundos) para el siguiente mensaje
             await asyncio.sleep(120)
@@ -140,7 +177,7 @@ class BartenderBot(BaseBot):
         
         while True:
             try:
-                await asyncio.sleep(15)  # Verificar cada 15 segundos
+                await asyncio.sleep(30)  # Verificar cada 30 segundos para reducir carga en API
                 
                 from datetime import datetime
                 current_time = datetime.now().strftime("%H:%M:%S")
@@ -158,9 +195,10 @@ class BartenderBot(BaseBot):
 
                     if bot_in_room:
                         consecutive_failures = 0  # Resetear contador si está conectado
-                        # Logging solo cada 5 minutos para no saturar
-                        if consecutive_failures == 0 and int(current_time.split(':')[1]) % 5 == 0:
-                            safe_print(f"[{current_time}] ✅ Bot cantinero conectado OK")
+                        # Logging solo cada 10 minutos para no saturar
+                        minute = int(current_time.split(':')[1])
+                        if minute % 10 == 0 and int(current_time.split(':')[2]) < 30:
+                            safe_print(f"[{current_time}] ✅ Bot cantinero conectado OK ({len(users)} usuarios en sala)")
                     else:
                         consecutive_failures += 1
                         safe_print(f"[{current_time}] ⚠️ Bot cantinero NO encontrado en sala ({consecutive_failures}/3)")
