@@ -311,42 +311,92 @@ class BartenderBot(BaseBot):
                 safe_print(f"❌ Error en !copy: {e}")
             return
 
-        # Comando !canemote <emote_id> - Cambiar emote en bucle (Solo Admin/Owner)
-        if msg.startswith("!canemote"):
+        # Sistema simplificado de emotes - cargar del main.py
+        emotes = {
+            "1": {"id": "emote-looping", "name": "fairytwirl"},
+            "2": {"id": "idle-floating", "name": "fairyfloat"},
+            "3": {"id": "emote-launch", "name": "launch"},
+            "4": {"id": "emote-cutesalute", "name": "cutesalute"},
+            "5": {"id": "emote-salute", "name": "atattention"},
+            "6": {"id": "dance-tiktok11", "name": "tiktok"},
+            "7": {"id": "emote-kissing", "name": "smooch"},
+            "8": {"id": "dance-employee", "name": "pushit"},
+            "9": {"id": "emote-gift", "name": "foryou"},
+            "10": {"id": "dance-touch", "name": "touch"},
+            "11": {"id": "dance-kawai", "name": "kawaii"},
+            "12": {"id": "sit-relaxed", "name": "repose"},
+            "13": {"id": "emote-sleigh", "name": "sleigh"},
+            "14": {"id": "emote-hyped", "name": "hyped"},
+            "15": {"id": "dance-jinglebell", "name": "jingle"},
+            "16": {"id": "idle-toilet", "name": "gottago"},
+            "17": {"id": "emote-timejump", "name": "timejump"},
+            "18": {"id": "idle-wild", "name": "scritchy"},
+            "19": {"id": "idle-nervous", "name": "bitnervous"},
+            "20": {"id": "emote-iceskating", "name": "iceskating"},
+            "140": {"id": "emote-ghost-idle", "name": "ghostfloat"},
+            "187": {"id": "emote-dab", "name": "dab"},
+            "188": {"id": "dance-gangnamstyle", "name": "gangnamstyle"}
+        }
+        
+        # Comando por número: !1, !2, etc.
+        if msg.startswith("!") and msg[1:].isdigit():
             if not is_admin_or_owner:
-                await self.highrise.chat("❌ Solo admin y propietario pueden cambiar el emote del cantinero")
+                await self.highrise.chat("❌ Solo admin y propietario pueden cambiar emotes")
                 return
             
-            parts = msg.split()
-            if len(parts) >= 2:
-                emote_id = parts[1].strip()
-                self.current_emote = emote_id
+            emote_num = msg[1:]
+            if emote_num in emotes:
+                emote_data = emotes[emote_num]
+                self.current_emote = emote_data["id"]
                 self.emote_loop_active = True
-                await self.highrise.chat(f"🎭 Emote del cantinero cambiado a: {emote_id}")
-                safe_print(f"✅ Emote del cantinero cambiado a: {emote_id} por {username}")
+                await self.highrise.chat(f"🎭 Emote cambiado a #{emote_num}: {emote_data['name']} (bucle infinito)")
+                safe_print(f"✅ Emote #{emote_num} ({emote_data['name']}) activado por {username}")
             else:
-                await self.highrise.chat("❌ Usa: !canemote <emote_id>\nEjemplos:\n!canemote dance-floss\n!canemote emote-ghost-idle")
+                await self.highrise.chat(f"❌ Emote #{emote_num} no existe")
+            return
+        
+        # Comando por nombre: !ghostfloat, !dab, etc.
+        if msg.startswith("!") and not msg[1:].isdigit() and msg.lower() != "!trago" and msg.lower() != "!copy" and msg.lower() != "!canstop" and msg.lower() != "!canstart" and msg.lower() != "!canstatus":
+            if not is_admin_or_owner:
+                return
+            
+            emote_name = msg[1:].lower().strip()
+            emote_found = None
+            emote_number = None
+            
+            # Buscar por nombre
+            for num, data in emotes.items():
+                if data["name"].lower() == emote_name or data["id"].lower() == emote_name:
+                    emote_found = data
+                    emote_number = num
+                    break
+            
+            if emote_found:
+                self.current_emote = emote_found["id"]
+                self.emote_loop_active = True
+                await self.highrise.chat(f"🎭 Emote cambiado a: {emote_found['name']} (#{emote_number}, bucle infinito)")
+                safe_print(f"✅ Emote '{emote_found['name']}' activado por {username}")
             return
         
         # Comando !canstop - Detener emote en bucle (Solo Admin/Owner)
         if msg.lower() == "!canstop":
             if not is_admin_or_owner:
-                await self.highrise.chat("❌ Solo admin y propietario pueden detener el emote del cantinero")
+                await self.highrise.chat("❌ Solo admin y propietario pueden detener el emote")
                 return
             
             self.emote_loop_active = False
-            await self.highrise.chat("⏸️ Emote del cantinero detenido")
+            await self.highrise.chat("⏸️ Emote detenido")
             safe_print(f"⏸️ Emote detenido por {username}")
             return
         
         # Comando !canstart - Reanudar emote en bucle (Solo Admin/Owner)
         if msg.lower() == "!canstart":
             if not is_admin_or_owner:
-                await self.highrise.chat("❌ Solo admin y propietario pueden iniciar el emote del cantinero")
+                await self.highrise.chat("❌ Solo admin y propietario pueden iniciar el emote")
                 return
             
             self.emote_loop_active = True
-            await self.highrise.chat(f"▶️ Emote del cantinero reanudado: {self.current_emote}")
+            await self.highrise.chat(f"▶️ Emote reanudado: {self.current_emote}")
             safe_print(f"▶️ Emote reanudado por {username}: {self.current_emote}")
             return
         
@@ -356,7 +406,7 @@ class BartenderBot(BaseBot):
                 return
             
             status = "🟢 Activo" if self.emote_loop_active else "🔴 Detenido"
-            await self.highrise.chat(f"📊 Estado del cantinero:\nEmote: {self.current_emote}\nEstado: {status}")
+            await self.highrise.chat(f"📊 Estado:\nEmote: {self.current_emote}\nEstado: {status}")
             return
 
         # Comando !trago @user
