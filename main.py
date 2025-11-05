@@ -180,8 +180,8 @@ class EmoteHealthManager:
     """Gestiona la salud de los emotes, detectando y deshabilitando emotes problemáticos"""
     
     HEALTH_FILE = "data/emote_health.json"
-    SOFT_FAILURE_THRESHOLD = 3
-    HARD_FAILURE_THRESHOLD = 5
+    SOFT_FAILURE_THRESHOLD = 1
+    HARD_FAILURE_THRESHOLD = 1
     COOLDOWN_HOURS = 24
     
     def __init__(self):
