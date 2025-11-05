@@ -276,9 +276,10 @@ class EmoteHealthManager:
         if should_save:
             self.save_health_data()
     
-    def record_failure(self, emote_id: str, emote_name: str, exception: str) -> bool:
-        """Registra un fallo del emote. Retorna True si es error de transporte."""
+    def record_failure(self, emote_id: str, emote_name: str, exception: str) -> tuple:
+        """Registra un fallo del emote. Retorna (is_transport_error, notification_message)."""
         is_transport_error = self._is_transport_error(exception)
+        notification_message = None
         
         if emote_id not in self.emote_stats:
             self.emote_stats[emote_id] = {
@@ -304,6 +305,7 @@ class EmoteHealthManager:
                 self.disabled_emotes.add(emote_id)
                 safe_print(f"🚫 Emote {emote_name} ({emote_id}) DESHABILITADO PERMANENTEMENTE - {stats['failures']} fallos")
                 log_event("EMOTE", f"Emote {emote_name} deshabilitado permanentemente: {stats['failures']} fallos - Último error: {exception}")
+                notification_message = f"🚫 [BOT PRINCIPAL] Emote '{emote_name}' deshabilitado permanentemente\n❌ Fallos: {stats['failures']}\n⚠️ Error: {str(exception)[:100]}"
         
         elif stats["failures"] >= self.SOFT_FAILURE_THRESHOLD:
             if not stats.get("soft_disabled", False):
@@ -313,7 +315,7 @@ class EmoteHealthManager:
                 log_event("EMOTE", f"Emote {emote_name} en cooldown: {stats['failures']} fallos - Último error: {exception}")
         
         self.save_health_data()
-        return is_transport_error
+        return is_transport_error, notification_message
     
     def _is_transport_error(self, exception_str: str) -> bool:
         """Detecta si el error es relacionado con el transporte/conexión"""
@@ -3711,7 +3713,11 @@ class Bot(BaseBot):
                         
                     except Exception as e:
                         error_msg = str(e)
-                        is_transport_error = emote_health_manager.record_failure(emote_id, emote_name, error_msg)
+                        is_transport_error, notification_msg = emote_health_manager.record_failure(emote_id, emote_name, error_msg)
+                        
+                        # Enviar notificación solo a admin/owner si el emote fue deshabilitado
+                        if notification_msg:
+                            await self.notify_admins(notification_msg)
                         
                         if is_transport_error:
                             consecutive_transport_errors += 1
@@ -3928,6 +3934,27 @@ class Bot(BaseBot):
         else: role = "Vip"
         await self.highrise.send_whisper(target_user_id, f"🔑 {username} Roles:\nNivel: {role}")
 
+    async def notify_admins(self, message: str):
+        """Envía notificación solo a admin y propietario"""
+        try:
+            # Notificar al propietario
+            if OWNER_ID:
+                try:
+                    await self.highrise.send_whisper(OWNER_ID, message)
+                    safe_print(f"📨 Notificación enviada al propietario")
+                except:
+                    pass
+            
+            # Notificar a los administradores
+            for admin_id in ADMIN_IDS:
+                try:
+                    await self.highrise.send_whisper(admin_id, message)
+                    safe_print(f"📨 Notificación enviada a admin {admin_id[:8]}...")
+                except:
+                    pass
+        except Exception as e:
+            safe_print(f"❌ Error enviando notificaciones: {e}")
+    
     async def get_bot_user(self):
         """Obtiene el objeto User del bot usando bot_id almacenado"""
         try:

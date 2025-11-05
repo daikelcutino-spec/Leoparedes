@@ -2,8 +2,10 @@ from highrise import BaseBot, User, Position, AnchorPosition
 from highrise.models import SessionMetadata, Error
 import asyncio
 from typing import Union
-from datetime import datetime
+from datetime import datetime, timedelta
 import sys
+import json
+import os
 
 def safe_print(message: str):
     """Imprime mensaje de forma segura en Windows, manejando errores de encoding"""
@@ -16,6 +18,160 @@ def safe_print(message: str):
         except:
             # Si todo falla, usar repr
             print(repr(message))
+
+# ============================================================================
+# SISTEMA DE GESTIÓN DE SALUD DE EMOTES
+# ============================================================================
+
+class EmoteHealthManager:
+    """Gestiona la salud de los emotes, detectando y deshabilitando emotes problemáticos"""
+    
+    HEALTH_FILE = "data/cantinero_emote_health.json"
+    SOFT_FAILURE_THRESHOLD = 1
+    HARD_FAILURE_THRESHOLD = 1
+    COOLDOWN_HOURS = 24
+    
+    def __init__(self):
+        self.emote_stats = {}
+        self.disabled_emotes = set()
+        self.load_health_data()
+    
+    def load_health_data(self):
+        """Carga datos de salud de emotes desde el archivo"""
+        try:
+            if os.path.exists(self.HEALTH_FILE):
+                with open(self.HEALTH_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    self.emote_stats = data.get("stats", {})
+                    self.disabled_emotes = set(data.get("disabled", []))
+                    safe_print(f"📊 [CANTINERO] Datos de salud cargados: {len(self.disabled_emotes)} deshabilitados")
+        except Exception as e:
+            safe_print(f"⚠️ [CANTINERO] Error cargando datos de salud: {e}")
+            self.emote_stats = {}
+            self.disabled_emotes = set()
+    
+    def save_health_data(self):
+        """Guarda datos de salud de emotes al archivo"""
+        try:
+            os.makedirs("data", exist_ok=True)
+            data = {
+                "stats": self.emote_stats,
+                "disabled": list(self.disabled_emotes),
+                "last_update": datetime.now().isoformat()
+            }
+            with open(self.HEALTH_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            safe_print(f"❌ [CANTINERO] Error guardando datos de salud: {e}")
+    
+    def should_run(self, emote_id: str, emote_name: str = "") -> bool:
+        """Determina si un emote debe ejecutarse"""
+        if emote_id in self.disabled_emotes:
+            return False
+        
+        if emote_id in self.emote_stats:
+            stats = self.emote_stats[emote_id]
+            
+            if stats.get("hard_disabled", False):
+                return False
+            
+            if stats.get("soft_disabled", False):
+                disabled_at = stats.get("disabled_at")
+                if disabled_at:
+                    try:
+                        disabled_time = datetime.fromisoformat(disabled_at)
+                        cooldown_end = disabled_time + timedelta(hours=self.COOLDOWN_HOURS)
+                        if datetime.now() < cooldown_end:
+                            return False
+                        else:
+                            stats["soft_disabled"] = False
+                            stats["failures"] = 0
+                            safe_print(f"♻️ [CANTINERO] Emote {emote_name} salió de cooldown")
+                            self.save_health_data()
+                    except:
+                        pass
+        
+        return True
+    
+    def record_success(self, emote_id: str, emote_name: str = ""):
+        """Registra una ejecución exitosa del emote"""
+        is_new_entry = emote_id not in self.emote_stats
+        
+        if is_new_entry:
+            self.emote_stats[emote_id] = {
+                "name": emote_name,
+                "successes": 0,
+                "failures": 0,
+                "last_success": None,
+                "last_failure": None,
+                "soft_disabled": False,
+                "hard_disabled": False
+            }
+        
+        self.emote_stats[emote_id]["successes"] += 1
+        self.emote_stats[emote_id]["last_success"] = datetime.now().isoformat()
+        
+        if is_new_entry or self.emote_stats[emote_id]["successes"] % 20 == 0:
+            self.save_health_data()
+    
+    def record_failure(self, emote_id: str, emote_name: str, exception: str) -> tuple:
+        """Registra un fallo del emote. Retorna (is_transport_error, notification_message)."""
+        is_transport_error = self._is_transport_error(exception)
+        notification_message = None
+        
+        if emote_id not in self.emote_stats:
+            self.emote_stats[emote_id] = {
+                "name": emote_name,
+                "successes": 0,
+                "failures": 0,
+                "last_success": None,
+                "last_failure": None,
+                "last_exception": None,
+                "soft_disabled": False,
+                "hard_disabled": False
+            }
+        
+        stats = self.emote_stats[emote_id]
+        stats["failures"] += 1
+        stats["last_failure"] = datetime.now().isoformat()
+        stats["last_exception"] = str(exception)
+        
+        if stats["failures"] >= self.HARD_FAILURE_THRESHOLD:
+            if not stats.get("hard_disabled", False):
+                stats["hard_disabled"] = True
+                stats["disabled_at"] = datetime.now().isoformat()
+                self.disabled_emotes.add(emote_id)
+                safe_print(f"🚫 [CANTINERO] Emote {emote_name} DESHABILITADO - {stats['failures']} fallos")
+                notification_message = f"🚫 [CANTINERO] Emote '{emote_name}' deshabilitado permanentemente\n❌ Fallos: {stats['failures']}\n⚠️ Error: {str(exception)[:100]}"
+        
+        elif stats["failures"] >= self.SOFT_FAILURE_THRESHOLD:
+            if not stats.get("soft_disabled", False):
+                stats["soft_disabled"] = True
+                stats["disabled_at"] = datetime.now().isoformat()
+                safe_print(f"⚠️ [CANTINERO] Emote {emote_name} en COOLDOWN - {stats['failures']} fallos")
+        
+        self.save_health_data()
+        return is_transport_error, notification_message
+    
+    def _is_transport_error(self, exception_str: str) -> bool:
+        """Detecta si el error es relacionado con el transporte/conexión"""
+        transport_keywords = [
+            "transport", "closing", "connection", "websocket",
+            "disconnect", "closed", "write to closing"
+        ]
+        exception_lower = str(exception_str).lower()
+        return any(keyword in exception_lower for keyword in transport_keywords)
+    
+    def get_disabled_count(self) -> int:
+        """Retorna el número de emotes deshabilitados"""
+        return len(self.disabled_emotes)
+    
+    def get_stats_summary(self) -> str:
+        """Retorna un resumen de las estadísticas"""
+        total = len(self.emote_stats)
+        disabled = len(self.disabled_emotes)
+        soft_disabled = sum(1 for s in self.emote_stats.values() if s.get("soft_disabled", False))
+        return f"Total: {total} | Deshabilitados: {disabled} | En cooldown: {soft_disabled}"
 
 class BartenderBot(BaseBot):
     """Bot Cantinero NOCTURNO - Floss continuo y mensajes automáticos"""
@@ -32,6 +188,13 @@ class BartenderBot(BaseBot):
         # Sistema de emotes en bucle
         self.current_emote = "emote-ghost-idle"  # ghostfloat - emote por defecto
         self.emote_loop_active = True  # Activado por defecto
+        
+        # Sistema de gestión de salud de emotes
+        self.emote_health = EmoteHealthManager()
+        
+        # IDs de admin y owner para notificaciones
+        self.owner_id = None
+        self.admin_ids = []
 
         # Lista de bebidas para el comando !trago
         self.bebidas = [
@@ -46,6 +209,27 @@ class BartenderBot(BaseBot):
             "☕ Un café irlandés",
             "🍻 Una jarra de cerveza artesanal"
         ]
+    
+    async def notify_admins(self, message: str):
+        """Envía notificación solo a admin y propietario"""
+        try:
+            # Notificar al propietario
+            if self.owner_id:
+                try:
+                    await self.highrise.send_whisper(self.owner_id, message)
+                    safe_print(f"📨 Notificación enviada al propietario")
+                except:
+                    pass
+            
+            # Notificar a los administradores
+            for admin_id in self.admin_ids:
+                try:
+                    await self.highrise.send_whisper(admin_id, message)
+                    safe_print(f"📨 Notificación enviada a admin {admin_id[:8]}...")
+                except:
+                    pass
+        except Exception as e:
+            safe_print(f"❌ Error enviando notificaciones: {e}")
 
     def get_day_message(self):
         """Obtiene el mensaje según el día de la semana"""
@@ -80,15 +264,23 @@ class BartenderBot(BaseBot):
         safe_print(f"🕷️ Bot Cantinero NOCTURNO iniciado! ID: {self.bot_id}")
         safe_print(f"🕷️ User ID: {session_metadata.user_id}")
 
+        # Cargar configuración de admin/owner desde config.json del bot principal
+        try:
+            with open("config.json", "r", encoding="utf-8") as f:
+                main_config = json.load(f)
+                self.owner_id = main_config.get("owner_id", "")
+                self.admin_ids = main_config.get("admin_ids", [])
+                safe_print(f"✅ Admin/Owner IDs cargados para notificaciones")
+        except Exception as e:
+            safe_print(f"⚠️ Error cargando admin/owner IDs: {e}")
+
         # Teletransportar al punto de inicio si está configurado
         try:
-            import json
             with open("cantinero_config.json", "r", encoding="utf-8") as f:
                 config = json.load(f)
 
             punto_inicio = config.get("punto_inicio")
             if punto_inicio:
-                from highrise import Position
                 spawn_position = Position(punto_inicio["x"], punto_inicio["y"], punto_inicio["z"])
                 await self.highrise.teleport(self.bot_id, spawn_position)
                 safe_print(f"📍 Bot cantinero teletransportado al punto de inicio: X={punto_inicio['x']}, Y={punto_inicio['y']}, Z={punto_inicio['z']}")
@@ -133,28 +325,40 @@ class BartenderBot(BaseBot):
             try:
                 # Solo ejecutar si el loop está activo y no está en llamada
                 if self.emote_loop_active and not self.is_in_call:
+                    # Verificar si el emote debe ejecutarse
+                    if not self.emote_health.should_run(self.current_emote, self.current_emote):
+                        safe_print(f"⏭️ [CANTINERO] Emote {self.current_emote} omitido (deshabilitado)")
+                        await asyncio.sleep(2)
+                        continue
+                    
                     await self.highrise.send_emote(self.current_emote)
-                    consecutive_errors = 0  # Resetear contador en caso de éxito
+                    self.emote_health.record_success(self.current_emote, self.current_emote)
+                    consecutive_errors = 0
 
-                    # Obtener duración del emote actual
                     emote_duration = emote_durations.get(self.current_emote, 10.0)
-
-                    # Esperar la duración del emote menos un pequeño margen
-                    # para que se repita de forma continua pero completa
                     await asyncio.sleep(max(0.5, emote_duration - 0.3))
                 else:
-                    # Si está desactivado o en llamada, esperar
                     await asyncio.sleep(2)
             except Exception as e:
                 consecutive_errors += 1
-                safe_print(f"⚠️ Error emote loop ({consecutive_errors}/{max_consecutive_errors}): {type(e).__name__}: {e}")
+                
+                # Registrar fallo y obtener mensaje de notificación
+                is_transport_error, notification_msg = self.emote_health.record_failure(
+                    self.current_emote, 
+                    self.current_emote, 
+                    str(e)
+                )
+                
+                # Enviar notificación solo a admin/owner si el emote fue deshabilitado
+                if notification_msg:
+                    await self.notify_admins(notification_msg)
+                
+                safe_print(f"⚠️ [CANTINERO] Error emote ({consecutive_errors}/{max_consecutive_errors}): {type(e).__name__}: {e}")
 
-                # Backoff exponencial: 10s, 20s, 40s
                 wait_time = min(10 * (2 ** (consecutive_errors - 1)), 60)
-                safe_print(f"⏳ Esperando {wait_time}s antes de reintentar emote...")
+                safe_print(f"⏳ Esperando {wait_time}s antes de reintentar...")
                 await asyncio.sleep(wait_time)
 
-                # Si hay demasiados errores, resetear después de espera larga
                 if consecutive_errors >= max_consecutive_errors:
                     consecutive_errors = 0
 
