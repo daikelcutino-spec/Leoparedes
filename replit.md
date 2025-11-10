@@ -85,7 +85,19 @@ A separate `cantinero_bot.py` operates as a bartender with a configurable emote 
 
 ## Recent Updates
 
-### November 10, 2025
+### November 10, 2025 (Tarde)
+- **Bloqueo de emotes no gratuitos en bot principal**:
+  - Implementado set `DISABLED_EMOTE_IDS` con 4 emotes no gratuitos: emote-kissing-passionate (kiss), emoji-shake-head (shakehead), emoji-nod (nod), emoji-hello (hello)
+  - Agregada validación en todos los puntos de ejecución de emotes para rechazar emotes deshabilitados
+  - Los usuarios reciben el mensaje "🚫 Emote deshabilitado" cuando intentan usar un emote bloqueado
+  - Validación aplicada en: ejecución por número, comando !emote, ejecución rápida, emotes mutuos y ciclo automático
+- **Eliminación de lista de emotes en bot cantinero**:
+  - Eliminado método `start_auto_emote_cycle` y su lista de 224 emotes del bot cantinero
+  - Comando `!automode` ahora responde "🚫 Modo automático deshabilitado"
+  - Bot cantinero sigue usando únicamente su emote por defecto (emote-ghost-idle / ghostfloat) en bucle
+  - Simplificación del código del bot cantinero al eliminar funcionalidad no utilizada
+
+### November 10, 2025 (Mañana)
 - **Sistema de Salud de Emotes ELIMINADO**:
   - Eliminado completamente el sistema EmoteHealthManager de ambos bots (bot principal y bot cantinero)
   - Eliminados comandos `!emotestats` y `!emotereset` del bot principal
