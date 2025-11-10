@@ -176,6 +176,14 @@ async def save_bot_inventory(bot_instance):
 # CATÁLOGO DE EMOTES
 # ============================================================================
 
+# Emotes deshabilitados (no gratuitos)
+DISABLED_EMOTE_IDS = {
+    "emote-kissing-passionate",  # kiss
+    "emoji-shake-head",          # shakehead
+    "emoji-nod",                 # nod
+    "emoji-hello"                # hello
+}
+
 emotes = {
     "1": {"id": "emote-looping", "name": "fairytwirl", "duration": 9.89, "is_free": True},
     "2": {"id": "idle-floating", "name": "fairyfloat", "duration": 27.60, "is_free": True},
@@ -1315,6 +1323,10 @@ class Bot(BaseBot):
             emote_number = msg
             emote = emotes.get(emote_number)
             if emote and emote["is_free"]:
+                # Verificar si el emote está deshabilitado
+                if emote["id"] in DISABLED_EMOTE_IDS:
+                    await send_response("🚫 Emote deshabilitado")
+                    return
                 try:
                     response = await self.highrise.get_room_users()
                     if isinstance(response, Error):
@@ -1377,7 +1389,10 @@ class Bot(BaseBot):
                         break
 
             if emote:
-                if emote["is_free"]:
+                # Verificar si el emote está deshabilitado
+                if emote["id"] in DISABLED_EMOTE_IDS:
+                    await send_response("🚫 Emote deshabilitado")
+                elif emote["is_free"]:
                     for target_id in target_user_ids:
                         asyncio.create_task(self.send_emote_loop(target_id, emote["id"]))
                     await send_response( f"🎭 Animación '{emote['name']}' activada")
@@ -1442,7 +1457,10 @@ class Bot(BaseBot):
 
             emote = next((e for e in emotes.values() if e["name"].lower() == emote_name.lower() or e["id"].lower() == emote_name.lower()), None)
             if emote:
-                if emote["is_free"]:
+                # Verificar si el emote está deshabilitado
+                if emote["id"] in DISABLED_EMOTE_IDS:
+                    await send_response("🚫 Emote deshabilitado")
+                elif emote["is_free"]:
                     if include_self and user.id not in target_user_ids:
                         target_user_ids.append(user.id)
                     for target_user_id in target_user_ids:
@@ -2364,6 +2382,11 @@ class Bot(BaseBot):
                 
                 if not emote["is_free"]:
                     await send_response(f"❌ El emote '{emote['name']}' no es gratuito")
+                    return
+                
+                # Verificar si el emote está deshabilitado
+                if emote["id"] in DISABLED_EMOTE_IDS:
+                    await send_response("🚫 Emote deshabilitado")
                     return
                 
                 # Buscar usuario objetivo
@@ -3460,6 +3483,11 @@ class Bot(BaseBot):
                     emote_id = emote_data["id"]
                     emote_name = emote_data["name"]
                     emote_duration = emote_data.get("duration", 5.0)
+                    
+                    # Omitir emotes deshabilitados
+                    if emote_id in DISABLED_EMOTE_IDS:
+                        emotes_skipped += 1
+                        continue
                     
                     try:
                         await self.highrise.send_emote(emote_id, self.bot_id)
