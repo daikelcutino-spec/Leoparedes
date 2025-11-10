@@ -85,8 +85,19 @@ A separate `cantinero_bot.py` operates as a bartender with a configurable emote 
 
 ## Recent Updates
 
+### November 10, 2025
+- **Sistema de Salud de Emotes ELIMINADO**:
+  - Eliminado completamente el sistema EmoteHealthManager de ambos bots (bot principal y bot cantinero)
+  - Eliminados comandos `!emotestats` y `!emotereset` del bot principal
+  - Eliminados archivos de persistencia `data/emote_health.json` y `data/cantinero_emote_health.json`
+  - Todos los emotes deshabilitados fueron rehabilitados
+  - Los emotes ahora se ejecutan sin validación de salud
+  - **Bot Cantinero**: Mantiene el emote 140 (emote-ghost-idle / ghostfloat) como emote por defecto
+  - **Emotes NO gratuitos identificados**: emote-kissing-passionate (kiss), emoji-shake-head (shakehead), emoji-nod (nod), emoji-hello (hello)
+  - Simplificación del código: reducido manejo de errores a detección básica de errores de transporte
+
 ### November 4, 2025 (Tarde)
-- **Sistema de Gestión de Salud de Emotes (EmoteHealthManager)**:
+- **Sistema de Gestión de Salud de Emotes (EmoteHealthManager)** [ELIMINADO EN NOV 10]:
   - Implementado sistema inteligente que detecta y deshabilita automáticamente emotes problemáticos que causan desconexiones del bot
   - **Persistencia completa**: Todos los datos se guardan en `data/emote_health.json` y sobreviven reinicios del bot
   - **Umbrales automáticos**:
