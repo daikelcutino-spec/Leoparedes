@@ -1,0 +1,4 @@
+flask
+highrise-bot-sdk>=24.1.0
+asyncio>=4.0.0
+pendulum==2.1.2
